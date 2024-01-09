@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#FF0A0A0A</color>
+    <color name="primary_second">#FF464749</color>
+    <color name="light_grey">#FFADADAD</color>
+    <color name="grey_shadow">#62ADADAD</color>
+    <color name="light_gray">#FFF5F5F5</color>
+    <color name="gray_icon">#FF666666</color>
+    <color name="vulcan">#FF141221</color>
+    <color name="royal_blue">#FF604FEF</color>
+    <color name="violet">#FFA74DBC</color>
+
+</resources>

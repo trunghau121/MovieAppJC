@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">core-app</string>
+    <string name="dialog_ok_button_title">Ok</string>
+    <string name="dialog_cancel_button_title">Huỷ</string>
+    <string name="yup">Đồng ý</string>
+    <string name="no">Không</string>
+</resources>
