@@ -62,7 +62,10 @@ fun MovieDetailPoster(viewModel: MovieDetailViewModel, movieDetailEntity: MovieD
                 .fillMaxWidth()
                 .height(heightTotal)
                 .padding(bottom = heightPoster / 2),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(
+                bottomStart = 20.dp,
+                bottomEnd = 20.dp
+            )
         ) {
             Box {
                 GlideImage(

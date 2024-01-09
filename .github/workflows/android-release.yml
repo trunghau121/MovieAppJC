@@ -80,7 +80,7 @@ jobs:
         with:
           path: version1.txt
 
-      - name: Update version in YAML
+      - name: Update version
         run: |
           VERSION_NAME="1.0.0"
           VERSION_CODE="1"
