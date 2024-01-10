@@ -20,7 +20,7 @@ jobs:
           distribution: zulu
           java-version: 17
           cache: gradle
-      - run: ./gradlew lint
+      - run: ./gradlew lintRelease
 
   version:
     name: Create version number
@@ -79,6 +79,12 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: version1.txt
+
+      - name: Bump version
+        uses: chkfung/android-version-actions@v1.2.1
+        with:
+          gradlePath: app/build.gradle.kts
+          versionName: ${{ steps.version.outputs.content }}
 
       - name: Update KeyStore password in key properties
         run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.KEYSTORE_PASS }}/g' key.properties
