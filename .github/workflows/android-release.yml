@@ -5,7 +5,7 @@ on:
     branches:
       - master
     tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+      - [0-9]+.[0-9]+.[0-9]+
 
 jobs:
 
@@ -28,7 +28,12 @@ jobs:
     name: Build apk
     needs: [ lint ]
     runs-on: ubuntu-latest
+    if: success() && startsWith(github.ref, 'refs/tags/v')
     steps:
+      - name: Generate version string
+        id: version-string
+        run: echo "VERSION_STR=${GITHUB_REF##*/}" >> GITHUB_OUTPUT
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -39,11 +44,15 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Create version number
+        id: version-string
+        run: echo "VERSION_STR=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+
       - name: Bump version
         uses: chkfung/android-version-actions@v1.2.1
         with:
           gradlePath: app/build.gradle.kts
-          versionName: ${{ github.ref }}
+          versionName: ${{ steps.version-string.outputs.VERSION_STR }}
 
       - name: Update KeyStore password in key properties
         run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.KEYSTORE_PASS }}/g' key.properties
@@ -63,7 +72,7 @@ jobs:
           artifacts: "app/build/outputs/apk/release/app-release.apk"
           token: ${{ secrets.TOKEN_GITHUB }}
           tag: ${{ github.ref }}
-          commit: ${{ github.sha }}
+          commit: ${{ steps.version-string.outputs.VERSION_STR }}
           prerelease: false
 
       - name: Upload app apk
