@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
 import com.movieappjc.common.constants.noFavoriteMovieText
 import com.movieappjc.common.localization.LocalLanguages
@@ -19,7 +19,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FavoriteMovieScreen(viewModel: FavoriteViewModel = koinViewModel()) {
-    val state by viewModel.movies.collectAsState()
+    val state by viewModel.movies.collectAsStateWithLifecycle()
     Column {
         AppBarFavorite(viewModel)
         if (state is Resource.Success) {

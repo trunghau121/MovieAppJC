@@ -9,6 +9,7 @@ gsonVersion = "2.10.1"
 glideVersion = "5.0.0-rc01"
 retrofitVersion = "2.9.0"
 lifecycleVersion = "2.6.2"
+lifecycleComposeVersion = "2.7.0-rc02"
 koinCoreVersion = "3.5.3"
 koinVersion = "3.5.3"
 pluginSerializationVersion = "1.7.20"
@@ -33,6 +34,7 @@ compose-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-pr
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "composeMaterial3Version" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityComposeVersion" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationVersion" }
+lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleComposeVersion" }
 
 glideCompose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glideComposeVersion" }
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStoreVersion" }

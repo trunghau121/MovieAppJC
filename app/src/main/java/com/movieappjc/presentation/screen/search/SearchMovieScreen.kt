@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
 import com.movieappjc.common.constants.noMoviesSearchedText
 import com.movieappjc.common.localization.LocalLanguages
@@ -20,7 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 fun SearchMovieScreen(viewModel: SearchMovieViewModel = koinViewModel()) {
     Column {
         AppBarSearch(viewModel)
-        when (val state = viewModel.movies.collectAsState().value) {
+        when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 if (state.data.data.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.imePadding()) {

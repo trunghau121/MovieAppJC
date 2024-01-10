@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
 import com.movieappjc.presentation.components.ErrorAppComponent
 import com.movieappjc.presentation.components.LoadingCircle
@@ -21,10 +21,10 @@ fun MovieDetailScreen(
     viewModel: MovieDetailViewModel = koinViewModel()
 ) {
     val scrollState = rememberScrollState()
-    val castState by viewModel.castMovie.collectAsState()
+    val castState by viewModel.castMovie.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when (val state = viewModel.movieDetail.collectAsState().value) {
+        when (val state = viewModel.movieDetail.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
                     MovieDetailPoster(viewModel, state.data)

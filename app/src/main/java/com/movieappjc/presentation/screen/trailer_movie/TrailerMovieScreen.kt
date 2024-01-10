@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +20,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.value
 import com.core_app.repository.Resource
 import com.movieappjc.common.constants.noTrailerVideoText
@@ -36,7 +36,7 @@ import org.koin.androidx.compose.koinViewModel
 fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = koinViewModel()) {
     Column {
         AppBarTrailerMovie(viewModel)
-        when (val state = viewModel.videos.collectAsState().value) {
+        when (val state = viewModel.videos.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 val videos = state.data.value()
                 if (videos.isNotEmpty()) {

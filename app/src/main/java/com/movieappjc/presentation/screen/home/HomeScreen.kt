@@ -10,9 +10,9 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.value
 import com.core_app.repository.Resource
 import com.movieappjc.domain.entities.MovieEntity
@@ -32,7 +32,7 @@ fun HomeScreen(
     onClickLanguage: (Locale) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    when (val state = homeViewModel.movies.collectAsState().value) {
+    when (val state = homeViewModel.movies.collectAsStateWithLifecycle().value) {
         is Resource.Success -> {
             NavigationDrawerApp(drawerState, homeViewModel, onClickLanguage) {
                 HomeContent(homeViewModel, drawerState, state.data.data)
@@ -64,7 +64,7 @@ fun HomeContent(homeViewModel: HomeViewModel, drawerState: DrawerState, movies: 
             Spacer(modifier = Modifier.height(20.dp))
             MovieTabbedCompose(homeViewModel)
             Spacer(modifier = Modifier.height(5.dp))
-            when (val state = homeViewModel.movieTabbed.collectAsState().value) {
+            when (val state = homeViewModel.movieTabbed.collectAsStateWithLifecycle().value) {
                 is Resource.Success -> {
                     MovieListCardCompose(
                         homeViewModel,

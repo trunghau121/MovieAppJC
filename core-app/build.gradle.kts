@@ -52,6 +52,7 @@ dependencies {
     api(libs.compose.ui.graphics)
     api(libs.compose.tooling.preview)
     api(libs.compose.material3)
+    api(libs.lifecycle.compose)
 
     api(libs.datastore)
     api(libs.datastore.preferences)
