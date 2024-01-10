@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Create version number
         id: version-string
-        run: echo "VERSION_STR=${GITHUB_REF##*/}" >> GITHUB_OUTPUT
+        run: echo "VERSION_STR=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
 
       - name: Checkout code
         uses: actions/checkout@v3
