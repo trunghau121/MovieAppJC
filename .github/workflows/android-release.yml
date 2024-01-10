@@ -28,7 +28,6 @@ jobs:
     name: Build apk
     needs: [ lint ]
     runs-on: ubuntu-latest
-    if: success() && startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Create version number
         id: version-string
