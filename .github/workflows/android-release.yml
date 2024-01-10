@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
 
@@ -33,23 +35,9 @@ jobs:
       - name: Fetch all history for all tags and branches
         run: git fetch --unshallow --tags
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.10
-        with:
-          versionSpec: '5.x'
-
-      - name: Use GitVersion
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.10
-
-      - name: Create version.txt with nuGetVersion
-        run: echo ${{ steps.gitversion.outputs.nuGetVersion  }} > version.txt
-
-      - name: Upload version.txt
-        uses: actions/upload-artifact@v3
-        with:
-          name: gitversion
-          path: version.txt
+      - name: Generate version string
+        id: version-string
+        run: echo "VERSION_STR=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
 
   build:
     name: Build apk
@@ -66,25 +54,11 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Get version.txt
-        uses: actions/download-artifact@v3
-        with:
-          name: gitversion
-
-      - name: Create new file without newline char from version.txt
-        run: tr -d '\n' < version.txt > version1.txt
-
-      - name: Read version
-        id: version
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: version1.txt
-
       - name: Bump version
         uses: chkfung/android-version-actions@v1.2.1
         with:
           gradlePath: app/build.gradle.kts
-          versionName: ${{ steps.version.outputs.content }}
+          versionName: ${{ steps.version-string.outputs.VERSION_STR }}
 
       - name: Update KeyStore password in key properties
         run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.KEYSTORE_PASS }}/g' key.properties
@@ -103,7 +77,7 @@ jobs:
         with:
           artifacts: "app/build/outputs/apk/release/app-release.apk"
           token: ${{ secrets.TOKEN_GITHUB }}
-          tag: ${{ steps.version.outputs.content }}
+          tag: Release v${{ steps.version-string.outputs.VERSION_STR }}
           commit: ${{ github.sha }}
           prerelease: false
 
