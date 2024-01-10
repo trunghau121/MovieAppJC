@@ -39,15 +39,11 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Create version number
-        id: version-string
-        run: echo "VERSION_STR=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-
       - name: Bump version
         uses: chkfung/android-version-actions@v1.2.1
         with:
           gradlePath: app/build.gradle.kts
-          versionName: ${{ steps.version-string.outputs.VERSION_STR }}
+          versionName: ${{ github.ref }}
 
       - name: Update KeyStore password in key properties
         run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.KEYSTORE_PASS }}/g' key.properties
@@ -66,7 +62,7 @@ jobs:
         with:
           artifacts: "app/build/outputs/apk/release/app-release.apk"
           token: ${{ secrets.TOKEN_GITHUB }}
-          tag: ${{ steps.version-string.outputs.VERSION_STR }}
+          tag: ${{ github.ref }}
           commit: ${{ github.sha }}
           prerelease: false
 
