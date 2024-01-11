@@ -21,11 +21,7 @@ class FavoriteViewModel @Inject constructor(
     private val _movies = MutableStateFlow<Resource<List<MovieEntity>>>(Resource.Loading())
     val movies = _movies.asStateFlow()
 
-    init {
-        getFavoriteMovies()
-    }
-
-    private fun getFavoriteMovies() {
+    fun getFavoriteMovies() {
         executeTask(request = { favoriteMovie.getFavoriteMovies() }, _movies)
     }
 

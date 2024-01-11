@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,9 @@ import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 @Composable
 fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
     val state by viewModel.movies.collectAsStateWithLifecycle()
+    LaunchedEffect(true) {
+        viewModel.getFavoriteMovies()
+    }
     Column {
         AppBarFavorite(viewModel)
         if (state is Resource.Success) {
