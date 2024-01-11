@@ -3,10 +3,8 @@ package com.movieappjc.data.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.movieappjc.domain.entities.MovieEntity
-import kotlinx.parcelize.Parcelize
 
 @Entity
-@Parcelize
 data class MovieTable(
     @PrimaryKey
     override val id: Int,

@@ -2,9 +2,7 @@ package com.movieappjc.data.models
 
 import com.google.gson.annotations.SerializedName
 import com.movieappjc.domain.entities.CastEntity
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class CastModel(
     @SerializedName("adult")
     val adult: Boolean?,
