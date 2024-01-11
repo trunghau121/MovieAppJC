@@ -3,7 +3,9 @@ package com.movieappjc.data.models
 import com.core_app.extension.value
 import com.google.gson.annotations.SerializedName
 import com.movieappjc.domain.entities.MovieEntity
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class MovieModel(
     @SerializedName("adult")
     val adult: Boolean?,

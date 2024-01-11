@@ -3,7 +3,9 @@ package com.movieappjc.data.models
 import com.core_app.extension.value
 import com.google.gson.annotations.SerializedName
 import com.movieappjc.domain.entities.MoviesResultEntity
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 class MoviesResultModel(
     @SerializedName("page")
     override val currentPage: Int,

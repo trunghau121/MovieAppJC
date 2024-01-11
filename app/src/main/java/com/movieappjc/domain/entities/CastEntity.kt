@@ -1,6 +1,8 @@
 package com.movieappjc.domain.entities
 
-interface CastEntity {
+import android.os.Parcelable
+
+interface CastEntity : Parcelable {
     val id: Int
     val name: String
     val character: String

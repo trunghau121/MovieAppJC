@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName
 import com.movieappjc.data.local.MovieTable
 import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.domain.entities.MovieEntity
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class MovieDetailModel(
     @SerializedName("adult")
     val adult: Boolean?,
     @SerializedName("backdrop_path")
     override val backdropPath: String,
-    @SerializedName("belongs_to_collection")
-    val belongsToCollection: Any?,
     @SerializedName("budget")
     val budget: Int?,
     @SerializedName("homepage")
