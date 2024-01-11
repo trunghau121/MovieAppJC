@@ -5,7 +5,7 @@
 - Domain: Entities, UseCases, Abstract Repositories 
 - Data: Rest API(Retrofit + Coroutines), Local DB(Room and DataStore), Models
 - Presentation: Screens, Components, ViewModel(Coroutine Flow)
-- DI: Koin
+- DI: Hilt
 
 # Screenshots in the App:
 
