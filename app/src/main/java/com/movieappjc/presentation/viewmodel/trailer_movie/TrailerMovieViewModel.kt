@@ -6,7 +6,7 @@ import com.core_app.repository.Resource
 import com.core_app.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
 import com.movieappjc.domain.entities.VideoEntity
-import com.movieappjc.domain.usecases.GetVideoTrailer
+import com.movieappjc.domain.usecases.VideoTrailerUseCase
 import com.movieappjc.presentation.route.DestinationKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TrailerMovieViewModel @Inject constructor(
-    private val getVideoTrailer: GetVideoTrailer,
+    private val getVideoTrailer: VideoTrailerUseCase,
     private val appNavigator: AppNavigator,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {

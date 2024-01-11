@@ -6,8 +6,8 @@ import com.movieappjc.domain.repositories.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetTrending @Inject constructor(private val movieRepository: MovieRepository) {
+class ComingSoonUseCase @Inject constructor(private val movieRepository: MovieRepository) {
     operator fun invoke(): Flow<Resource<MoviesResultEntity>> {
-        return movieRepository.getTrending()
+        return movieRepository.getComingSoon()
     }
 }

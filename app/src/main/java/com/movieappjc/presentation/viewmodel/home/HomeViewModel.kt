@@ -5,10 +5,10 @@ import com.core_app.repository.Resource
 import com.core_app.repository.Resource.Loading
 import com.core_app.viewmodel.BaseViewModel
 import com.movieappjc.domain.entities.MoviesResultEntity
-import com.movieappjc.domain.usecases.GetComingSoon
-import com.movieappjc.domain.usecases.GetPlayingNow
-import com.movieappjc.domain.usecases.GetPopular
-import com.movieappjc.domain.usecases.GetTrending
+import com.movieappjc.domain.usecases.ComingSoonUseCase
+import com.movieappjc.domain.usecases.PlayingNowUseCase
+import com.movieappjc.domain.usecases.PopularUseCase
+import com.movieappjc.domain.usecases.TrendingUseCase
 import com.core_app.navigation.AppNavigator
 import com.movieappjc.presentation.route.DestinationApp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +20,11 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val getTrending: GetTrending,
-                    private val getPopular: GetPopular,
-                    private val getPlayingNow: GetPlayingNow,
-                    private val getComingSoon: GetComingSoon,
-                    private val appNavigator: AppNavigator
+class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase,
+                                        private val getPopular: PopularUseCase,
+                                        private val getPlayingNow: PlayingNowUseCase,
+                                        private val comingSoonUseCase: ComingSoonUseCase,
+                                        private val appNavigator: AppNavigator
     ) : BaseViewModel() {
     private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(Loading())
     val movies = _movies.asStateFlow()
@@ -59,7 +59,7 @@ class HomeViewModel @Inject constructor(private val getTrending: GetTrending,
                 jobTab= executeTask(request = { getPlayingNow() }, onSuccess = _movieTabbed)
             }
             2 -> {
-                jobTab = executeTask(request = { getComingSoon() }, onSuccess = _movieTabbed)
+                jobTab = executeTask(request = { comingSoonUseCase() }, onSuccess = _movieTabbed)
             }
         }
     }

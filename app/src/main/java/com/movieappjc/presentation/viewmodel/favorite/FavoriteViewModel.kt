@@ -5,7 +5,7 @@ import com.core_app.repository.Resource
 import com.core_app.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.domain.usecases.ActionsFavoriteMovie
+import com.movieappjc.domain.usecases.FavoriteMovieUseCase
 import com.movieappjc.presentation.route.DestinationApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-    private val favoriteMovie: ActionsFavoriteMovie,
+    private val favoriteMovie: FavoriteMovieUseCase,
     private val appNavigator: AppNavigator
 ) : BaseViewModel() {
     private val _movies = MutableStateFlow<Resource<List<MovieEntity>>>(Resource.Loading())

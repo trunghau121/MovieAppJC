@@ -8,9 +8,9 @@ import com.core_app.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
 import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
-import com.movieappjc.domain.usecases.ActionsFavoriteMovie
-import com.movieappjc.domain.usecases.GetCastCrew
-import com.movieappjc.domain.usecases.GetDetailMovie
+import com.movieappjc.domain.usecases.FavoriteMovieUseCase
+import com.movieappjc.domain.usecases.CastCrewUseCase
+import com.movieappjc.domain.usecases.DetailMovieUseCase
 import com.movieappjc.presentation.route.DestinationApp
 import com.movieappjc.presentation.route.DestinationKey
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,9 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieDetailViewModel @Inject constructor(
-    private val getDetailMovie: GetDetailMovie,
-    private val getCastCrew: GetCastCrew,
-    private val favoriteMovie: ActionsFavoriteMovie,
+    private val detailMovieUseCase: DetailMovieUseCase,
+    private val getCastCrew: CastCrewUseCase,
+    private val favoriteMovie: FavoriteMovieUseCase,
     private val appNavigator: AppNavigator,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
@@ -47,7 +47,7 @@ class MovieDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _movieDetail.emit(Resource.Loading())
         }
-        executeTask(request = { getDetailMovie(movieId) },
+        executeTask(request = { detailMovieUseCase(movieId) },
             success = {
                 _movieDetail.value = it
                 executeTask(request = { getCastCrew(movieId) }, onSuccess = _castMovie)

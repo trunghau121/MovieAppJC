@@ -6,7 +6,7 @@ import com.movieappjc.domain.repositories.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ActionsFavoriteMovie @Inject constructor(private val movieRepository: MovieRepository) {
+class FavoriteMovieUseCase @Inject constructor(private val movieRepository: MovieRepository) {
     suspend fun saveMovie(movieEntity: MovieEntity){
         movieRepository.saveMovie(movieEntity)
     }

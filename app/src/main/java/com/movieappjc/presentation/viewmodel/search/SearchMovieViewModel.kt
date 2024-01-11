@@ -5,7 +5,7 @@ import com.core_app.repository.Resource
 import com.core_app.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
 import com.movieappjc.domain.entities.MoviesResultEntity
-import com.movieappjc.domain.usecases.GetSearchMovie
+import com.movieappjc.domain.usecases.SearchMovieUseCase
 import com.movieappjc.presentation.route.DestinationApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchMovieViewModel @Inject constructor(
-    private val getSearchMovie: GetSearchMovie,
+    private val getSearchMovie: SearchMovieUseCase,
     private val appNavigator: AppNavigator
 ): BaseViewModel() {
     private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(SearchMovieInitState())

@@ -6,7 +6,7 @@ import com.movieappjc.domain.repositories.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetPlayingNow @Inject constructor(private val movieRepository: MovieRepository) {
+class PlayingNowUseCase @Inject constructor(private val movieRepository: MovieRepository) {
     operator fun invoke(): Flow<Resource<MoviesResultEntity>> {
         return movieRepository.getPlayingNow()
     }

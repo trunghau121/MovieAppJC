@@ -6,8 +6,8 @@ import com.movieappjc.domain.repositories.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetSearchMovie @Inject constructor(private val movieRepository: MovieRepository) {
-    operator fun invoke(name: String): Flow<Resource<MoviesResultEntity>> {
-        return movieRepository.searchMovie(name)
+class TrendingUseCase @Inject constructor(private val movieRepository: MovieRepository) {
+    operator fun invoke(): Flow<Resource<MoviesResultEntity>> {
+        return movieRepository.getTrending()
     }
 }
