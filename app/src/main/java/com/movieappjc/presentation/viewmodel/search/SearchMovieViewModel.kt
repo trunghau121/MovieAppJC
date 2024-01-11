@@ -7,12 +7,15 @@ import com.core_app.navigation.AppNavigator
 import com.movieappjc.domain.entities.MoviesResultEntity
 import com.movieappjc.domain.usecases.GetSearchMovie
 import com.movieappjc.presentation.route.DestinationApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SearchMovieViewModel(
+@HiltViewModel
+class SearchMovieViewModel @Inject constructor(
     private val getSearchMovie: GetSearchMovie,
     private val appNavigator: AppNavigator
 ): BaseViewModel() {

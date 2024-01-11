@@ -1,16 +1,16 @@
 package com.movieappjc.presentation.screen.main
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.core_app.navigation.NavigationEffects
 import com.movieappjc.presentation.route.NavHostApp
 import com.movieappjc.presentation.viewmodel.main.MainViewModel
-import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     onClickLanguage: (Locale) -> Unit = {}
 ) {
     val navController = rememberNavController()

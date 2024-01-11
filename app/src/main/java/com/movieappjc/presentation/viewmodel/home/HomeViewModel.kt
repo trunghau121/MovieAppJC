@@ -11,13 +11,16 @@ import com.movieappjc.domain.usecases.GetPopular
 import com.movieappjc.domain.usecases.GetTrending
 import com.core_app.navigation.AppNavigator
 import com.movieappjc.presentation.route.DestinationApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class HomeViewModel(private val getTrending: GetTrending,
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val getTrending: GetTrending,
                     private val getPopular: GetPopular,
                     private val getPlayingNow: GetPlayingNow,
                     private val getComingSoon: GetComingSoon,

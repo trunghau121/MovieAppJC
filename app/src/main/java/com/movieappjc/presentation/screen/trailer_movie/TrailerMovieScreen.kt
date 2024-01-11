@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.value
 import com.core_app.repository.Resource
@@ -30,10 +31,9 @@ import com.movieappjc.presentation.components.ErrorAppComponent
 import com.movieappjc.presentation.components.LoadingCircle
 import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
 import com.movieappjc.theme.fontCustomSemiBold
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = koinViewModel()) {
+fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
     Column {
         AppBarTrailerMovie(viewModel)
         when (val state = viewModel.videos.collectAsStateWithLifecycle().value) {

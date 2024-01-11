@@ -4,8 +4,9 @@ import com.core_app.repository.Resource
 import com.movieappjc.domain.entities.VideoEntity
 import com.movieappjc.domain.repositories.MovieRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class GetVideoTrailer(private val movieRepository: MovieRepository) {
+class GetVideoTrailer @Inject constructor(private val movieRepository: MovieRepository) {
     operator fun invoke(movieId: Int): Flow<Resource<List<VideoEntity>>> {
         return movieRepository.getVideos(movieId)
     }

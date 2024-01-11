@@ -13,11 +13,14 @@ import com.movieappjc.domain.usecases.GetCastCrew
 import com.movieappjc.domain.usecases.GetDetailMovie
 import com.movieappjc.presentation.route.DestinationApp
 import com.movieappjc.presentation.route.DestinationKey
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MovieDetailViewModel(
+@HiltViewModel
+class MovieDetailViewModel @Inject constructor(
     private val getDetailMovie: GetDetailMovie,
     private val getCastCrew: GetCastCrew,
     private val favoriteMovie: ActionsFavoriteMovie,

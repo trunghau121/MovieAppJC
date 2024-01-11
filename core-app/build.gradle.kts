@@ -4,7 +4,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
-    id("kotlin-kapt")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -44,7 +43,6 @@ android {
 }
 
 dependencies {
-    api(libs.androidx.multidex)
     api(libs.androidx.ktx)
 
     api(libs.activity.compose)
@@ -59,7 +57,7 @@ dependencies {
 
     api(libs.glideCompose)
     api(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.ksp)
     api(libs.glide.okhttp3.integration)
 
     api(libs.okhttp3)
@@ -75,9 +73,5 @@ dependencies {
     api(libs.lifecycle.viewmodel.compose)
     api(libs.androidx.lifecycle.runtime)
 
-    api(libs.koin.core)
-    api(libs.koin.android)
-    api(libs.koin.compose.navigation)
-    api(libs.koin.androidx.compose)
     api(libs.navigation.compose)
 }

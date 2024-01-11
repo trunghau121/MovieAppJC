@@ -8,17 +8,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
 import com.movieappjc.presentation.components.ErrorAppComponent
 import com.movieappjc.presentation.components.LoadingCircle
 import com.movieappjc.presentation.screen.detail.cast_crew.CastCrewComponent
 import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MovieDetailScreen(
-    viewModel: MovieDetailViewModel = koinViewModel()
+    viewModel: MovieDetailViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
     val castState by viewModel.castMovie.collectAsStateWithLifecycle()

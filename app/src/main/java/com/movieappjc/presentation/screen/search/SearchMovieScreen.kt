@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
 import com.movieappjc.common.constants.noMoviesSearchedText
@@ -14,10 +15,9 @@ import com.movieappjc.presentation.components.EmptyTextApp
 import com.movieappjc.presentation.components.ErrorAppComponent
 import com.movieappjc.presentation.components.LoadingCircle
 import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SearchMovieScreen(viewModel: SearchMovieViewModel = koinViewModel()) {
+fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
     Column {
         AppBarSearch(viewModel)
         when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {

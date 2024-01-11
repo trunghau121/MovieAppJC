@@ -5,14 +5,16 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowInsets
 import android.view.WindowManager
-import com.core_app.BaseApplication
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 
 object ScreenUtil {
     private var screenWidth = 0
     private var screenHeight = 0
+    @Composable
     fun getScreenHeight(): Int {
-        val context = BaseApplication.getInstance().applicationContext
-        if (screenHeight == 0 && context != null) {
+        val context = LocalContext.current
+        if (screenHeight == 0) {
             val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             screenHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val metrics = wm.currentWindowMetrics
@@ -32,9 +34,10 @@ object ScreenUtil {
         return screenHeight
     }
 
+    @Composable
     fun getScreenWidth(): Int {
-        val context = BaseApplication.getInstance().applicationContext
-        if (screenWidth == 0 && context != null) {
+        val context = LocalContext.current
+        if (screenWidth == 0) {
             val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             screenWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val metrics = wm.currentWindowMetrics

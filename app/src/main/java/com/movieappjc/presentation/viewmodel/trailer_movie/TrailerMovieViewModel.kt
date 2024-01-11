@@ -8,11 +8,14 @@ import com.core_app.navigation.AppNavigator
 import com.movieappjc.domain.entities.VideoEntity
 import com.movieappjc.domain.usecases.GetVideoTrailer
 import com.movieappjc.presentation.route.DestinationKey
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TrailerMovieViewModel(
+@HiltViewModel
+class TrailerMovieViewModel @Inject constructor(
     private val getVideoTrailer: GetVideoTrailer,
     private val appNavigator: AppNavigator,
     savedStateHandle: SavedStateHandle

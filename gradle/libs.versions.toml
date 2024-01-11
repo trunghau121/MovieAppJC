@@ -3,15 +3,14 @@ coreKtxVersion = "1.12.0"
 composeVersion = "1.5.4"
 composeMaterial3Version = "1.1.2"
 activityComposeVersion = "1.8.2"
-multidexVersion = "2.0.1"
 okhttpVersion = "4.12.0"
 gsonVersion = "2.10.1"
 glideVersion = "5.0.0-rc01"
 retrofitVersion = "2.9.0"
 lifecycleVersion = "2.6.2"
 lifecycleComposeVersion = "2.7.0-rc02"
-koinCoreVersion = "3.5.3"
-koinVersion = "3.5.3"
+hiltVersion = "2.50"
+hiltCompilerVersion = "1.1.0"
 pluginSerializationVersion = "1.7.20"
 coroutinesVersion = "1.7.3"
 glideComposeVersion = "1.0.0-beta01"
@@ -26,7 +25,6 @@ roomVersion = "2.6.1"
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleVersion" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "lifecycleVersion" }
-androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidexVersion" }
 
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "composeVersion" }
 compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "composeVersion" }
@@ -41,7 +39,7 @@ datastore-preferences = { group = "androidx.datastore", name = "datastore-prefer
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "dataStoreVersion" }
 
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glideVersion" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glideVersion" }
+glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glideVersion" }
 glide-okhttp3-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glideVersion" }
 
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
@@ -55,10 +53,10 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gsonVersi
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion" }
 
-koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinCoreVersion" }
-koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koinVersion" }
-koin-compose-navigation = { group = "io.insert-koin", name = "koin-androidx-compose-navigation", version.ref = "koinVersion" }
-koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinVersion" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltVersion" }
+hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltCompilerVersion" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltCompilerVersion" }
 
 haze-jetpack-compose = { group = "dev.chrisbanes.haze", name = "haze-jetpack-compose", version.ref = "hazeVersion" }
 readmore-material = { group = "com.webtoonscorp.android", name = "readmore-material", version.ref = "readmoreVersion" }

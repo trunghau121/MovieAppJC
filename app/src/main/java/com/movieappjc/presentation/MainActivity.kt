@@ -20,16 +20,19 @@ import com.movieappjc.domain.repositories.AppRepository
 import com.movieappjc.presentation.screen.main.MainScreen
 import com.movieappjc.theme.MovieAppJCTheme
 import com.movieappjc.theme.kColorVulcan
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 import java.util.Locale
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var appRepository: AppRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            MyApp{
+        setContent{
+            MyApp(appRepository = appRepository){
                 MainScreen(onClickLanguage = it)
             }
         }
@@ -37,10 +40,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(content: @Composable ((Locale) -> Unit) -> Unit){
+fun MyApp(appRepository: AppRepository, content: @Composable ((Locale) -> Unit) -> Unit){
     MovieAppJCTheme {
         val coroutineScope = rememberCoroutineScope()
-        val appRepository: AppRepository = koinInject()
         var locale by remember { mutableStateOf(Locale.getDefault()) }
         LaunchedEffect(true){
             val language = appRepository.getPreferredLanguage().first()

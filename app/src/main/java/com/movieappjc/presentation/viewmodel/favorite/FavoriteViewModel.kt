@@ -7,11 +7,14 @@ import com.core_app.navigation.AppNavigator
 import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.domain.usecases.ActionsFavoriteMovie
 import com.movieappjc.presentation.route.DestinationApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FavoriteViewModel(
+@HiltViewModel
+class FavoriteViewModel @Inject constructor(
     private val favoriteMovie: ActionsFavoriteMovie,
     private val appNavigator: AppNavigator
 ) : BaseViewModel() {

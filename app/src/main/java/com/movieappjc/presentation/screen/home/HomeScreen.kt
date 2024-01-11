@@ -12,6 +12,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.value
 import com.core_app.repository.Resource
@@ -23,12 +24,11 @@ import com.movieappjc.presentation.screen.home.movie_carousel.MovieCarouselCompo
 import com.movieappjc.presentation.screen.home.movie_tabbed.MovieListCardCompose
 import com.movieappjc.presentation.screen.home.movie_tabbed.MovieTabbedCompose
 import com.movieappjc.presentation.viewmodel.home.HomeViewModel
-import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = koinViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     onClickLanguage: (Locale) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)

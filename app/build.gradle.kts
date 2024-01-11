@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 val keystoreProperties = project.rootProject.file("key.properties")
@@ -74,7 +75,14 @@ dependencies {
     implementation(libs.haze.jetpack.compose)
     implementation(libs.readmore.material)
     implementation(libs.youtubeplayer)
+    // Room
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 }

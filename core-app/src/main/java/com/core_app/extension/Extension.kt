@@ -7,7 +7,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import com.core_app.BaseApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,10 +28,6 @@ fun Long?.value(def: Long = 0) = this ?: def
 fun BigDecimal?.value(def: BigDecimal = BigDecimal.ZERO) = this ?: def
 
 fun <T> List<T>?.value() = this ?: emptyList()
-
-fun getString(id: Int): String {
-    return BaseApplication.getInstance().getString(id)
-}
 
 @Composable
 fun Int.pxToDp(): Dp {

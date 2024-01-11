@@ -4,8 +4,4 @@
     <style name="Theme.MovieAppJC" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
-    <style name="AppTheme.SplashScreen" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="colorPrimaryDark">@color/royal_blue</item>
-        <item name="android:windowBackground">@drawable/img_splash_screen</item>
-    </style>
 </resources>
