@@ -43,7 +43,7 @@ fun TrailerMovieScreen(viewModel: StableHolder<TrailerMovieViewModel> = StableHo
                 val videos = state.data.value()
                 if (videos.isNotEmpty()) {
                     ListTrailer(ImmutableHolder(videos))
-                }else {
+                } else {
                     Spacer(modifier = Modifier.height(100.dp))
                     Text(
                         text = LocalLanguages.current.noTrailerVideoText(),
@@ -55,11 +55,13 @@ fun TrailerMovieScreen(viewModel: StableHolder<TrailerMovieViewModel> = StableHo
                     )
                 }
             }
+
             is Resource.Error -> {
                 ErrorAppComponent(error = state.error) {
                     viewModel().getTrailer()
                 }
             }
+
             else -> {
                 LoadingCircle()
             }
@@ -82,8 +84,8 @@ private fun ListTrailer(
                 lifecycleOwner = StableHolder(LocalLifecycleOwner.current)
             )
         }
-        items(videos()) { item ->
-            ItemVideo(videoId, item){
+        items(videos(), key = { it.key }) { item ->
+            ItemVideo(videoId, item) {
                 videoId = it
             }
         }

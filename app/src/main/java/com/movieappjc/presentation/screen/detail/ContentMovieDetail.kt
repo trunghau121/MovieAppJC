@@ -29,13 +29,14 @@ import com.movieappjc.common.constants.minutesText
 import com.movieappjc.common.constants.showLessText
 import com.movieappjc.common.constants.showMoreText
 import com.movieappjc.common.localization.LocalLanguages
+import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.theme.fontCustomLight
 import com.movieappjc.theme.fontCustomMedium
 import com.webtoonscorp.android.readmore.foundation.ToggleArea
 import com.webtoonscorp.android.readmore.material.ReadMoreText
 
 @Composable
-fun ContentMovieDetail(releaseDate: String, duration: Int, overview: String) {
+fun ContentMovieDetail(movieDetailEntity: MovieDetailEntity) {
     val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -51,7 +52,7 @@ fun ContentMovieDetail(releaseDate: String, duration: Int, overview: String) {
             tint = Color.LightGray,
         )
         Text(
-            text = releaseDate,
+            text = movieDetailEntity.releaseDate,
             modifier = Modifier.padding(start = 4.dp, end = 10.dp),
             color = Color.LightGray,
             style = MaterialTheme.typography.fontCustomMedium,
@@ -72,7 +73,7 @@ fun ContentMovieDetail(releaseDate: String, duration: Int, overview: String) {
             tint = Color.LightGray,
         )
         Text(
-            text = "$duration ${LocalLanguages.current.minutesText()}",
+            text = "${movieDetailEntity.duration} ${LocalLanguages.current.minutesText()}",
             modifier = Modifier.padding(start = 4.dp),
             color = Color.LightGray,
             style = MaterialTheme.typography.fontCustomMedium,
@@ -81,7 +82,7 @@ fun ContentMovieDetail(releaseDate: String, duration: Int, overview: String) {
         )
     }
     ReadMoreText(
-        text = overview,
+        text = movieDetailEntity.overview,
         expanded = expanded,
         modifier = Modifier.fillMaxWidth(),
         onExpandedChange = onExpandedChange,

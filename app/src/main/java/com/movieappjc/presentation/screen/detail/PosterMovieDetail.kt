@@ -40,6 +40,7 @@ import com.movieappjc.R
 import com.movieappjc.common.GlideListener
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.common.screenutil.ScreenUtil
+import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.theme.fontCustomSemiBold
 import com.movieappjc.theme.kColorPrimarySecond
 import com.movieappjc.theme.kColorViolet
@@ -50,10 +51,7 @@ import dev.chrisbanes.haze.hazeChild
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MovieDetailPoster(
-    title: String,
-    backdropPath: String,
-    posterPath: String,
-    voteAverage: Double,
+    movieDetailEntity: MovieDetailEntity,
     openTrailerMovie: () -> Unit
 ) {
     val heightTotal = (ScreenUtil.getScreenHeight().div(1.6f)).toInt().pxToDp()
@@ -83,10 +81,10 @@ fun MovieDetailPoster(
                             blurRadius = 30.dp,
                         )
                         .fillMaxSize(),
-                    model = "${Endpoints.urlOriginalImage}${backdropPath}",
+                    model = "${Endpoints.urlOriginalImage}${movieDetailEntity.backdropPath}",
                     transition = CrossFade,
                     contentScale = ContentScale.FillHeight,
-                    contentDescription = title
+                    contentDescription = movieDetailEntity.title
                 ) {
                     it.listener(GlideListener {
                         showButtonReview = true
@@ -112,7 +110,7 @@ fun MovieDetailPoster(
                             .wrapContentSize()
                             .align(Alignment.BottomEnd)
                             .hazeChild(hazeState, shape = CircleShape),
-                        voteAverage = voteAverage
+                        voteAverage = movieDetailEntity.voteAverage
                     )
                 }
             }
@@ -133,17 +131,17 @@ fun MovieDetailPoster(
                 GlideImage(
                     modifier = Modifier
                         .fillMaxSize(),
-                    model = "${Endpoints.baseUrlImage}${posterPath}",
+                    model = "${Endpoints.baseUrlImage}${movieDetailEntity.posterPath}",
                     transition = CrossFade,
                     contentScale = ContentScale.Crop,
-                    contentDescription = title
+                    contentDescription = movieDetailEntity.title
                 )
             }
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 10.dp, top = (heightPoster / 2) + 10.dp, end = 10.dp),
-                text = title,
+                text = movieDetailEntity.title,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,
                 fontSize = 18.sp,

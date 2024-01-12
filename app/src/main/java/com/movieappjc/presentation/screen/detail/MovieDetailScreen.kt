@@ -36,17 +36,10 @@ fun MovieDetailScreen(
                 ) {
                     val data = state.data
                     MovieDetailPoster(
-                        title = data.title,
-                        backdropPath = data.backdropPath,
-                        posterPath = data.posterPath,
-                        voteAverage = data.voteAverage,
+                        movieDetailEntity = data,
                         openTrailerMovie = viewModel()::openTrailerMovie
                     )
-                    ContentMovieDetail(
-                        releaseDate = data.releaseDate,
-                        duration = data.duration,
-                        overview = data.overview
-                    )
+                    ContentMovieDetail(movieDetailEntity = data)
                     if (castState is Resource.Success) {
                         val cast = (castState as Resource.Success).data
                         if (cast.isNotEmpty()) {

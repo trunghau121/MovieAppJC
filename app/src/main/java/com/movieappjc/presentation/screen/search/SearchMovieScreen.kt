@@ -28,7 +28,7 @@ fun SearchMovieScreen(viewModel: StableHolder<SearchMovieViewModel> = StableHold
             is Resource.Success -> {
                 if (state.data.data.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.imePadding()) {
-                        items(state.data.data) {
+                        items(state.data.data, key = { it.id }) {
                             SearchMovieItem(
                                 movieEntity = it,
                                 onNavigateToMovieDetail = viewModel()::onNavigateToMovieDetail

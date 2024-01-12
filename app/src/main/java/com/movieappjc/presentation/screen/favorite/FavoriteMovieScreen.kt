@@ -35,7 +35,7 @@ fun FavoriteMovieScreen(viewModel: StableHolder<FavoriteViewModel> = StableHolde
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(5.dp)
                 ) {
-                    items(movies.data.size) {
+                    items(movies.data.size, key = { movies.data[it].id }) {
                         val item = movies.data[it]
                         FavoriteMovieItem(viewModel, item) {
                             viewModel().deleteFavoriteMovie(item.id)
