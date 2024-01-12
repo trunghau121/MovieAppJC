@@ -58,17 +58,19 @@ fun MovieDetailPoster(
     val heightPoster = heightTotal.div(2.6f)
     val hazeState = remember { HazeState() }
     var showButtonReview by rememberSaveable { mutableStateOf(false) }
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(heightTotal)) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(heightTotal)
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(heightTotal)
                 .padding(bottom = heightPoster / 2),
             shape = RoundedCornerShape(
-                bottomStart = 20.dp,
-                bottomEnd = 20.dp
+                bottomStartPercent = 5,
+                bottomEndPercent = 5
             )
         ) {
             Box {

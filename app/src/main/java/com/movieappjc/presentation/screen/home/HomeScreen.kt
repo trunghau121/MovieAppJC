@@ -30,19 +30,19 @@ import java.util.Locale
 
 @Composable
 fun HomeScreen(
-    homeViewModel: StableHolder<HomeViewModel> = StableHolder(hiltViewModel()),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     onClickLanguage: (Locale) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    when (val state = homeViewModel().movies.collectAsStateWithLifecycle().value) {
+    when (val state = homeViewModel.movies.collectAsStateWithLifecycle().value) {
         is Resource.Success -> {
             NavigationDrawerApp(
                 drawerState = drawerState,
-                openFavoriteMovie = homeViewModel()::openFavoriteMovie,
+                openFavoriteMovie = homeViewModel::openFavoriteMovie,
                 onClickLanguage = onClickLanguage
             ) {
                 HomeContent(
-                    homeViewModel,
+                    StableHolder(homeViewModel),
                     drawerState,
                     ImmutableHolder(state.data.data)
                 )
@@ -51,8 +51,8 @@ fun HomeScreen(
 
         is Resource.Error -> {
             ErrorAppComponent(error = state.error) {
-                homeViewModel().getMovies()
-                homeViewModel().loadMovieTabbed(homeViewModel().indexPage)
+                homeViewModel.getMovies()
+                homeViewModel.loadMovieTabbed(homeViewModel.indexPage)
             }
         }
 

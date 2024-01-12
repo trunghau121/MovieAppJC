@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
-import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.noMoviesSearchedText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.presentation.components.EmptyTextApp
@@ -21,17 +20,17 @@ import com.movieappjc.presentation.components.LoadingCircle
 import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 
 @Composable
-fun SearchMovieScreen(viewModel: StableHolder<SearchMovieViewModel> = StableHolder(hiltViewModel())) {
+fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
     Column {
-        AppBarSearch(onSearchMovie = viewModel()::searchMovie, onBack = viewModel()::onBack)
-        when (val state = viewModel().movies.collectAsStateWithLifecycle().value) {
+        AppBarSearch(onSearchMovie = viewModel::searchMovie, onBack = viewModel::onBack)
+        when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 if (state.data.data.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.imePadding()) {
                         items(state.data.data, key = { it.id }) {
                             SearchMovieItem(
                                 movieEntity = it,
-                                onNavigateToMovieDetail = viewModel()::onNavigateToMovieDetail
+                                onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail
                             )
                         }
                     }
@@ -41,9 +40,7 @@ fun SearchMovieScreen(viewModel: StableHolder<SearchMovieViewModel> = StableHold
             }
 
             is Resource.Error -> {
-                ErrorAppComponent(error = state.error) {
-                    viewModel().reloadSearchMovie()
-                }
+                ErrorAppComponent(error = state.error, onRetry = viewModel::reloadSearchMovie)
             }
 
             is Resource.Loading -> {

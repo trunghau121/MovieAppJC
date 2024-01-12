@@ -24,7 +24,6 @@ fun MovieAppJCTheme(
     }
 
     MaterialTheme(
-        typography = Typography,
         content = content
     )
 }

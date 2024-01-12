@@ -13,20 +13,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
-import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.noFavoriteMovieText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.presentation.components.EmptyTextApp
 import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 
 @Composable
-fun FavoriteMovieScreen(viewModel: StableHolder<FavoriteViewModel> = StableHolder(hiltViewModel())) {
-    val state by viewModel().movies.collectAsStateWithLifecycle()
+fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
+    val state by viewModel.movies.collectAsStateWithLifecycle()
     LaunchedEffect(true) {
-        viewModel().getFavoriteMovies()
+        viewModel.getFavoriteMovies()
     }
     Column {
-        AppBarFavorite(onBack = viewModel()::onBack)
+        AppBarFavorite(onBack = viewModel::onBack)
         if (state is Resource.Success) {
             val movies = state as Resource.Success
             if (movies.data.isNotEmpty()) {
@@ -36,13 +35,14 @@ fun FavoriteMovieScreen(viewModel: StableHolder<FavoriteViewModel> = StableHolde
                     contentPadding = PaddingValues(5.dp)
                 ) {
                     items(movies.data.size, key = { movies.data[it].id }) {
-                        val item = movies.data[it]
-                        FavoriteMovieItem(viewModel, item) {
-                            viewModel().deleteFavoriteMovie(item.id)
-                        }
+                        FavoriteMovieItem(
+                            movieEntity = movies.data[it],
+                            onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail,
+                            onDelete = viewModel::deleteFavoriteMovie
+                        )
                     }
                 }
-            }else {
+            } else {
                 EmptyTextApp(LocalLanguages.current.noFavoriteMovieText())
             }
         }

@@ -23,26 +23,24 @@ import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.core_app.extension.pxToDp
-import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 import com.movieappjc.theme.kColorViolet
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun FavoriteMovieItem(
-    viewModel: StableHolder<FavoriteViewModel>,
     movieEntity: MovieEntity,
-    onDelete: () -> Unit
+    onNavigateToMovieDetail: (Int) -> Unit,
+    onDelete: (Int) -> Unit
 ) {
     val width = (ScreenUtil.getScreenWidth() / 2).pxToDp() - 16.dp
     Card(
         modifier = Modifier
             .width(width)
             .height(width.times(1.5f))
-            .padding(5.dp).clickable { viewModel().onNavigateToMovieDetail(movieEntity.id) },
+            .padding(5.dp).clickable { onNavigateToMovieDetail(movieEntity.id) },
         shape = RoundedCornerShape(15.dp),
         border = BorderStroke(2.dp, color = kColorViolet)
     ) {
@@ -59,7 +57,7 @@ fun FavoriteMovieItem(
                     .size(45.dp)
                     .align(Alignment.TopEnd)
                     .padding(10.dp)
-                    .clickable { onDelete() },
+                    .clickable { onDelete(movieEntity.id) },
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "",
                 tint = Color.White

@@ -12,7 +12,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
 import com.core_app.utils.ImmutableHolder
-import com.core_app.utils.StableHolder
 import com.movieappjc.presentation.components.ErrorAppComponent
 import com.movieappjc.presentation.components.LoadingCircle
 import com.movieappjc.presentation.screen.detail.cast_crew.CastCrewComponent
@@ -20,14 +19,13 @@ import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
 
 @Composable
 fun MovieDetailScreen(
-    viewModel: StableHolder<MovieDetailViewModel> = StableHolder(hiltViewModel())
+    viewModel: MovieDetailViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
-    val castState by viewModel().castMovie.collectAsStateWithLifecycle()
-    val isMovieFavorite by viewModel().isMovieFavorite.collectAsStateWithLifecycle()
+    val isMovieFavorite by viewModel.isMovieFavorite.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when (val state = viewModel().movieDetail.collectAsStateWithLifecycle().value) {
+        when (val state = viewModel.movieDetail.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 Column(
                     modifier = Modifier
@@ -37,9 +35,11 @@ fun MovieDetailScreen(
                     val data = state.data
                     MovieDetailPoster(
                         movieDetailEntity = data,
-                        openTrailerMovie = viewModel()::openTrailerMovie
+                        openTrailerMovie = viewModel::openTrailerMovie
                     )
-                    ContentMovieDetail(movieDetailEntity = data)
+                    TimeMovieDetail(movieDetailEntity = data)
+                    DescriptionMovieDetail(overview = data.overview)
+                    val castState by viewModel.castMovie.collectAsStateWithLifecycle()
                     if (castState is Resource.Success) {
                         val cast = (castState as Resource.Success).data
                         if (cast.isNotEmpty()) {
@@ -49,15 +49,13 @@ fun MovieDetailScreen(
                 }
                 MovieDetailHeader(
                     isMovieFavorite = isMovieFavorite,
-                    onSaveMovie = viewModel()::saveFavoriteMovie,
-                    onBack = viewModel()::onBack
+                    onSaveMovie = viewModel::saveFavoriteMovie,
+                    onBack = viewModel::onBack
                 )
             }
 
             is Resource.Error -> {
-                ErrorAppComponent(error = state.error) {
-                    viewModel().getMovieDetail()
-                }
+                ErrorAppComponent(error = state.error, onRetry = viewModel::getMovieDetail)
             }
 
             else -> {

@@ -3,7 +3,6 @@ package com.movieappjc.common.localization
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
-import com.core_app.utils.StableHolder
 import java.util.Locale
 
 internal val defaultLocalization: Localization = Localization(Locale.ENGLISH)
@@ -78,9 +77,9 @@ fun nonTranslatable(defaultValue: String, id: Int = generateUID()): String {
 val LocalLanguages = compositionLocalOf { defaultLocalization }
 
 @Composable
-fun Localization(locale: StableHolder<Locale>, content: @Composable () -> Unit) {
+fun LocalizationApp(locale: Locale, content: @Composable () -> Unit) {
     CompositionLocalProvider(
-        LocalLanguages provides (localizationMap[locale()] ?: defaultLocalization),
+        LocalLanguages provides (localizationMap[locale] ?: defaultLocalization),
         content = content
     )
 }

@@ -35,10 +35,10 @@ import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
 import com.movieappjc.theme.fontCustomSemiBold
 
 @Composable
-fun TrailerMovieScreen(viewModel: StableHolder<TrailerMovieViewModel> = StableHolder(hiltViewModel())) {
+fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
     Column {
-        AppBarTrailerMovie(onBack = viewModel()::onBack)
-        when (val state = viewModel().videos.collectAsStateWithLifecycle().value) {
+        AppBarTrailerMovie(onBack = viewModel::onBack)
+        when (val state = viewModel.videos.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 val videos = state.data.value()
                 if (videos.isNotEmpty()) {
@@ -57,9 +57,7 @@ fun TrailerMovieScreen(viewModel: StableHolder<TrailerMovieViewModel> = StableHo
             }
 
             is Resource.Error -> {
-                ErrorAppComponent(error = state.error) {
-                    viewModel().getTrailer()
-                }
+                ErrorAppComponent(error = state.error, onRetry = viewModel::getTrailer)
             }
 
             else -> {

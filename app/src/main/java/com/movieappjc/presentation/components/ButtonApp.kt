@@ -1,5 +1,6 @@
 package com.movieappjc.presentation.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -17,6 +18,7 @@ import com.movieappjc.theme.kColorViolet
 
 @Composable
 fun ButtonApp(text: String, onClick: () -> Unit) {
+    isSystemInDarkTheme()
     Button(
         onClick = onClick,
         modifier = Modifier.padding(horizontal = 20.dp),

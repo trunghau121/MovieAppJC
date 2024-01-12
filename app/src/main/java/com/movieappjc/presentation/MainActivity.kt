@@ -14,9 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.supportedLocalesNow
-import com.movieappjc.common.localization.Localization
+import com.movieappjc.common.localization.LocalizationApp
 import com.movieappjc.domain.repositories.AppRepository
 import com.movieappjc.presentation.screen.main.MainScreen
 import com.movieappjc.theme.MovieAppJCTheme
@@ -51,7 +50,7 @@ fun MyApp(appRepository: AppRepository, content: @Composable ((Locale) -> Unit) 
                 locale = language
         }
         supportedLocalesNow
-        Localization(locale = StableHolder(locale)) {
+        LocalizationApp(locale = locale) {
             Surface(modifier = Modifier.fillMaxSize().navigationBarsPadding(), color = kColorVulcan) {
                 content {
                     if (locale != it) {
