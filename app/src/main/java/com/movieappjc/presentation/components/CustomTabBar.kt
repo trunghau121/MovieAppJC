@@ -28,7 +28,7 @@ import com.movieappjc.theme.fontCustomMedium
 import com.movieappjc.theme.kColorViolet
 
 @Composable
-fun CustomTabBar(items: List<String>,
+fun CustomTabBar(items: () -> List<String>,
                  modifier: Modifier,
                  selectedItemIndex: Int = 0,
                  onSelectedTab: (index: Int) -> Unit) {
@@ -39,7 +39,7 @@ fun CustomTabBar(items: List<String>,
         horizontalArrangement = Arrangement.Center
     ) {
 
-        items.forEachIndexed { index, title ->
+        items().forEachIndexed { index, title ->
             Column(
                 modifier = Modifier
                     .fillMaxHeight()

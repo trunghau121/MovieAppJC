@@ -41,16 +41,15 @@ import androidx.compose.ui.unit.sp
 import com.core_app.extension.useDebounce
 import com.movieappjc.common.constants.enterSearchText
 import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 import com.movieappjc.theme.fontCustomMedium
 import com.movieappjc.theme.fontCustomNormal
 import com.movieappjc.theme.kColorViolet
 
 @Composable
-fun AppBarSearch(viewModel: SearchMovieViewModel) {
+fun AppBarSearch(onSearchMovie: (String) -> Unit, onBack: () -> Unit) {
     var valueText by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
-    valueText.useDebounce { viewModel.searchMovie(it) }
+    valueText.useDebounce { onSearchMovie(it) }
     Column(
         Modifier
             .statusBarsPadding()
@@ -64,7 +63,7 @@ fun AppBarSearch(viewModel: SearchMovieViewModel) {
                 modifier = Modifier.padding(10.dp),
                 onClick = {
                     keyboardController?.hide()
-                    viewModel.onBack()
+                    onBack()
                 }
             ) {
                 Icon(

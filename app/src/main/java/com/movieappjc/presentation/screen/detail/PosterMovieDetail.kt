@@ -40,8 +40,6 @@ import com.movieappjc.R
 import com.movieappjc.common.GlideListener
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.common.screenutil.ScreenUtil
-import com.movieappjc.domain.entities.MovieDetailEntity
-import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
 import com.movieappjc.theme.fontCustomSemiBold
 import com.movieappjc.theme.kColorPrimarySecond
 import com.movieappjc.theme.kColorViolet
@@ -51,12 +49,20 @@ import dev.chrisbanes.haze.hazeChild
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MovieDetailPoster(viewModel: MovieDetailViewModel, movieDetailEntity: MovieDetailEntity) {
+fun MovieDetailPoster(
+    title: String,
+    backdropPath: String,
+    posterPath: String,
+    voteAverage: Double,
+    openTrailerMovie: () -> Unit
+) {
     val heightTotal = (ScreenUtil.getScreenHeight().div(1.6f)).toInt().pxToDp()
     val heightPoster = heightTotal.div(2.6f)
     val hazeState = remember { HazeState() }
-    var showButtonReview by rememberSaveable{ mutableStateOf(false) }
-    Box(modifier = Modifier.fillMaxWidth().height(heightTotal)) {
+    var showButtonReview by rememberSaveable { mutableStateOf(false) }
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(heightTotal)) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,24 +83,25 @@ fun MovieDetailPoster(viewModel: MovieDetailViewModel, movieDetailEntity: MovieD
                             blurRadius = 30.dp,
                         )
                         .fillMaxSize(),
-                    model = "${Endpoints.urlOriginalImage}${movieDetailEntity.backdropPath}",
+                    model = "${Endpoints.urlOriginalImage}${backdropPath}",
                     transition = CrossFade,
                     contentScale = ContentScale.FillHeight,
-                    contentDescription = movieDetailEntity.title
-                ){
+                    contentDescription = title
+                ) {
                     it.listener(GlideListener {
                         showButtonReview = true
                     })
                 }
                 Box(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .background(color = kColorPrimarySecond.copy(alpha = 0.1f))
                 )
                 Image(
                     modifier = Modifier
                         .size(60.dp)
                         .align(Alignment.Center)
-                        .clickable { viewModel.openTrailerMovie() },
+                        .clickable { openTrailerMovie() },
                     painter = painterResource(id = R.drawable.icon_play),
                     contentDescription = ""
                 )
@@ -105,14 +112,16 @@ fun MovieDetailPoster(viewModel: MovieDetailViewModel, movieDetailEntity: MovieD
                             .wrapContentSize()
                             .align(Alignment.BottomEnd)
                             .hazeChild(hazeState, shape = CircleShape),
-                        voteAverage = movieDetailEntity.voteAverage
+                        voteAverage = voteAverage
                     )
                 }
             }
         }
 
         Row(
-            Modifier.padding(start = 15.dp).align(Alignment.BottomStart)
+            Modifier
+                .padding(start = 15.dp)
+                .align(Alignment.BottomStart)
         ) {
             Card(
                 modifier = Modifier
@@ -124,17 +133,17 @@ fun MovieDetailPoster(viewModel: MovieDetailViewModel, movieDetailEntity: MovieD
                 GlideImage(
                     modifier = Modifier
                         .fillMaxSize(),
-                    model = "${Endpoints.baseUrlImage}${movieDetailEntity.posterPath}",
+                    model = "${Endpoints.baseUrlImage}${posterPath}",
                     transition = CrossFade,
                     contentScale = ContentScale.Crop,
-                    contentDescription = movieDetailEntity.title
+                    contentDescription = title
                 )
             }
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 10.dp, top = (heightPoster / 2) + 10.dp, end = 10.dp),
-                text = movieDetailEntity.title,
+                text = title,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,
                 fontSize = 18.sp,

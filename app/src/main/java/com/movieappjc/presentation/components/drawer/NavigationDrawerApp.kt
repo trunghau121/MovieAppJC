@@ -37,7 +37,6 @@ import com.movieappjc.common.constants.languageText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.presentation.screen.about.AboutDialog
 import com.movieappjc.presentation.screen.feedback.FeedbackDialog
-import com.movieappjc.presentation.viewmodel.home.HomeViewModel
 import com.movieappjc.theme.kColorVulcan
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -46,7 +45,7 @@ import java.util.Locale
 @Composable
 fun NavigationDrawerApp(
     drawerState: DrawerState,
-    homeViewModel: HomeViewModel,
+    openFavoriteMovie: () -> Unit,
     onClickLanguage: (Locale) -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -85,7 +84,7 @@ fun NavigationDrawerApp(
                             icon = Icons.Filled.Favorite
                         )
                     ) {
-                        homeViewModel.openFavoriteMovie()
+                        openFavoriteMovie()
                         onClick()
                     }
                     DrawerItem(

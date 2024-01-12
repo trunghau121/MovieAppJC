@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.core_app.navigation.NavHost
 import com.core_app.navigation.composable
+import com.core_app.utils.StableHolder
 import com.movieappjc.presentation.screen.detail.MovieDetailScreen
 import com.movieappjc.presentation.screen.favorite.FavoriteMovieScreen
 import com.movieappjc.presentation.screen.home.HomeScreen
@@ -14,9 +15,12 @@ import com.movieappjc.presentation.screen.trailer_movie.TrailerMovieScreen
 import java.util.Locale
 
 @Composable
-fun NavHostApp(navController: NavHostController, onClickLanguage: (Locale) -> Unit = {}) {
+fun NavHostApp(
+    navController: StableHolder<NavHostController>, onClickLanguage
+    : (Locale) -> Unit = {}
+) {
     NavHost(
-        navController = navController,
+        navController = navController(),
         startDestination = DestinationApp.HomeScreen
     ) {
         composable(destination = DestinationApp.HomeScreen) {

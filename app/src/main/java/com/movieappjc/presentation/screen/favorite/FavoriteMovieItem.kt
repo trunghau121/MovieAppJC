@@ -23,6 +23,7 @@ import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.core_app.extension.pxToDp
+import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
@@ -32,7 +33,7 @@ import com.movieappjc.theme.kColorViolet
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun FavoriteMovieItem(
-    viewModel: FavoriteViewModel,
+    viewModel: StableHolder<FavoriteViewModel>,
     movieEntity: MovieEntity,
     onDelete: () -> Unit
 ) {
@@ -41,7 +42,7 @@ fun FavoriteMovieItem(
         modifier = Modifier
             .width(width)
             .height(width.times(1.5f))
-            .padding(5.dp).clickable { viewModel.onNavigateToMovieDetail(movieEntity.id) },
+            .padding(5.dp).clickable { viewModel().onNavigateToMovieDetail(movieEntity.id) },
         shape = RoundedCornerShape(15.dp),
         border = BorderStroke(2.dp, color = kColorViolet)
     ) {

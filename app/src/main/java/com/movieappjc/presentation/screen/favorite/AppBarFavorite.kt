@@ -21,11 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.movieappjc.common.constants.favoriteMoviesText
 import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun AppBarFavorite(viewModel: FavoriteViewModel) {
+fun AppBarFavorite(onBack : () -> Unit) {
     Column(
         Modifier.statusBarsPadding()
     ) {
@@ -35,7 +34,7 @@ fun AppBarFavorite(viewModel: FavoriteViewModel) {
         ) {
             IconButton(
                 modifier = Modifier.padding(10.dp),
-                onClick = { viewModel.onBack() }
+                onClick = onBack
             ) {
                 Icon(
                     modifier = Modifier.size(28.dp),

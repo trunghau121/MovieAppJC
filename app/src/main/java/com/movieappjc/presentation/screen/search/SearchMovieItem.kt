@@ -29,13 +29,12 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 import com.movieappjc.theme.fontCustomMedium
 import com.movieappjc.theme.fontCustomNormal
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SearchMovieItem(viewModel: SearchMovieViewModel, movieEntity: MovieEntity){
+fun SearchMovieItem(movieEntity: MovieEntity, onNavigateToMovieDetail: (Int) -> Unit){
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(
         modifier = Modifier
@@ -43,7 +42,7 @@ fun SearchMovieItem(viewModel: SearchMovieViewModel, movieEntity: MovieEntity){
             .padding(horizontal = 15.dp, vertical = 8.dp)
             .clickable {
                 keyboardController?.hide()
-                viewModel.onNavigateToMovieDetail(movieEntity.id)
+                onNavigateToMovieDetail(movieEntity.id)
             },
         verticalAlignment = Alignment.CenterVertically
     ) {

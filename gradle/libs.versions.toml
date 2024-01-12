@@ -7,8 +7,8 @@ okhttpVersion = "4.12.0"
 gsonVersion = "2.10.1"
 glideVersion = "5.0.0-rc01"
 retrofitVersion = "2.9.0"
-lifecycleVersion = "2.6.2"
-lifecycleComposeVersion = "2.7.0-rc02"
+lifecycleVersion = "2.7.0"
+lifecycleComposeVersion = "2.7.0"
 hiltVersion = "2.50"
 hiltCompilerVersion = "1.1.0"
 pluginSerializationVersion = "1.7.20"
@@ -61,6 +61,7 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 haze-jetpack-compose = { group = "dev.chrisbanes.haze", name = "haze-jetpack-compose", version.ref = "hazeVersion" }
 readmore-material = { group = "com.webtoonscorp.android", name = "readmore-material", version.ref = "readmoreVersion" }
 youtubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "youtubeplayerVersion" }
+
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }

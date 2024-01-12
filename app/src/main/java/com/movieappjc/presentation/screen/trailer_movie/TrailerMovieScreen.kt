@@ -24,6 +24,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.value
 import com.core_app.repository.Resource
+import com.core_app.utils.ImmutableHolder
+import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.noTrailerVideoText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.domain.entities.VideoEntity
@@ -33,14 +35,14 @@ import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
 import com.movieappjc.theme.fontCustomSemiBold
 
 @Composable
-fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
+fun TrailerMovieScreen(viewModel: StableHolder<TrailerMovieViewModel> = StableHolder(hiltViewModel())) {
     Column {
-        AppBarTrailerMovie(viewModel)
-        when (val state = viewModel.videos.collectAsStateWithLifecycle().value) {
+        AppBarTrailerMovie(onBack = viewModel()::onBack)
+        when (val state = viewModel().videos.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 val videos = state.data.value()
                 if (videos.isNotEmpty()) {
-                    ListTrailer(videos)
+                    ListTrailer(ImmutableHolder(videos))
                 }else {
                     Spacer(modifier = Modifier.height(100.dp))
                     Text(
@@ -55,7 +57,7 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
             }
             is Resource.Error -> {
                 ErrorAppComponent(error = state.error) {
-                    viewModel.getTrailer()
+                    viewModel().getTrailer()
                 }
             }
             else -> {
@@ -68,19 +70,19 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun ListTrailer(
-    videos: List<VideoEntity>
+    videos: ImmutableHolder<List<VideoEntity>>
 ) {
     var videoId by remember { mutableStateOf("") }
-    if (videoId.isEmpty()) videoId = videos[0].key
+    if (videoId.isEmpty()) videoId = videos()[0].key
 
     LazyColumn {
         stickyHeader {
             YoutubePlayerComponent(
                 videoId = videoId,
-                lifecycleOwner = LocalLifecycleOwner.current
+                lifecycleOwner = StableHolder(LocalLifecycleOwner.current)
             )
         }
-        items(videos) { item ->
+        items(videos()) { item ->
             ItemVideo(videoId, item){
                 videoId = it
             }

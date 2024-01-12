@@ -16,13 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.core_app.utils.ImmutableHolder
 import com.movieappjc.common.constants.castText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun CastCrewComponent(cast: List<CastEntity>) {
+fun CastCrewComponent(cast: ImmutableHolder<List<CastEntity>>) {
     Column(modifier = Modifier.height(210.dp)){
         Text(
             text = LocalLanguages.current.castText(),
@@ -37,7 +38,7 @@ fun CastCrewComponent(cast: List<CastEntity>) {
             modifier = Modifier.height(140.dp),
             rows = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            items(cast, key = { it.id }){
+            items(cast(), key = { it.id }){
                 ItemCastComponent(castEntity = it)
             }
         }

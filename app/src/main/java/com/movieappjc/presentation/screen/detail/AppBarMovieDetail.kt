@@ -13,17 +13,13 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
 
 @Composable
-fun MovieDetailHeader(viewModel: MovieDetailViewModel) {
-    val isMovieFavorite by viewModel.isMovieFavorite.collectAsStateWithLifecycle()
+fun MovieDetailHeader(isMovieFavorite: Boolean, onSaveMovie: () -> Unit, onBack: () -> Unit) {
     Column(
         Modifier.statusBarsPadding()
     ) {
@@ -33,7 +29,7 @@ fun MovieDetailHeader(viewModel: MovieDetailViewModel) {
         ) {
             IconButton(
                 modifier = Modifier.padding(10.dp),
-                onClick = { viewModel.onBack() }
+                onClick = onBack
             ) {
                 Icon(
                     modifier = Modifier.size(28.dp),
@@ -45,7 +41,7 @@ fun MovieDetailHeader(viewModel: MovieDetailViewModel) {
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 modifier = Modifier.padding(10.dp),
-                onClick = { viewModel.saveFavoriteMovie() }
+                onClick = onSaveMovie
             ) {
                 Icon(
                     modifier = Modifier.size(28.dp),

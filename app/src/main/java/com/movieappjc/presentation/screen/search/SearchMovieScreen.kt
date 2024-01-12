@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
+import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.noMoviesSearchedText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.presentation.components.EmptyTextApp
@@ -20,31 +21,37 @@ import com.movieappjc.presentation.components.LoadingCircle
 import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 
 @Composable
-fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
+fun SearchMovieScreen(viewModel: StableHolder<SearchMovieViewModel> = StableHolder(hiltViewModel())) {
     Column {
-        AppBarSearch(viewModel)
-        when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {
+        AppBarSearch(onSearchMovie = viewModel()::searchMovie, onBack = viewModel()::onBack)
+        when (val state = viewModel().movies.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 if (state.data.data.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.imePadding()) {
                         items(state.data.data) {
-                            SearchMovieItem(viewModel, it)
+                            SearchMovieItem(
+                                movieEntity = it,
+                                onNavigateToMovieDetail = viewModel()::onNavigateToMovieDetail
+                            )
                         }
                     }
-                }else {
+                } else {
                     EmptyTextApp(LocalLanguages.current.noMoviesSearchedText())
                 }
             }
+
             is Resource.Error -> {
                 ErrorAppComponent(error = state.error) {
-                    viewModel.reloadSearchMovie()
+                    viewModel().reloadSearchMovie()
                 }
             }
+
             is Resource.Loading -> {
-                Box(modifier = Modifier.height(200.dp)){
+                Box(modifier = Modifier.height(200.dp)) {
                     LoadingCircle()
                 }
             }
+
             else -> {}
         }
     }

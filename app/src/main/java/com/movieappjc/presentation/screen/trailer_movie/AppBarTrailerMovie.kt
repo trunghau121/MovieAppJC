@@ -21,11 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.movieappjc.common.constants.watchTrailersText
 import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun AppBarTrailerMovie(viewModel: TrailerMovieViewModel){
+fun AppBarTrailerMovie(onBack: () -> Unit){
     Column(
         Modifier.statusBarsPadding()
     ) {
@@ -35,7 +34,7 @@ fun AppBarTrailerMovie(viewModel: TrailerMovieViewModel){
         ) {
             IconButton(
                 modifier = Modifier.padding(10.dp),
-                onClick = { viewModel.onBack() }
+                onClick = onBack
             ) {
                 Icon(
                     modifier = Modifier.size(28.dp),

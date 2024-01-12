@@ -21,13 +21,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.movieappjc.R
 import com.movieappjc.common.constants.movieText
-import com.movieappjc.presentation.viewmodel.home.HomeViewModel
 import com.movieappjc.theme.fontCustomSemiBold
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppbarHome(drawerState: DrawerState, viewModel: HomeViewModel) {
+fun AppbarHome(drawerState: DrawerState, openSearchMovie: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     TopAppBar(
         modifier = Modifier.statusBarsPadding(),
@@ -56,7 +55,7 @@ fun AppbarHome(drawerState: DrawerState, viewModel: HomeViewModel) {
             }
         },
         actions = {
-            IconButton(onClick = { viewModel.openSearchMovie() }) {
+            IconButton(onClick = openSearchMovie) {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "",

@@ -16,10 +16,9 @@ import com.movieappjc.common.constants.popularText
 import com.movieappjc.common.constants.soonText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.presentation.components.CustomTabBar
-import com.movieappjc.presentation.viewmodel.home.HomeViewModel
 
 @Composable
-fun MovieTabbedCompose(homeViewModel: HomeViewModel) {
+fun MovieTabbedCompose(loadMovieTabbed: (Int) -> Unit) {
     var tabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val tabs = listOf(
@@ -35,11 +34,11 @@ fun MovieTabbedCompose(homeViewModel: HomeViewModel) {
                 .height(50.dp),
             selectedItemIndex = tabIndex,
             onSelectedTab = { tabIndex = it },
-            items = tabs
+            items = { tabs }
         )
     }
 
     LaunchedEffect(tabIndex) {
-        homeViewModel.loadMovieTabbed(tabIndex)
+        loadMovieTabbed(tabIndex)
     }
 }

@@ -6,8 +6,10 @@ import android.util.DisplayMetrics
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.platform.LocalContext
 
+@Stable
 object ScreenUtil {
     private var screenWidth = 0
     private var screenHeight = 0

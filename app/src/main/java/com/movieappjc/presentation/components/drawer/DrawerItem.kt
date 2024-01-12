@@ -25,9 +25,7 @@ fun DrawerItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                onClick()
-            }
+            .clickable(onClick = onClick)
             .padding(start = 10.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

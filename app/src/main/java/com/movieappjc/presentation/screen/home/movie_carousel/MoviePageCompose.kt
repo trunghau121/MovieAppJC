@@ -18,18 +18,18 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.core_app.utils.ImmutableHolder
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.viewmodel.home.HomeViewModel
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun MoviePageCompose(
-    homeViewModel: HomeViewModel,
-    movies: List<MovieEntity>,
-    pagerState: PagerState
+    movies: ImmutableHolder<List<MovieEntity>>,
+    pagerState: PagerState,
+    onNavigateToMovieDetail: (Int) -> Unit
 ) {
     val currentIndex = pagerState.currentPage
     val currentPageOffset = pagerState.currentPageOffsetFraction
@@ -67,12 +67,12 @@ fun MoviePageCompose(
                 modifier = Modifier
                     .fillMaxSize()
                     .clickable {
-                        homeViewModel.onNavigateToMovieDetail(movies[page].id)
+                        onNavigateToMovieDetail(movies()[page].id)
                     },
-                model = "${Endpoints.baseUrlImage}${movies[page].posterPath}",
+                model = "${Endpoints.baseUrlImage}${movies()[page].posterPath}",
                 transition = CrossFade,
                 contentScale = ContentScale.Crop,
-                contentDescription = movies[page].title
+                contentDescription = movies()[page].title
             )
         }
     }

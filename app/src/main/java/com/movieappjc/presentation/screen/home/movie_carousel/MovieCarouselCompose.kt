@@ -18,29 +18,35 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.core_app.utils.ImmutableHolder
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.viewmodel.home.HomeViewModel
 import com.movieappjc.theme.fontCustomSemiBold
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MovieCarouselCompose(homeViewModel: HomeViewModel, movies: List<MovieEntity>) {
+fun MovieCarouselCompose(movies: ImmutableHolder<List<MovieEntity>>, onNavigateToMovieDetail: (Int) -> Unit) {
     val pagerState = rememberPagerState {
-        movies.size
+        movies().size
     }
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(bottom = 10.dp)) {
-        MovieBackdropCompose(movies[pagerState.currentPage])
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 10.dp)
+    ) {
+        MovieBackdropCompose(movies()[pagerState.currentPage])
         Column(
             modifier = Modifier.align(Alignment.BottomStart)
         ) {
-            MoviePageCompose(homeViewModel, movies, pagerState)
+            MoviePageCompose(
+                movies = movies,
+                pagerState = pagerState,
+                onNavigateToMovieDetail = onNavigateToMovieDetail
+            )
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(PaddingValues(10.dp)),
-                text = movies[pagerState.currentPage].title,
+                text = movies()[pagerState.currentPage].title,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,
                 fontSize = 18.sp,

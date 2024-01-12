@@ -27,12 +27,11 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.viewmodel.home.HomeViewModel
 import com.movieappjc.theme.fontCustomSemiBold
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MovieTabCardCompose(homeViewModel: HomeViewModel, movieEntity: MovieEntity) {
+fun MovieTabCardCompose(onNavigateToMovieDetail: (Int) -> Unit, movieEntity: MovieEntity) {
     Column(
         modifier = Modifier
             .width((ScreenUtil.getScreenWidth() / 8).dp)
@@ -47,7 +46,7 @@ fun MovieTabCardCompose(homeViewModel: HomeViewModel, movieEntity: MovieEntity) 
         ) {
             GlideImage(
                 modifier = Modifier.fillMaxSize().clickable {
-                    homeViewModel.onNavigateToMovieDetail(movieEntity.id)
+                    onNavigateToMovieDetail(movieEntity.id)
                 },
                 model = "${Endpoints.baseUrlImage}${movieEntity.posterPath}",
                 contentScale = ContentScale.Crop,
