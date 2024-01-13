@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MovieDetailHeader(isMovieFavorite: Boolean, onSaveMovie: () -> Unit, onBack: () -> Unit) {
+    val tintColor = remember(isMovieFavorite) {
+        if(isMovieFavorite) Color.Red else Color.White
+    }
     Column(
         Modifier.statusBarsPadding()
     ) {
@@ -47,7 +51,7 @@ fun MovieDetailHeader(isMovieFavorite: Boolean, onSaveMovie: () -> Unit, onBack:
                     modifier = Modifier.size(28.dp),
                     imageVector = Icons.Filled.Favorite,
                     contentDescription = "",
-                    tint = if(isMovieFavorite) Color.Red else Color.White
+                    tint = tintColor
                 )
             }
         }

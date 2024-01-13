@@ -21,10 +21,6 @@ import com.movieappjc.theme.kColorPrimarySecond
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MovieBackdropCompose(movieEntity: MovieEntity) {
-    val shape = RoundedCornerShape(
-        bottomStartPercent = 10,
-        bottomEndPercent = 10,
-    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,7 +29,12 @@ fun MovieBackdropCompose(movieEntity: MovieEntity) {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.8f)
-                .clip(shape = shape)
+                .clip(
+                    shape = RoundedCornerShape(
+                        bottomStartPercent = 10,
+                        bottomEndPercent = 10,
+                    )
+                )
                 .blur(40.dp)
         ) {
             GlideImage(

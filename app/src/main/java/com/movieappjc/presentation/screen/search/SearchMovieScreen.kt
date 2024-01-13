@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.repository.Resource
 import com.movieappjc.common.constants.noMoviesSearchedText
 import com.movieappjc.common.localization.LocalLanguages
@@ -25,11 +26,18 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
         AppBarSearch(onSearchMovie = viewModel::searchMovie, onBack = viewModel::onBack)
         when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
-                if (state.data.data.isNotEmpty()) {
+                val data = state.data.data
+                if (data.isNotEmpty()) {
+                    val glidePreload = rememberGlidePreloadingData(
+                        data = data, preloadImageSize = Size(100f, 100f)
+                    ) { item, requestBuilder ->
+                        requestBuilder.load(item.getPosterUrl())
+                    }
                     LazyColumn(modifier = Modifier.imePadding()) {
-                        items(state.data.data, key = { it.id }) {
+                        items(glidePreload.size, key = { data[it].id }) {
                             SearchMovieItem(
-                                movieEntity = it,
+                                movieEntity = glidePreload[it].first,
+                                preloadRequest = glidePreload[it].second,
                                 onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail
                             )
                         }

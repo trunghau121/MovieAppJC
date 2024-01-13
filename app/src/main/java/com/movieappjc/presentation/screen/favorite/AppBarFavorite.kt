@@ -1,7 +1,6 @@
 package com.movieappjc.presentation.screen.favorite
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,31 +24,28 @@ import com.movieappjc.theme.fontCustomMedium
 
 @Composable
 fun AppBarFavorite(onBack : () -> Unit) {
-    Column(
-        Modifier.statusBarsPadding()
+    Row(
+        modifier = Modifier.statusBarsPadding(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        IconButton(
+            modifier = Modifier.padding(10.dp),
+            onClick = onBack
         ) {
-            IconButton(
-                modifier = Modifier.padding(10.dp),
-                onClick = onBack
-            ) {
-                Icon(
-                    modifier = Modifier.size(28.dp),
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "",
-                    tint = Color.White,
-                )
-            }
-            Text(
-                text = LocalLanguages.current.favoriteMoviesText(),
-                color = Color.White,
-                style = MaterialTheme.typography.fontCustomMedium,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Start
+            Icon(
+                modifier = Modifier.size(28.dp),
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "",
+                tint = Color.White,
             )
         }
+        Text(
+            text = LocalLanguages.current.favoriteMoviesText(),
+            color = Color.White,
+            style = MaterialTheme.typography.fontCustomMedium,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Start
+        )
     }
 }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,91 +49,88 @@ fun AppBarSearch(onSearchMovie: (String) -> Unit, onBack: () -> Unit) {
     var valueText by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     valueText.useDebounce { onSearchMovie(it) }
-    Column(
-        Modifier
+    Row(
+        modifier = Modifier
             .statusBarsPadding()
-            .padding(end = 10.dp)
+            .padding(end = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        IconButton(
+            modifier = Modifier.padding(10.dp),
+            onClick = {
+                keyboardController?.hide()
+                onBack()
+            }
         ) {
-            IconButton(
-                modifier = Modifier.padding(10.dp),
-                onClick = {
-                    keyboardController?.hide()
-                    onBack()
-                }
+            Icon(
+                modifier = Modifier.size(28.dp),
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "",
+                tint = Color.White,
+            )
+        }
+
+        BasicTextField(
+            value = valueText,
+            onValueChange = { newText ->
+                valueText = newText
+            },
+            cursorBrush = SolidColor(Color.White),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions { keyboardController?.hide() },
+            textStyle = MaterialTheme.typography.fontCustomMedium.copy(
+                fontSize = 16.sp,
+                color = Color.White
+            ),
+            singleLine = true
+        ) { innerTextField ->
+            Row(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .fillMaxWidth()
+                    .background(
+                        color = kColorViolet.copy(alpha = .2f),
+                        shape = RoundedCornerShape(size = 16.dp)
+                    )
+                    .padding(horizontal = 10.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.size(28.dp),
-                    imageVector = Icons.Filled.ArrowBack,
+                    modifier = Modifier.size(25.dp),
+                    imageVector = Icons.Filled.Search,
                     contentDescription = "",
-                    tint = Color.White,
+                    tint = Color.Gray
                 )
-            }
 
-            BasicTextField(
-                value = valueText,
-                onValueChange = { newText ->
-                    valueText = newText
-                },
-                cursorBrush = SolidColor(Color.White),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions { keyboardController?.hide() },
-                textStyle = MaterialTheme.typography.fontCustomMedium.copy(
-                    fontSize = 16.sp,
-                    color = Color.White
-                ),
-                singleLine = true
-            ) { innerTextField ->
-                Row(
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .fillMaxWidth()
-                        .background(
-                            color = kColorViolet.copy(alpha = .2f),
-                            shape = RoundedCornerShape(size = 16.dp)
-                        )
-                        .padding(horizontal = 10.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(25.dp),
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "",
-                        tint = Color.Gray
+                Spacer(modifier = Modifier.width(width = 8.dp))
+
+                if (valueText.isEmpty()) {
+                    Text(
+                        text = LocalLanguages.current.enterSearchText(),
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.fontCustomNormal,
                     )
+                }
 
-                    Spacer(modifier = Modifier.width(width = 8.dp))
+                Box(modifier = Modifier.weight(1f)) {
+                    innerTextField()
+                }
 
-                    if (valueText.isEmpty()) {
-                        Text(
-                            text = LocalLanguages.current.enterSearchText(),
-                            modifier = Modifier.fillMaxWidth(),
-                            color = Color.Gray,
-                            fontSize = 16.sp,
-                            style = MaterialTheme.typography.fontCustomNormal,
-                        )
-                    }
-
-                    Box(modifier = Modifier.weight(1f)) {
-                        innerTextField()
-                    }
-
-                    if (valueText.isNotEmpty()) {
-                        Spacer(modifier = Modifier.width(width = 5.dp))
-                        Icon(
-                            modifier = Modifier
-                                .size(25.dp)
-                                .background(color = Color.Gray, shape = CircleShape)
-                                .padding(5.dp)
-                                .clickable { valueText = "" },
-                            imageVector = Icons.Filled.Clear,
-                            contentDescription = "",
-                            tint = Color.White
-                        )
-                    }
+                if (valueText.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(width = 5.dp))
+                    Icon(
+                        modifier = Modifier
+                            .size(25.dp)
+                            .background(color = Color.Gray, shape = CircleShape)
+                            .padding(5.dp)
+                            .clickable { valueText = "" },
+                        imageVector = Icons.Filled.Clear,
+                        contentDescription = "",
+                        tint = Color.White
+                    )
                 }
             }
         }

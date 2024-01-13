@@ -7,15 +7,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.utils.ImmutableHolder
 import com.movieappjc.common.constants.castText
 import com.movieappjc.common.localization.LocalLanguages
@@ -24,7 +25,12 @@ import com.movieappjc.theme.fontCustomMedium
 
 @Composable
 fun CastCrewComponent(cast: ImmutableHolder<List<CastEntity>>) {
-    Column(modifier = Modifier.height(210.dp)){
+    val glidePreload = rememberGlidePreloadingData(
+        data = cast(), preloadImageSize = Size(60f, 60f)
+    ) { item, requestBuilder ->
+        requestBuilder.load(item.getProfileUrl())
+    }
+    Column(modifier = Modifier.height(210.dp)) {
         Text(
             text = LocalLanguages.current.castText(),
             modifier = Modifier.padding(start = 15.dp, top = 20.dp),
@@ -37,9 +43,13 @@ fun CastCrewComponent(cast: ImmutableHolder<List<CastEntity>>) {
         LazyHorizontalGrid(
             modifier = Modifier.height(140.dp),
             rows = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            items(cast(), key = { it.id }){
-                ItemCastComponent(castEntity = it)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(glidePreload.size, key = { cast()[it].id }) {
+                ItemCastComponent(
+                    castEntity = glidePreload[it].first,
+                    preloadRequest = glidePreload[it].second
+                )
             }
         }
     }

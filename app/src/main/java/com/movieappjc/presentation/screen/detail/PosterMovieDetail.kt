@@ -19,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,8 +55,13 @@ fun MovieDetailPoster(
     movieDetailEntity: MovieDetailEntity,
     openTrailerMovie: () -> Unit
 ) {
-    val heightTotal = (ScreenUtil.getScreenHeight().div(1.6f)).toInt().pxToDp()
-    val heightPoster = heightTotal.div(2.6f)
+    val heightScreen = ScreenUtil.getScreenHeight().pxToDp()
+    val heightTotal = remember(heightScreen){ heightScreen.div(1.6f) }
+    val heightPoster = remember{
+        derivedStateOf {
+            heightTotal.div(2.6f)
+        }
+    }
     val hazeState = remember { HazeState() }
     var showButtonReview by rememberSaveable { mutableStateOf(false) }
     Box(
@@ -67,7 +73,7 @@ fun MovieDetailPoster(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(heightTotal)
-                .padding(bottom = heightPoster / 2),
+                .padding(bottom = heightPoster.value / 2),
             shape = RoundedCornerShape(
                 bottomStartPercent = 5,
                 bottomEndPercent = 5
@@ -125,8 +131,8 @@ fun MovieDetailPoster(
         ) {
             Card(
                 modifier = Modifier
-                    .width((heightPoster.div(1.5f)))
-                    .height(heightPoster),
+                    .width((heightPoster.value.div(1.5f)))
+                    .height(heightPoster.value),
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(1.dp, color = kColorViolet)
             ) {
@@ -142,7 +148,7 @@ fun MovieDetailPoster(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 10.dp, top = (heightPoster / 2) + 10.dp, end = 10.dp),
+                    .padding(start = 10.dp, top = (heightPoster.value / 2) + 10.dp, end = 10.dp),
                 text = movieDetailEntity.title,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,

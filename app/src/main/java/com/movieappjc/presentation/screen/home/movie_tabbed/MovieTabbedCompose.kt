@@ -21,11 +21,9 @@ import com.movieappjc.presentation.components.CustomTabBar
 fun MovieTabbedCompose(loadMovieTabbed: (Int) -> Unit) {
     var tabIndex by rememberSaveable { mutableIntStateOf(0) }
 
-    val tabs = listOf(
-        LocalLanguages.current.popularText(),
-        LocalLanguages.current.nowText(),
-        LocalLanguages.current.soonText()
-    )
+    val tabs = with(LocalLanguages.current) {
+        listOf(popularText(), nowText(), soonText())
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         CustomTabBar(
