@@ -2,9 +2,9 @@ package com.movieappjc.presentation.screen.home.movie_tabbed
 
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.utils.ImmutableHolder
 import com.movieappjc.common.screenutil.ScreenUtil
@@ -16,17 +16,21 @@ fun MovieListCardCompose(
     movies: ImmutableHolder<List<MovieEntity>>,
     modifier: Modifier
 ) {
-    val with = (ScreenUtil.getScreenWidth() / 8).dp
+    val widthScreen = ScreenUtil.getScreenWidth()
+    val withItem = remember (widthScreen){
+        widthScreen.div(2.2f)
+    }
     val glidePreload = rememberGlidePreloadingData(
-        data = movies(), preloadImageSize = Size(with.value, with.value * 1.5f)
+        data = movies(), preloadImageSize = Size(withItem, withItem * 1.5f)
     ) { item, requestBuilder ->
         requestBuilder.load(item.getPosterUrl())
     }
     LazyRow(modifier = modifier) {
         items(glidePreload.size, key = { movies()[it].id }) {
+            val (item, preloadRequest) = glidePreload[it]
             MovieTabCardCompose(
-                movieEntity = glidePreload[it].first,
-                preloadRequest = glidePreload[it].second,
+                movieEntity = item,
+                preloadRequest = { preloadRequest },
                 onNavigateToMovieDetail = onNavigateToMovieDetail
             )
         }

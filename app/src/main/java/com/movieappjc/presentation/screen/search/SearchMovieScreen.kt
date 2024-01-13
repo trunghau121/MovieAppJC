@@ -35,9 +35,10 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
                     }
                     LazyColumn(modifier = Modifier.imePadding()) {
                         items(glidePreload.size, key = { data[it].id }) {
+                            val (item, preloadRequest) = glidePreload[it]
                             SearchMovieItem(
-                                movieEntity = glidePreload[it].first,
-                                preloadRequest = glidePreload[it].second,
+                                movieEntity = item,
+                                preloadRequest = { preloadRequest },
                                 onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail
                             )
                         }

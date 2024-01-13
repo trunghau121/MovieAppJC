@@ -36,7 +36,7 @@ import com.movieappjc.theme.fontCustomNormal
 @Composable
 fun SearchMovieItem(
     movieEntity: MovieEntity,
-    preloadRequest: RequestBuilder<Drawable>,
+    preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -60,7 +60,7 @@ fun SearchMovieItem(
             transition = CrossFade,
             contentDescription = movieEntity.title
         ) { primaryRequest ->
-            primaryRequest.thumbnail(preloadRequest)
+            primaryRequest.thumbnail(preloadRequest())
         }
         Spacer(modifier = Modifier.width(10.dp))
         Column {

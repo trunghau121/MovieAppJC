@@ -35,7 +35,7 @@ import com.movieappjc.theme.kColorViolet
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ItemCastComponent(castEntity: CastEntity, preloadRequest: RequestBuilder<Drawable>) {
+fun ItemCastComponent(castEntity: CastEntity, preloadRequest: () -> RequestBuilder<Drawable>) {
     Box(
         modifier = Modifier
             .width(230.dp)
@@ -84,7 +84,7 @@ fun ItemCastComponent(castEntity: CastEntity, preloadRequest: RequestBuilder<Dra
             contentScale = ContentScale.Crop,
             contentDescription = castEntity.name
         ) { primaryRequest ->
-            primaryRequest.thumbnail(preloadRequest)
+            primaryRequest.thumbnail(preloadRequest())
         }
     }
 }

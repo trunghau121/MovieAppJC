@@ -35,7 +35,7 @@ import com.movieappjc.theme.kColorViolet
 fun ItemVideo(
     videoId: String,
     item: VideoEntity,
-    preloadRequest: RequestBuilder<Drawable>,
+    preloadRequest: () -> RequestBuilder<Drawable>,
     onClick: (String) -> Unit
 ) {
     val backgroundColor = remember(videoId) {
@@ -59,7 +59,7 @@ fun ItemVideo(
             transition = CrossFade,
             contentDescription = item.name
         ) { primaryRequest ->
-            primaryRequest.thumbnail(preloadRequest)
+            primaryRequest.thumbnail(preloadRequest())
         }
         Spacer(modifier = Modifier.width(10.dp))
         Text(

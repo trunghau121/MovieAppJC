@@ -46,9 +46,10 @@ fun CastCrewComponent(cast: ImmutableHolder<List<CastEntity>>) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(glidePreload.size, key = { cast()[it].id }) {
+                val (item, preloadRequest) = glidePreload[it]
                 ItemCastComponent(
-                    castEntity = glidePreload[it].first,
-                    preloadRequest = glidePreload[it].second
+                    castEntity = item,
+                    preloadRequest = { preloadRequest }
                 )
             }
         }

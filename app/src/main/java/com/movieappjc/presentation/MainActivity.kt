@@ -50,7 +50,7 @@ fun MyApp(appRepository: AppRepository, content: @Composable ((Locale) -> Unit) 
                 locale = language
         }
         supportedLocalesNow
-        LocalizationApp(locale = locale) {
+        LocalizationApp(locale = { locale }) {
             Surface(modifier = Modifier.fillMaxSize().navigationBarsPadding(), color = kColorVulcan) {
                 content {
                     if (locale != it) {

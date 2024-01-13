@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +27,7 @@ import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.movieappjc.common.constants.Endpoints
+import com.core_app.extension.pxToDp
 import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.theme.fontCustomSemiBold
@@ -35,12 +36,16 @@ import com.movieappjc.theme.fontCustomSemiBold
 @Composable
 fun MovieTabCardCompose(
     movieEntity: MovieEntity,
-    preloadRequest: RequestBuilder<Drawable>,
+    preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit
 ) {
+    val widthScreen = ScreenUtil.getScreenWidth().pxToDp()
+    val withItem = remember (widthScreen){
+        widthScreen.div(2.2f)
+    }
     Column(
         modifier = Modifier
-            .width((ScreenUtil.getScreenWidth() / 8).dp)
+            .width(withItem)
             .fillMaxHeight()
             .padding(horizontal = 10.dp),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -54,12 +59,12 @@ fun MovieTabCardCompose(
                 .clickable {
                     onNavigateToMovieDetail(movieEntity.id)
                 },
-            model = "${Endpoints.baseUrlImage}${movieEntity.posterPath}",
+            model = movieEntity.getPosterUrl(),
             contentScale = ContentScale.Crop,
             transition = CrossFade,
             contentDescription = movieEntity.title
         ) { primaryRequest ->
-            primaryRequest.thumbnail(preloadRequest)
+            primaryRequest.thumbnail(preloadRequest())
         }
         Text(
             modifier = Modifier

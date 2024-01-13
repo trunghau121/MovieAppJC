@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
-import com.core_app.extension.pxToDp
 import com.core_app.repository.Resource
 import com.movieappjc.common.constants.noFavoriteMovieText
 import com.movieappjc.common.localization.LocalLanguages
@@ -25,7 +24,7 @@ import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 @Composable
 fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
     val state by viewModel.movies.collectAsStateWithLifecycle()
-    val width = (ScreenUtil.getScreenWidth() / 2).pxToDp() - 16.dp
+    val width = (ScreenUtil.getScreenWidth() / 2) - 16
     LaunchedEffect(true) {
         viewModel.getFavoriteMovies()
     }
@@ -35,7 +34,7 @@ fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
             val movies = (state as Resource.Success).data
             if (movies.isNotEmpty()) {
                 val glidePreload = rememberGlidePreloadingData(
-                    data = movies, preloadImageSize = Size(width.value, width.times(1.5f).value)
+                    data = movies, preloadImageSize = Size(width.toFloat(), width.times(1.5f))
                 ) { item, requestBuilder ->
                     requestBuilder.load(item.getPosterUrl())
                 }
@@ -45,9 +44,10 @@ fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
                     contentPadding = PaddingValues(5.dp)
                 ) {
                     items(glidePreload.size, key = { movies[it].id }) {
+                        val (item, preloadRequest) = glidePreload[it]
                         FavoriteMovieItem(
-                            movieEntity = glidePreload[it].first,
-                            preloadRequest = glidePreload[it].second,
+                            movieEntity = item,
+                            preloadRequest = { preloadRequest },
                             onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail,
                             onDelete = viewModel::deleteFavoriteMovie
                         )

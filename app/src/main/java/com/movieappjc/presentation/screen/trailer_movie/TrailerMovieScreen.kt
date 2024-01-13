@@ -88,10 +88,11 @@ private fun ListTrailer(
             )
         }
         items(glidePreload.size, key = { videos()[it].key }) { index ->
+            val (item, preloadRequest) = glidePreload[index]
             ItemVideo(
                 videoId = videoId,
-                item = glidePreload[index].first,
-                preloadRequest = glidePreload[index].second
+                item = item,
+                preloadRequest = { preloadRequest }
             ) {
                 videoId = it
             }

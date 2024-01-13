@@ -33,7 +33,7 @@ import com.movieappjc.theme.kColorViolet
 @Composable
 fun FavoriteMovieItem(
     movieEntity: MovieEntity,
-    preloadRequest: RequestBuilder<Drawable>,
+    preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit,
     onDelete: (Int) -> Unit
 ) {
@@ -54,7 +54,7 @@ fun FavoriteMovieItem(
                 contentScale = ContentScale.Crop,
                 contentDescription = movieEntity.title
             ) { primaryRequest ->
-                primaryRequest.thumbnail(preloadRequest)
+                primaryRequest.thumbnail(preloadRequest())
             }
             Icon(
                 modifier = Modifier

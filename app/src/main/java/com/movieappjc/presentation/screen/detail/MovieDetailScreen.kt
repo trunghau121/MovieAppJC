@@ -23,6 +23,7 @@ fun MovieDetailScreen(
 ) {
     val scrollState = rememberScrollState()
     val isMovieFavorite by viewModel.isMovieFavorite.collectAsStateWithLifecycle()
+    val castState by viewModel.castMovie.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (val state = viewModel.movieDetail.collectAsStateWithLifecycle().value) {
@@ -39,7 +40,6 @@ fun MovieDetailScreen(
                     )
                     TimeMovieDetail(movieDetailEntity = data)
                     DescriptionMovieDetail(overview = data.overview)
-                    val castState by viewModel.castMovie.collectAsStateWithLifecycle()
                     if (castState is Resource.Success) {
                         val cast = (castState as Resource.Success).data
                         if (cast.isNotEmpty()) {
