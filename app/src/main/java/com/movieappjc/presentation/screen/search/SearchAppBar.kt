@@ -25,10 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,7 +33,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.core_app.extension.useDebounce
 import com.movieappjc.common.constants.enterSearchText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.theme.fontCustomMedium
@@ -45,12 +40,16 @@ import com.movieappjc.theme.fontCustomNormal
 import com.movieappjc.theme.kColorViolet
 
 @Composable
-fun SearchAppBar(onSearchMovie: (String) -> Unit, onBack: () -> Unit) {
-    var valueText by rememberSaveable { mutableStateOf("") }
+fun SearchAppBar(
+    valueText: String,
+    onChangeText: (String) -> Unit,
+    onBack: () -> Unit
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    valueText.useDebounce { onSearchMovie(it) }
     Row(
-        modifier = Modifier.statusBarsPadding().padding(end = 10.dp),
+        modifier = Modifier
+            .statusBarsPadding()
+            .padding(end = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -71,9 +70,7 @@ fun SearchAppBar(onSearchMovie: (String) -> Unit, onBack: () -> Unit) {
 
         BasicTextField(
             value = valueText,
-            onValueChange = { newText ->
-                valueText = newText
-            },
+            onValueChange = onChangeText,
             cursorBrush = SolidColor(Color.White),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions { keyboardController?.hide() },
@@ -124,7 +121,7 @@ fun SearchAppBar(onSearchMovie: (String) -> Unit, onBack: () -> Unit) {
                             .size(25.dp)
                             .background(color = Color.Gray, shape = CircleShape)
                             .padding(5.dp)
-                            .clickable { valueText = "" },
+                            .clickable { onChangeText("") },
                         imageVector = Icons.Filled.Clear,
                         contentDescription = "",
                         tint = Color.White

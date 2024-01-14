@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
@@ -23,9 +24,14 @@ import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 
 @Composable
 fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
+    val textSearch by viewModel.textSearch.collectAsStateWithLifecycle()
     val sizeItem = 100.dp
     Column {
-        SearchAppBar(onSearchMovie = viewModel::searchMovie, onBack = viewModel::onBack)
+        SearchAppBar(
+            valueText = textSearch,
+            onChangeText = viewModel::onChangText,
+            onBack = viewModel::onBack
+        )
         when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 val data = state.data.data
