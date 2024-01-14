@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
+import com.core_app.extension.dpToPx
 import com.core_app.extension.value
 import com.core_app.repository.Resource
 import com.core_app.utils.ImmutableHolder
@@ -30,15 +31,15 @@ import com.core_app.utils.StableHolder
 import com.movieappjc.common.constants.noTrailerVideoText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.domain.entities.VideoEntity
-import com.movieappjc.presentation.components.ErrorAppComponent
-import com.movieappjc.presentation.components.LoadingCircle
+import com.movieappjc.presentation.components.ErrorApp
+import com.movieappjc.presentation.components.CircularProgressBar
 import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
 import com.movieappjc.theme.fontCustomSemiBold
 
 @Composable
 fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
     Column {
-        AppBarTrailerMovie(onBack = viewModel::onBack)
+        TrailerMovieAppBar(onBack = viewModel::onBack)
         when (val state = viewModel.videos.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
                 val videos = state.data.value()
@@ -58,11 +59,11 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
             }
 
             is Resource.Error -> {
-                ErrorAppComponent(error = state.error, onRetry = viewModel::getTrailer)
+                ErrorApp(error = state.error, onRetry = viewModel::getTrailer)
             }
 
             else -> {
-                LoadingCircle()
+                CircularProgressBar()
             }
         }
     }
@@ -73,25 +74,29 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
 private fun ListTrailer(
     videos: ImmutableHolder<List<VideoEntity>>
 ) {
+    val sizeItem = 80.dp
     var videoId by remember { mutableStateOf("") }
     if (videoId.isEmpty()) videoId = videos()[0].key
+
     val glidePreload = rememberGlidePreloadingData(
-        data = videos(), preloadImageSize = Size(80f, 80f)
+        data = videos(), preloadImageSize = Size(sizeItem.dpToPx(), sizeItem.dpToPx())
     ) { item, requestBuilder ->
         requestBuilder.load(item.getThumbnail())
     }
+
     LazyColumn {
         stickyHeader {
-            YoutubePlayerComponent(
+            TrailerYoutubePlayer(
                 videoId = videoId,
                 lifecycleOwner = StableHolder(LocalLifecycleOwner.current)
             )
         }
         items(glidePreload.size, key = { videos()[it].key }) { index ->
             val (item, preloadRequest) = glidePreload[index]
-            ItemVideo(
+            TrailerItem(
                 videoId = videoId,
                 item = item,
+                sizeItem = sizeItem,
                 preloadRequest = { preloadRequest }
             ) {
                 videoId = it

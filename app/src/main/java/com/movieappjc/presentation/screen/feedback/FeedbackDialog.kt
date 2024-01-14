@@ -29,7 +29,7 @@ import com.movieappjc.common.constants.descriptionFeedbackText
 import com.movieappjc.common.constants.sendText
 import com.movieappjc.common.constants.titleFeedbackText
 import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.presentation.components.ButtonApp
+import com.movieappjc.presentation.components.AppButton
 import com.movieappjc.theme.fontCustomNormal
 import com.movieappjc.theme.fontCustomSemiBold
 import com.movieappjc.theme.kColorPrimarySecond
@@ -44,7 +44,10 @@ fun FeedbackDialog(
         Column {
             Box(
                 modifier = Modifier
-                    .background(color = kColorVulcan, shape = RoundedCornerShape(16.dp))
+                    .background(
+                        color = kColorVulcan,
+                        shape = RoundedCornerShape(16.dp)
+                    )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
@@ -89,9 +92,9 @@ fun FeedbackDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        ButtonApp(text = LocalLanguages.current.cancelText()) { onDismiss() }
+                        AppButton(text = LocalLanguages.current.cancelText()) { onDismiss() }
                         Spacer(modifier = Modifier.weight(1f))
-                        ButtonApp(text = LocalLanguages.current.sendText()) { onDismiss() }
+                        AppButton(text = LocalLanguages.current.sendText()) { onDismiss() }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                 }

@@ -13,7 +13,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 @Composable
-fun YoutubePlayerComponent(
+fun TrailerYoutubePlayer(
     videoId: String,
     lifecycleOwner: StableHolder<LifecycleOwner>
 ){

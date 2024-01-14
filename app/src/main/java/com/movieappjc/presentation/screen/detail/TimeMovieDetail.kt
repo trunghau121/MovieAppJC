@@ -29,9 +29,7 @@ import com.movieappjc.theme.fontCustomMedium
 @Composable
 fun TimeMovieDetail(movieDetailEntity: MovieDetailEntity) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 30.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -50,9 +48,7 @@ fun TimeMovieDetail(movieDetailEntity: MovieDetailEntity) {
             textAlign = TextAlign.Start
         )
         Divider(
-            modifier = Modifier
-                .width(1.dp)
-                .height(15.dp),
+            modifier = Modifier.width(1.dp).height(15.dp),
             color = Color.LightGray,
         )
         Spacer(modifier = Modifier.width(10.dp))

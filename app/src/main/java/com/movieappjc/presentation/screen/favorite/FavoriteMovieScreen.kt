@@ -14,27 +14,29 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
+import com.core_app.extension.dpToPx
 import com.core_app.repository.Resource
 import com.movieappjc.common.constants.noFavoriteMovieText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.common.screenutil.ScreenUtil
-import com.movieappjc.presentation.components.EmptyTextApp
+import com.movieappjc.presentation.components.AppEmptyText
 import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 
 @Composable
 fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
     val state by viewModel.movies.collectAsStateWithLifecycle()
-    val width = (ScreenUtil.getScreenWidth() / 2) - 16
+    val widthItem = (ScreenUtil.getScreenWidth() / 2) - 16.dp
+    val heightItem = widthItem.times(1.5f)
     LaunchedEffect(true) {
         viewModel.getFavoriteMovies()
     }
     Column {
-        AppBarFavorite(onBack = viewModel::onBack)
+        FavoriteAppBar(onBack = viewModel::onBack)
         if (state is Resource.Success) {
             val movies = (state as Resource.Success).data
             if (movies.isNotEmpty()) {
                 val glidePreload = rememberGlidePreloadingData(
-                    data = movies, preloadImageSize = Size(width.toFloat(), width.times(1.5f))
+                    data = movies, preloadImageSize = Size(widthItem.dpToPx(), heightItem.dpToPx())
                 ) { item, requestBuilder ->
                     requestBuilder.load(item.getPosterUrl())
                 }
@@ -47,6 +49,8 @@ fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
                         val (item, preloadRequest) = glidePreload[it]
                         FavoriteMovieItem(
                             movieEntity = item,
+                            widthItem = widthItem,
+                            heightItem = heightItem,
                             preloadRequest = { preloadRequest },
                             onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail,
                             onDelete = viewModel::deleteFavoriteMovie
@@ -54,7 +58,7 @@ fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
                     }
                 }
             } else {
-                EmptyTextApp(LocalLanguages.current.noFavoriteMovieText())
+                AppEmptyText(LocalLanguages.current.noFavoriteMovieText())
             }
         }
     }

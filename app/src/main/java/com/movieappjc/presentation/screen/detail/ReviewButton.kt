@@ -23,9 +23,7 @@ import com.movieappjc.theme.fontCustomMedium
 
 @Composable
 fun ReviewButton(modifier: Modifier, voteAverage: Double) {
-    Box(
-        modifier = modifier
-    ) {
+    Box(modifier = modifier) {
         Row(
             modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
             verticalAlignment = Alignment.CenterVertically,

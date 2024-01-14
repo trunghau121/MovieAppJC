@@ -19,13 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.core_app.extension.pxToDp
-import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.theme.kColorViolet
 
@@ -33,15 +32,16 @@ import com.movieappjc.theme.kColorViolet
 @Composable
 fun FavoriteMovieItem(
     movieEntity: MovieEntity,
+    widthItem: Dp,
+    heightItem: Dp,
     preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit,
     onDelete: (Int) -> Unit
 ) {
-    val width = (ScreenUtil.getScreenWidth() / 2).pxToDp() - 16.dp
     Card(
         modifier = Modifier
-            .width(width)
-            .height(width.times(1.5f))
+            .width(widthItem)
+            .height(heightItem)
             .padding(5.dp).clickable { onNavigateToMovieDetail(movieEntity.id) },
         shape = RoundedCornerShape(15.dp),
         border = BorderStroke(2.dp, color = kColorViolet)

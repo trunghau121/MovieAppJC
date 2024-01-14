@@ -78,7 +78,7 @@ fun NavigationDrawerApp(
                         contentScale = ContentScale.FillHeight
                     )
                     Spacer(modifier = Modifier.height(30.dp))
-                    DrawerItem(
+                    DrawerItemView(
                         NavigationDrawerData(
                             label = localization.favoriteMoviesText(),
                             icon = Icons.Filled.Favorite
@@ -87,7 +87,7 @@ fun NavigationDrawerApp(
                         openFavoriteMovie()
                         onClick()
                     }
-                    DrawerItem(
+                    DrawerItemView(
                         NavigationDrawerData(
                             label = localization.languageText(),
                             icon = Icons.Filled.Settings
@@ -102,7 +102,7 @@ fun NavigationDrawerApp(
                             showSubMenu.value = !showSubMenu.value
                         }
                     }
-                    DrawerItem(
+                    DrawerItemView(
                         NavigationDrawerData(
                             label = localization.feedbackText(),
                             icon = Icons.Filled.Edit
@@ -111,7 +111,7 @@ fun NavigationDrawerApp(
                         onClick()
                         feedbackDialog.value = true
                     }
-                    DrawerItem(
+                    DrawerItemView(
                         NavigationDrawerData(
                             label = localization.aboutText(),
                             icon = Icons.Filled.Info
@@ -127,8 +127,8 @@ fun NavigationDrawerApp(
     )
     if (infoDialog.value) {
         AboutDialog(
-            title = LocalLanguages.current.aboutText(),
-            description = LocalLanguages.current.aboutDescriptionText(),
+            title = localization.aboutText(),
+            description = localization.aboutDescriptionText(),
             onDismiss = {
                 infoDialog.value = false
             }

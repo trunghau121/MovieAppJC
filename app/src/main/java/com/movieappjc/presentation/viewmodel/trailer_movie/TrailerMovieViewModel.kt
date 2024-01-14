@@ -1,5 +1,6 @@
 package com.movieappjc.presentation.viewmodel.trailer_movie
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.core_app.repository.Resource
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Stable
 @HiltViewModel
 class TrailerMovieViewModel @Inject constructor(
     private val getVideoTrailer: VideoTrailerUseCase,

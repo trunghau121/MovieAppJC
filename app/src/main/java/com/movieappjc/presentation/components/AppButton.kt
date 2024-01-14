@@ -16,7 +16,7 @@ import com.movieappjc.theme.fontCustomMedium
 import com.movieappjc.theme.kColorViolet
 
 @Composable
-fun ButtonApp(text: String, onClick: () -> Unit) {
+fun AppButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier.padding(horizontal = 20.dp),

@@ -19,12 +19,12 @@ import com.core_app.repository.Resource
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.components.ErrorAppComponent
-import com.movieappjc.presentation.components.LoadingCircle
+import com.movieappjc.presentation.components.ErrorApp
+import com.movieappjc.presentation.components.CircularProgressBar
 import com.movieappjc.presentation.components.drawer.NavigationDrawerApp
-import com.movieappjc.presentation.screen.home.movie_carousel.MovieCarouselCompose
-import com.movieappjc.presentation.screen.home.movie_tabbed.MovieListCardCompose
-import com.movieappjc.presentation.screen.home.movie_tabbed.MovieTabbedCompose
+import com.movieappjc.presentation.screen.home.movie_carousel.CarouselMovie
+import com.movieappjc.presentation.screen.home.movie_tabbed.MovieList
+import com.movieappjc.presentation.screen.home.movie_tabbed.MovieTabbed
 import com.movieappjc.presentation.viewmodel.home.HomeViewModel
 import java.util.Locale
 
@@ -50,14 +50,14 @@ fun HomeScreen(
         }
 
         is Resource.Error -> {
-            ErrorAppComponent(error = state.error) {
+            ErrorApp(error = state.error) {
                 homeViewModel.getMovies()
                 homeViewModel.loadMovieTabbed(homeViewModel.indexPage)
             }
         }
 
         else -> {
-            LoadingCircle()
+            CircularProgressBar()
         }
     }
 }
@@ -72,11 +72,11 @@ fun HomeContent(
         modifier = Modifier.fillMaxSize()
     ) {
         Box(modifier = Modifier.weight(1.15f)) {
-            MovieCarouselCompose(
+            CarouselMovie(
                 movies = movies,
                 onNavigateToMovieDetail = homeViewModel()::onNavigateToMovieDetail
             )
-            AppbarHome(
+            HomeAppBar(
                 drawerState = drawerState,
                 openSearchMovie = homeViewModel()::openSearchMovie
             )
@@ -84,25 +84,25 @@ fun HomeContent(
 
         Column(modifier = Modifier.weight(0.85f), verticalArrangement = Arrangement.SpaceBetween) {
             Spacer(modifier = Modifier.height(20.dp))
-            MovieTabbedCompose(loadMovieTabbed = homeViewModel()::loadMovieTabbed)
+            MovieTabbed(loadMovieTabbed = homeViewModel()::loadMovieTabbed)
             Spacer(modifier = Modifier.height(5.dp))
             when (val state = homeViewModel().movieTabbed.collectAsStateWithLifecycle().value) {
                 is Resource.Success -> {
-                    MovieListCardCompose(
-                        onNavigateToMovieDetail = homeViewModel()::onNavigateToMovieDetail,
+                    MovieList(
                         ImmutableHolder(state.data.data.value()),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onNavigateToMovieDetail = homeViewModel()::onNavigateToMovieDetail
                     )
                 }
 
                 is Resource.Error -> {
-                    ErrorAppComponent(error = state.error) {
+                    ErrorApp(error = state.error) {
                         homeViewModel().loadMovieTabbed(homeViewModel().indexPage)
                     }
                 }
 
                 else -> {
-                    LoadingCircle()
+                    CircularProgressBar()
                 }
             }
         }

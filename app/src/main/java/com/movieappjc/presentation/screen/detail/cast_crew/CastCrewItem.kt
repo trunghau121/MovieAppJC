@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.RequestBuilder
@@ -35,7 +36,11 @@ import com.movieappjc.theme.kColorViolet
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ItemCastComponent(castEntity: CastEntity, preloadRequest: () -> RequestBuilder<Drawable>) {
+fun CastCrewItem(
+    castEntity: CastEntity,
+    sizeItem: Dp,
+    preloadRequest: () -> RequestBuilder<Drawable>
+) {
     Box(
         modifier = Modifier
             .width(230.dp)
@@ -75,7 +80,7 @@ fun ItemCastComponent(castEntity: CastEntity, preloadRequest: () -> RequestBuild
 
         GlideImage(
             modifier = Modifier
-                .size(60.dp)
+                .size(sizeItem)
                 .border(border = BorderStroke(2.dp, color = kColorViolet), shape = CircleShape)
                 .clip(shape = CircleShape)
                 .background(color = Color.LightGray),

@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.movieappjc.theme.kColorViolet
 
 @Composable
-fun LoadingCircle() {
+fun CircularProgressBar() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

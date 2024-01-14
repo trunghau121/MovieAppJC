@@ -45,14 +45,12 @@ import com.movieappjc.theme.fontCustomNormal
 import com.movieappjc.theme.kColorViolet
 
 @Composable
-fun AppBarSearch(onSearchMovie: (String) -> Unit, onBack: () -> Unit) {
+fun SearchAppBar(onSearchMovie: (String) -> Unit, onBack: () -> Unit) {
     var valueText by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     valueText.useDebounce { onSearchMovie(it) }
     Row(
-        modifier = Modifier
-            .statusBarsPadding()
-            .padding(end = 10.dp),
+        modifier = Modifier.statusBarsPadding().padding(end = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

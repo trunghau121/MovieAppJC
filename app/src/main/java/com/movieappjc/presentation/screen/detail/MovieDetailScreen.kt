@@ -12,9 +12,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.repository.Resource
 import com.core_app.utils.ImmutableHolder
-import com.movieappjc.presentation.components.ErrorAppComponent
-import com.movieappjc.presentation.components.LoadingCircle
-import com.movieappjc.presentation.screen.detail.cast_crew.CastCrewComponent
+import com.movieappjc.presentation.components.ErrorApp
+import com.movieappjc.presentation.components.CircularProgressBar
+import com.movieappjc.presentation.screen.detail.cast_crew.CastCrewList
 import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
 
 @Composable
@@ -28,13 +28,9 @@ fun MovieDetailScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when (val state = viewModel.movieDetail.collectAsStateWithLifecycle().value) {
             is Resource.Success -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                ) {
+                Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
                     val data = state.data
-                    MovieDetailPoster(
+                    PosterMovieDetail(
                         movieDetailEntity = data,
                         openTrailerMovie = viewModel::openTrailerMovie
                     )
@@ -43,11 +39,11 @@ fun MovieDetailScreen(
                     if (castState is Resource.Success) {
                         val cast = (castState as Resource.Success).data
                         if (cast.isNotEmpty()) {
-                            CastCrewComponent(ImmutableHolder(cast))
+                            CastCrewList(ImmutableHolder(cast))
                         }
                     }
                 }
-                MovieDetailHeader(
+                MovieDetailAppBar(
                     isMovieFavorite = isMovieFavorite,
                     onSaveMovie = viewModel::saveFavoriteMovie,
                     onBack = viewModel::onBack
@@ -55,11 +51,11 @@ fun MovieDetailScreen(
             }
 
             is Resource.Error -> {
-                ErrorAppComponent(error = state.error, onRetry = viewModel::getMovieDetail)
+                ErrorApp(error = state.error, onRetry = viewModel::getMovieDetail)
             }
 
             else -> {
-                LoadingCircle()
+                CircularProgressBar()
             }
         }
     }

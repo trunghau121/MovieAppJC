@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.movieappjc.theme.fontCustomNormal
 
 @Composable
-fun EmptyTextApp(emptyText: String, top: Dp = 150.dp) {
+fun AppEmptyText(emptyText: String, top: Dp = 150.dp) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

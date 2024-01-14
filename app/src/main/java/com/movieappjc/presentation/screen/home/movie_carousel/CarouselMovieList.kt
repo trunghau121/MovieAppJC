@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.core_app.extension.pxToDp
 import com.core_app.utils.ImmutableHolder
 import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
@@ -31,7 +30,7 @@ import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MoviePageCompose(
+fun CarouselMovieList(
     movies: ImmutableHolder<List<MovieEntity>>,
     pagerState: PagerState,
     onNavigateToMovieDetail: (Int) -> Unit
@@ -39,14 +38,14 @@ fun MoviePageCompose(
     val currentIndex = pagerState.currentPage
     val currentPageOffset = pagerState.currentPageOffsetFraction
     val maxOffset = 30.dp
-    val heightScreen = ScreenUtil.getScreenHeight().pxToDp()
+    val heightScreen = ScreenUtil.getScreenHeight()
     val heightItem = remember(heightScreen) {
         heightScreen.div(3)
     }
     HorizontalPager(
         state = pagerState,
-        pageSpacing = (ScreenUtil.getScreenWidth() / 7).pxToDp(),
-        contentPadding = PaddingValues(horizontal = (ScreenUtil.getScreenWidth() / 4).pxToDp()),
+        pageSpacing = ScreenUtil.getScreenWidth() / 7,
+        contentPadding = PaddingValues(horizontal = ScreenUtil.getScreenWidth() / 4),
     ) { page ->
         val offset = maxOffset * when (page) {
             currentIndex -> {

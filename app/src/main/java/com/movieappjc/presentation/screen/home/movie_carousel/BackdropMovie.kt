@@ -20,11 +20,8 @@ import com.movieappjc.theme.kColorPrimarySecond
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MovieBackdropCompose(movieEntity: MovieEntity) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+fun BackdropMovie(movieEntity: MovieEntity) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -38,8 +35,7 @@ fun MovieBackdropCompose(movieEntity: MovieEntity) {
                 .blur(40.dp)
         ) {
             GlideImage(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 model = "${Endpoints.baseUrlImage}${movieEntity.backdropPath}",
                 contentScale = ContentScale.FillHeight,
                 contentDescription = movieEntity.title
@@ -51,10 +47,6 @@ fun MovieBackdropCompose(movieEntity: MovieEntity) {
                     .background(color = kColorPrimarySecond.copy(alpha = 0.2f))
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.2f)
-        )
+        Box(modifier = Modifier.fillMaxWidth().weight(0.2f))
     }
 }

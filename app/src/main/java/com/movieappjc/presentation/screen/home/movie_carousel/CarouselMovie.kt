@@ -24,28 +24,21 @@ import com.movieappjc.theme.fontCustomSemiBold
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MovieCarouselCompose(movies: ImmutableHolder<List<MovieEntity>>, onNavigateToMovieDetail: (Int) -> Unit) {
+fun CarouselMovie(movies: ImmutableHolder<List<MovieEntity>>, onNavigateToMovieDetail: (Int) -> Unit) {
     val pagerState = rememberPagerState {
         movies().size
     }
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 10.dp)
-    ) {
-        MovieBackdropCompose(movies()[pagerState.currentPage])
-        Column(
-            modifier = Modifier.align(Alignment.BottomStart)
-        ) {
-            MoviePageCompose(
+        modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
+        BackdropMovie(movies()[pagerState.currentPage])
+        Column(modifier = Modifier.align(Alignment.BottomStart)) {
+            CarouselMovieList(
                 movies = movies,
                 pagerState = pagerState,
                 onNavigateToMovieDetail = onNavigateToMovieDetail
             )
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(PaddingValues(10.dp)),
+                modifier = Modifier.fillMaxWidth().padding(PaddingValues(10.dp)),
                 text = movies()[pagerState.currentPage].title,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,

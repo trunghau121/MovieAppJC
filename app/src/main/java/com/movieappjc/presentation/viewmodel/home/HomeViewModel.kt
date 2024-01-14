@@ -1,5 +1,6 @@
 package com.movieappjc.presentation.viewmodel.home
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.core_app.repository.Resource
 import com.core_app.repository.Resource.Loading
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+@Stable
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase,
                                         private val getPopular: PopularUseCase,

@@ -1,5 +1,6 @@
 package com.movieappjc.presentation.viewmodel.search
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.core_app.repository.Resource
 import com.core_app.viewmodel.BaseViewModel
@@ -14,12 +15,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Stable
 @HiltViewModel
 class SearchMovieViewModel @Inject constructor(
     private val getSearchMovie: SearchMovieUseCase,
     private val appNavigator: AppNavigator
 ): BaseViewModel() {
-    private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(SearchMovieInitState())
+    private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(Resource.InitState())
     val movies = _movies.asStateFlow()
     private var job: Job?= null
     private var keySearch: String= ""
@@ -39,7 +41,7 @@ class SearchMovieViewModel @Inject constructor(
             }
         }else {
             viewModelScope.launch {
-                _movies.emit(SearchMovieInitState())
+                _movies.emit(Resource.InitState())
             }
         }
     }

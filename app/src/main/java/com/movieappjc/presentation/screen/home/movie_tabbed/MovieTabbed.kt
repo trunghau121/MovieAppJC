@@ -18,7 +18,7 @@ import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.presentation.components.CustomTabBar
 
 @Composable
-fun MovieTabbedCompose(loadMovieTabbed: (Int) -> Unit) {
+fun MovieTabbed(loadMovieTabbed: (Int) -> Unit) {
     var tabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val tabs = with(LocalLanguages.current) {
@@ -27,9 +27,7 @@ fun MovieTabbedCompose(loadMovieTabbed: (Int) -> Unit) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
         CustomTabBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
+            modifier = Modifier.fillMaxWidth().height(50.dp),
             selectedItemIndex = tabIndex,
             onSelectedTab = { tabIndex = it },
             items = { tabs }

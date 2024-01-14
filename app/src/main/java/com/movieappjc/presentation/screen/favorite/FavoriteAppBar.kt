@@ -23,7 +23,7 @@ import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun AppBarFavorite(onBack : () -> Unit) {
+fun FavoriteAppBar(onBack : () -> Unit) {
     Row(
         modifier = Modifier.statusBarsPadding(),
         horizontalArrangement = Arrangement.SpaceBetween,

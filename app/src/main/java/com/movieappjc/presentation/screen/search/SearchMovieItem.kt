@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.RequestBuilder
@@ -36,6 +37,7 @@ import com.movieappjc.theme.fontCustomNormal
 @Composable
 fun SearchMovieItem(
     movieEntity: MovieEntity,
+    sizeItem: Dp,
     preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit
 ) {
@@ -52,7 +54,7 @@ fun SearchMovieItem(
     ) {
         GlideImage(
             modifier = Modifier
-                .size(100.dp)
+                .size(sizeItem)
                 .clip(shape = RoundedCornerShape(16.dp))
                 .background(color = Color.LightGray),
             model = movieEntity.getPosterUrl(),

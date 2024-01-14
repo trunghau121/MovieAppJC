@@ -24,9 +24,10 @@ import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun CastCrewComponent(cast: ImmutableHolder<List<CastEntity>>) {
+fun CastCrewList(cast: ImmutableHolder<List<CastEntity>>) {
+    val sizeItem = 60.dp
     val glidePreload = rememberGlidePreloadingData(
-        data = cast(), preloadImageSize = Size(60f, 60f)
+        data = cast(), preloadImageSize = Size(sizeItem.value, sizeItem.value)
     ) { item, requestBuilder ->
         requestBuilder.load(item.getProfileUrl())
     }
@@ -47,8 +48,9 @@ fun CastCrewComponent(cast: ImmutableHolder<List<CastEntity>>) {
         ) {
             items(glidePreload.size, key = { cast()[it].id }) {
                 val (item, preloadRequest) = glidePreload[it]
-                ItemCastComponent(
+                CastCrewItem(
                     castEntity = item,
+                    sizeItem = sizeItem,
                     preloadRequest = { preloadRequest }
                 )
             }

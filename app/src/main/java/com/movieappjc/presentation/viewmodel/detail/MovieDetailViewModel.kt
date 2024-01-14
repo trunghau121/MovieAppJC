@@ -1,5 +1,6 @@
 package com.movieappjc.presentation.viewmodel.detail
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.core_app.repository.HandelError
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Stable
 @HiltViewModel
 class MovieDetailViewModel @Inject constructor(
     private val detailMovieUseCase: DetailMovieUseCase,
@@ -53,7 +55,7 @@ class MovieDetailViewModel @Inject constructor(
                 executeTask(request = { getCastCrew(movieId) }, onSuccess = _castMovie)
             },
             error = {
-                _movieDetail.value = Resource.Error( HandelError().getError(it))
+                _movieDetail.value = Resource.Error(HandelError().getError(it))
             }
         )
     }

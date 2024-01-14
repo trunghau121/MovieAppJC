@@ -19,7 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.core_app.extension.pxToDp
 import com.movieappjc.R
 import com.movieappjc.common.GlideListener
 import com.movieappjc.common.constants.Endpoints
@@ -51,29 +49,21 @@ import dev.chrisbanes.haze.hazeChild
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MovieDetailPoster(
+fun PosterMovieDetail(
     movieDetailEntity: MovieDetailEntity,
     openTrailerMovie: () -> Unit
 ) {
-    val heightScreen = ScreenUtil.getScreenHeight().pxToDp()
+    val heightScreen = ScreenUtil.getScreenHeight()
     val heightTotal = remember(heightScreen){ heightScreen.div(1.6f) }
-    val heightPoster = remember{
-        derivedStateOf {
-            heightTotal.div(2.6f)
-        }
-    }
+    val heightPoster = remember(heightTotal){ heightTotal.div(2.6f) }
     val hazeState = remember { HazeState() }
     var showButtonReview by rememberSaveable { mutableStateOf(false) }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(heightTotal)
-    ) {
+    Box(modifier = Modifier.fillMaxWidth().height(heightTotal)) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(heightTotal)
-                .padding(bottom = heightPoster.value / 2),
+                .padding(bottom = heightPoster / 2),
             shape = RoundedCornerShape(
                 bottomStartPercent = 5,
                 bottomEndPercent = 5
@@ -124,21 +114,14 @@ fun MovieDetailPoster(
             }
         }
 
-        Row(
-            Modifier
-                .padding(start = 15.dp)
-                .align(Alignment.BottomStart)
-        ) {
+        Row(modifier = Modifier.padding(start = 15.dp).align(Alignment.BottomStart)) {
             Card(
-                modifier = Modifier
-                    .width((heightPoster.value.div(1.5f)))
-                    .height(heightPoster.value),
+                modifier = Modifier.width((heightPoster.div(1.5f))).height(heightPoster),
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(1.dp, color = kColorViolet)
             ) {
                 GlideImage(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     model = "${Endpoints.baseUrlImage}${movieDetailEntity.posterPath}",
                     transition = CrossFade,
                     contentScale = ContentScale.Crop,
@@ -148,7 +131,7 @@ fun MovieDetailPoster(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 10.dp, top = (heightPoster.value / 2) + 10.dp, end = 10.dp),
+                    .padding(start = 10.dp, top = (heightPoster / 2) + 10.dp, end = 10.dp),
                 text = movieDetailEntity.title,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,

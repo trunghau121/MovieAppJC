@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun DrawerItem(
+fun DrawerItemView(
     item: NavigationDrawerData,
     onClick: () -> Unit,
 ) {

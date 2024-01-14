@@ -30,7 +30,7 @@ import com.movieappjc.presentation.screen.feedback.FeedbackDialog
 import com.movieappjc.theme.fontCustomNormal
 
 @Composable
-fun ErrorAppComponent(error: Pair<ErrorType, String>, onRetry: () -> Unit) {
+fun ErrorApp(error: Pair<ErrorType, String>, onRetry: () -> Unit) {
     val convertText = if (error.first == ErrorType.FROM_API) {
         error.second
     }else {
@@ -60,8 +60,8 @@ fun ErrorAppComponent(error: Pair<ErrorType, String>, onRetry: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                ButtonApp(text = LocalLanguages.current.feedbackText()) { feedbackDialog.value = true }
-                ButtonApp(text = LocalLanguages.current.retryText(), onClick = onRetry)
+                AppButton(text = LocalLanguages.current.feedbackText()) { feedbackDialog.value = true }
+                AppButton(text = LocalLanguages.current.retryText(), onClick = onRetry)
             }
         }
     }

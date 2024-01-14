@@ -20,13 +20,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MovieDetailHeader(isMovieFavorite: Boolean, onSaveMovie: () -> Unit, onBack: () -> Unit) {
+fun MovieDetailAppBar(isMovieFavorite: Boolean, onSaveMovie: () -> Unit, onBack: () -> Unit) {
     val tintColor = remember(isMovieFavorite) {
         if(isMovieFavorite) Color.Red else Color.White
     }
-    Column(
-        Modifier.statusBarsPadding()
-    ) {
+    Column(Modifier.statusBarsPadding()) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically

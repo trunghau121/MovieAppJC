@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppbarHome(drawerState: DrawerState, openSearchMovie: () -> Unit) {
+fun HomeAppBar(drawerState: DrawerState, openSearchMovie: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     TopAppBar(
         modifier = Modifier.statusBarsPadding(),
@@ -42,11 +42,7 @@ fun AppbarHome(drawerState: DrawerState, openSearchMovie: () -> Unit) {
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         navigationIcon = {
-            IconButton(
-                onClick = {
-                    coroutineScope.launch { drawerState.open() }
-                }
-            ) {
+            IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_menu),
                     contentDescription = "",

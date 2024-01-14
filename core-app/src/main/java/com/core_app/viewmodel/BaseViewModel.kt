@@ -11,40 +11,28 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel() {
-    open fun <T> executeTask(
+    fun <T> executeTask(
         request: () -> Flow<T>,
         success: (T) -> Unit,
-        error: (Throwable) -> Unit = {},
-        isShowError: Boolean = true
+        error: (Throwable) -> Unit = {}
     ): Job {
         return viewModelScope.launch {
             request().catch { exception ->
-                handleError(isShowError, exception, error)
+                error(exception)
             }.collect { response ->
                 success(response)
             }
         }
     }
 
-    protected fun <T> executeTask(
+    fun <T> executeTask(
         request: () -> Flow<Resource<T>>,
-        onSuccess: MutableStateFlow<Resource<T>>? = null,
-        isShowError: Boolean = true
+        onSuccess: MutableStateFlow<Resource<T>>
     ): Job {
         return executeTask(request, success = {
-            onSuccess?.value = it
+            onSuccess.value = it
         }, error = { exception ->
-            onSuccess?.value = Resource.Error(HandelError().getError(exception))
-        }, isShowError)
-    }
-
-    private fun handleError(
-        isShowError: Boolean,
-        throwable: Throwable,
-        onError: (Throwable) -> Unit
-    ) {
-        if (isShowError) {
-            onError(throwable)
-        }
+            onSuccess.value = Resource.Error(HandelError().getError(exception))
+        })
     }
 }

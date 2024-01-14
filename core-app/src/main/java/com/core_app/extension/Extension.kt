@@ -35,6 +35,11 @@ fun Int.pxToDp(): Dp {
 }
 
 @Composable
+fun Dp.dpToPx(): Float {
+    return with(LocalDensity.current) { this@dpToPx.toPx() }
+}
+
+@Composable
 fun <T> T.useDebounce(
     delayMillis: Long = 300L,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
