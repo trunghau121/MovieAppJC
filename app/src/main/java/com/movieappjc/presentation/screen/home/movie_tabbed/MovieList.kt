@@ -1,5 +1,7 @@
 package com.movieappjc.presentation.screen.home.movie_tabbed
 
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +19,7 @@ fun MovieList(
     onNavigateToMovieDetail: (Int) -> Unit,
 ) {
     val widthScreen = ScreenUtil.getScreenWidth()
-    val withItem =  widthScreen.div(2.2f)
+    val withItem =  widthScreen.div(2.3f)
     val heightItem = withItem.times(1.5f)
 
     val glidePreload = rememberGlidePreloadingData(
@@ -30,8 +32,8 @@ fun MovieList(
         items(glidePreload.size, key = { movies()[it].id }) {
             val (item, preloadRequest) = glidePreload[it]
             MovieItem(
+                modifier = Modifier.width(withItem).fillMaxHeight(),
                 movieEntity = item,
-                withItem = withItem,
                 preloadRequest = { preloadRequest },
                 onNavigateToMovieDetail = onNavigateToMovieDetail
             )

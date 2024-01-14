@@ -3,6 +3,8 @@ package com.movieappjc.presentation.screen.favorite
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
@@ -48,9 +50,8 @@ fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
                     items(glidePreload.size, key = { movies[it].id }) {
                         val (item, preloadRequest) = glidePreload[it]
                         FavoriteMovieItem(
+                            modifier = Modifier.width(widthItem).height(heightItem),
                             movieEntity = item,
-                            widthItem = widthItem,
-                            heightItem = heightItem,
                             preloadRequest = { preloadRequest },
                             onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail,
                             onDelete = viewModel::deleteFavoriteMovie

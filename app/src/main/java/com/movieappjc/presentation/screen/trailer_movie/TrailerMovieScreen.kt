@@ -1,6 +1,7 @@
 package com.movieappjc.presentation.screen.trailer_movie
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,6 +36,7 @@ import com.movieappjc.presentation.components.ErrorApp
 import com.movieappjc.presentation.components.CircularProgressBar
 import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
 import com.movieappjc.theme.fontCustomSemiBold
+import com.movieappjc.theme.kColorViolet
 
 @Composable
 fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
@@ -94,7 +96,9 @@ private fun ListTrailer(
         items(glidePreload.size, key = { videos()[it].key }) { index ->
             val (item, preloadRequest) = glidePreload[index]
             TrailerItem(
-                videoId = videoId,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(if (item.key == videoId) kColorViolet else Color.Transparent),
                 item = item,
                 sizeItem = sizeItem,
                 preloadRequest = { preloadRequest }

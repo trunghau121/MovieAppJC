@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,24 +28,18 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movieappjc.domain.entities.VideoEntity
 import com.movieappjc.theme.fontCustomMedium
-import com.movieappjc.theme.kColorViolet
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun TrailerItem(
-    videoId: String,
+    modifier: Modifier = Modifier,
     item: VideoEntity,
     sizeItem: Dp,
     preloadRequest: () -> RequestBuilder<Drawable>,
     onClick: (String) -> Unit
 ) {
-    val backgroundColor = remember(videoId) {
-        if (item.key == videoId) kColorViolet else Color.Transparent
-    }
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = backgroundColor)
+        modifier = modifier
             .clickable { onClick(item.key) }
             .padding(horizontal = 15.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically

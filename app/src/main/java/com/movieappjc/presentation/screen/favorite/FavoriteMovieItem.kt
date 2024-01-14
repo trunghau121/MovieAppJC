@@ -5,10 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -19,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.CrossFade
@@ -31,18 +28,14 @@ import com.movieappjc.theme.kColorViolet
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun FavoriteMovieItem(
+    modifier: Modifier = Modifier,
     movieEntity: MovieEntity,
-    widthItem: Dp,
-    heightItem: Dp,
     preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit,
     onDelete: (Int) -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .width(widthItem)
-            .height(heightItem)
-            .padding(5.dp).clickable { onNavigateToMovieDetail(movieEntity.id) },
+        modifier = modifier.padding(5.dp).clickable { onNavigateToMovieDetail(movieEntity.id) },
         shape = RoundedCornerShape(15.dp),
         border = BorderStroke(2.dp, color = kColorViolet)
     ) {

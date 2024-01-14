@@ -16,7 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +36,7 @@ fun TimeMovieDetail(movieDetailEntity: MovieDetailEntity) {
     ) {
         Icon(
             modifier = Modifier.size(18.dp),
-            painter = painterResource(R.drawable.icon_date),
+            imageVector = ImageVector.vectorResource(R.drawable.icon_date),
             contentDescription = "",
             tint = Color.LightGray,
         )
@@ -54,7 +55,7 @@ fun TimeMovieDetail(movieDetailEntity: MovieDetailEntity) {
         Spacer(modifier = Modifier.width(10.dp))
         Icon(
             modifier = Modifier.size(18.dp),
-            painter = painterResource(R.drawable.icon_time),
+            imageVector = ImageVector.vectorResource(R.drawable.icon_time),
             contentDescription = "",
             tint = Color.LightGray,
         )

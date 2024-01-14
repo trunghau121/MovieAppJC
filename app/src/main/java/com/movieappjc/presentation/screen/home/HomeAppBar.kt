@@ -16,7 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.movieappjc.R
@@ -44,7 +45,7 @@ fun HomeAppBar(drawerState: DrawerState, openSearchMovie: () -> Unit) {
         navigationIcon = {
             IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_menu),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_menu),
                     contentDescription = "",
                     tint = Color.White,
                 )
