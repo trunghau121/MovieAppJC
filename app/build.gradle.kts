@@ -12,6 +12,11 @@ val keystoreProperties = project.rootProject.file("key.properties")
 val properties = Properties()
 properties.load(keystoreProperties.inputStream())
 
+val appVersion = project.rootProject.file("version.txt").readText().trim()
+fun getVersionCode(): Int {
+    val (versionMajor, versionMinor, versionPatch) = appVersion.split(".")
+    return versionMajor.toInt() * 100000000 + versionMinor.toInt() * 10000 + versionPatch.toInt()
+}
 
 android {
     namespace = "com.movieappjc"
@@ -20,8 +25,8 @@ android {
     defaultConfig {
         applicationId = "com.movieappjc"
         minSdk = 24
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = getVersionCode()
+        versionName = appVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -47,10 +52,12 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
         if (project.findProperty("enableComposeCompilerReports") == "true") {
@@ -63,17 +70,21 @@ android {
             )
         }
     }
+
     buildFeatures {
         buildConfig = true
     }
+
     buildFeatures {
         compose = true
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.4"
     }

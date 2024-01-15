@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName
 import com.movieappjc.data.local.MovieTable
 import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.domain.entities.MovieEntity
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class MovieDetailModel(
     @SerializedName("adult")
     val adult: Boolean?,

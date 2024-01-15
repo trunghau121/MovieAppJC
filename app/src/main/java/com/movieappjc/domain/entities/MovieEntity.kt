@@ -1,8 +1,9 @@
 package com.movieappjc.domain.entities
 
+import android.os.Parcelable
 import com.movieappjc.common.constants.Endpoints
 
-interface MovieEntity {
+interface MovieEntity : Parcelable {
     val posterPath: String
     val id: Int
     val backdropPath: String

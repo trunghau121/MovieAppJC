@@ -1,6 +1,8 @@
 package com.movieappjc.domain.entities
 
-interface VideoEntity {
+import android.os.Parcelable
+
+interface VideoEntity : Parcelable {
     val key: String
     val name: String
     val type: String

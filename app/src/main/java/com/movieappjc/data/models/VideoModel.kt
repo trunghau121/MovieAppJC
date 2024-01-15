@@ -2,7 +2,9 @@ package com.movieappjc.data.models
 
 import com.google.gson.annotations.SerializedName
 import com.movieappjc.domain.entities.VideoEntity
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class VideoModel(
     @SerializedName("id")
     val id: String?,

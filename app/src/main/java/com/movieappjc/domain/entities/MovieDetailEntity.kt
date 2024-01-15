@@ -1,6 +1,8 @@
 package com.movieappjc.domain.entities
 
-interface MovieDetailEntity {
+import android.os.Parcelable
+
+interface MovieDetailEntity : Parcelable {
     val id: Int
     val title: String
     val overview: String

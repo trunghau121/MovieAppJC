@@ -1,8 +1,9 @@
 package com.movieappjc.domain.entities
 
+import android.os.Parcelable
 import com.movieappjc.common.constants.Endpoints
 
-interface CastEntity {
+interface CastEntity : Parcelable {
     val id: Int
     val name: String
     val character: String
