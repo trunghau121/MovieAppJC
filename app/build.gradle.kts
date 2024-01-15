@@ -15,7 +15,7 @@ properties.load(keystoreProperties.inputStream())
 val appVersion = project.rootProject.file("version.txt").readText().trim()
 fun getVersionCode(): Int {
     val (versionMajor, versionMinor, versionPatch) = appVersion.split(".")
-    return versionMajor.toInt() * 100000000 + versionMinor.toInt() * 10000 + versionPatch.toInt()
+    return versionMajor.toInt() * 100 + versionMinor.toInt() * 10 + versionPatch.toInt()
 }
 
 android {
