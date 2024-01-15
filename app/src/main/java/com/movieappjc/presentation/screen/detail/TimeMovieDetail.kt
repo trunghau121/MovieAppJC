@@ -24,13 +24,16 @@ import androidx.compose.ui.unit.sp
 import com.movieappjc.R
 import com.movieappjc.common.constants.minutesText
 import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun TimeMovieDetail(movieDetailEntity: MovieDetailEntity) {
+fun TimeMovieDetail(
+    modifier: Modifier = Modifier,
+    releaseDate: String,
+    duration: Int
+) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 30.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -41,7 +44,7 @@ fun TimeMovieDetail(movieDetailEntity: MovieDetailEntity) {
             tint = Color.LightGray,
         )
         Text(
-            text = movieDetailEntity.releaseDate,
+            text = releaseDate,
             modifier = Modifier.padding(start = 4.dp, end = 10.dp),
             color = Color.LightGray,
             style = MaterialTheme.typography.fontCustomMedium,
@@ -60,7 +63,7 @@ fun TimeMovieDetail(movieDetailEntity: MovieDetailEntity) {
             tint = Color.LightGray,
         )
         Text(
-            text = "${movieDetailEntity.duration} ${LocalLanguages.current.minutesText()}",
+            text = "$duration ${LocalLanguages.current.minutesText()}",
             modifier = Modifier.padding(start = 4.dp),
             color = Color.LightGray,
             style = MaterialTheme.typography.fontCustomMedium,

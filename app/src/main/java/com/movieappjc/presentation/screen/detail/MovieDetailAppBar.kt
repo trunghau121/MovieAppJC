@@ -1,12 +1,10 @@
 package com.movieappjc.presentation.screen.detail
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -20,38 +18,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MovieDetailAppBar(isMovieFavorite: Boolean, onSaveMovie: () -> Unit, onBack: () -> Unit) {
+fun MovieDetailAppBar(
+    modifier: Modifier = Modifier,
+    isMovieFavorite: () -> Boolean,
+    onSaveMovie: () -> Unit,
+    onBack: () -> Unit
+) {
     val tintColor = remember(isMovieFavorite) {
-        if(isMovieFavorite) Color.Red else Color.White
+        if(isMovieFavorite()) Color.Red else Color.White
     }
-    Column(Modifier.statusBarsPadding()) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            modifier = Modifier.padding(10.dp),
+            onClick = onBack
         ) {
-            IconButton(
-                modifier = Modifier.padding(10.dp),
-                onClick = onBack
-            ) {
-                Icon(
-                    modifier = Modifier.size(28.dp),
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "",
-                    tint = Color.White,
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(
-                modifier = Modifier.padding(10.dp),
-                onClick = onSaveMovie
-            ) {
-                Icon(
-                    modifier = Modifier.size(28.dp),
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription = "",
-                    tint = tintColor
-                )
-            }
+            Icon(
+                modifier = Modifier.size(28.dp),
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "",
+                tint = Color.White,
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(
+            modifier = Modifier.padding(10.dp),
+            onClick = onSaveMovie
+        ) {
+            Icon(
+                modifier = Modifier.size(28.dp),
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = "",
+                tint = tintColor
+            )
         }
     }
 }

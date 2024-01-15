@@ -92,7 +92,6 @@ android {
 
 dependencies {
     implementation(project(":core-app"))
-    implementation(libs.haze.jetpack.compose)
     implementation(libs.readmore.material)
     implementation(libs.youtubeplayer)
     // Room

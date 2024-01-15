@@ -36,7 +36,7 @@ fun MovieItem(
     onNavigateToMovieDetail: (Int) -> Unit
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 10.dp),
+        modifier = modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -54,7 +54,7 @@ fun MovieItem(
             primaryRequest.thumbnail(preloadRequest())
         }
         Text(
-            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            modifier = Modifier.fillMaxWidth().padding(6.dp),
             text = movieEntity.title,
             color = Color.White,
             style = MaterialTheme.typography.fontCustomSemiBold,

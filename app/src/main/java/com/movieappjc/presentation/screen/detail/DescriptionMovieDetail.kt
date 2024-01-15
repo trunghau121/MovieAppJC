@@ -19,12 +19,12 @@ import com.webtoonscorp.android.readmore.foundation.ToggleArea
 import com.webtoonscorp.android.readmore.material.ReadMoreText
 
 @Composable
-fun DescriptionMovieDetail(overview: String) {
+fun DescriptionMovieDetail(modifier: Modifier = Modifier, overview: String) {
     val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false) }
     ReadMoreText(
         text = overview,
         expanded = expanded,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onExpandedChange = onExpandedChange,
         contentPadding = PaddingValues(start = 15.dp, top = 15.dp, end = 15.dp),
         color = Color.LightGray,

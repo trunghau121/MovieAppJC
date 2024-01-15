@@ -17,24 +17,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
-import com.core_app.utils.ImmutableHolder
 import com.movieappjc.common.constants.castText
 import com.movieappjc.common.localization.LocalLanguages
 import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun CastCrewList(cast: ImmutableHolder<List<CastEntity>>) {
+fun CastCrewList(modifier: Modifier = Modifier, cast: () -> List<CastEntity>) {
     val sizeItem = 60.dp
+    val casts = cast()
     val glidePreload = rememberGlidePreloadingData(
-        data = cast(), preloadImageSize = Size(sizeItem.value, sizeItem.value)
+        data = casts, preloadImageSize = Size(sizeItem.value, sizeItem.value)
     ) { item, requestBuilder ->
         requestBuilder.load(item.getProfileUrl())
     }
-    Column(modifier = Modifier.height(210.dp)) {
+    Column(modifier = modifier.height(210.dp)) {
         Text(
             text = LocalLanguages.current.castText(),
-            modifier = Modifier.padding(start = 15.dp, top = 20.dp),
+            modifier = Modifier.padding(start = 15.dp, top = 10.dp),
             color = Color.Gray,
             style = MaterialTheme.typography.fontCustomMedium,
             fontSize = 17.sp,
@@ -46,7 +46,7 @@ fun CastCrewList(cast: ImmutableHolder<List<CastEntity>>) {
             rows = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(glidePreload.size, key = { cast()[it].id }) {
+            items(glidePreload.size, key = { casts[it].id }) {
                 val (item, preloadRequest) = glidePreload[it]
                 CastCrewItem(
                     castEntity = item,

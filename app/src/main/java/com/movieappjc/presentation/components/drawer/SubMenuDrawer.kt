@@ -29,7 +29,7 @@ fun SubMenuDrawer(onClickLanguage: (Locale) -> Unit){
                 .clickable {
                     onClickLanguage(VIETNAMESE)
                 }
-                .padding(start = 40.dp, top = 15.dp, end = 10.dp, bottom = 15.dp),
+                .padding(start = 40.dp, top = 10.dp, end = 10.dp, bottom = 10.dp),
             text = "Vietnamese",
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,

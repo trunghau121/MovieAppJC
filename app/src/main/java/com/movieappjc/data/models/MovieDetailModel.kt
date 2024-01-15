@@ -1,5 +1,6 @@
 package com.movieappjc.data.models
 
+import androidx.compose.runtime.Stable
 import com.google.gson.annotations.SerializedName
 import com.movieappjc.data.local.MovieTable
 import com.movieappjc.domain.entities.MovieDetailEntity
@@ -7,6 +8,7 @@ import com.movieappjc.domain.entities.MovieEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Stable
 data class MovieDetailModel(
     @SerializedName("adult")
     val adult: Boolean?,
@@ -47,7 +49,9 @@ data class MovieDetailModel(
     @SerializedName("vote_average")
     override val voteAverage: Double,
     @SerializedName("vote_count")
-    val voteCount: Int?
+    val voteCount: Int?,
+    @SerializedName("genres")
+    override val genres: List<GenreModel>
 ): MovieDetailEntity {
     override fun toMovie(): MovieEntity {
         return MovieTable(

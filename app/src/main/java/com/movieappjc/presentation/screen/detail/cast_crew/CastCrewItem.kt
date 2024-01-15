@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -61,16 +62,24 @@ fun CastCrewItem(
             Text(
                 text = castEntity.name,
                 color = Color.White,
-                style = MaterialTheme.typography.fontCustomMedium,
+                style = MaterialTheme.typography.fontCustomMedium.copy(
+                    platformStyle = PlatformTextStyle(
+                        includeFontPadding = false
+                    )
+                ),
                 fontSize = 15.sp,
                 textAlign = TextAlign.Start,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = castEntity.character,
                 color = Color.LightGray,
-                style = MaterialTheme.typography.fontCustomMedium,
+                style = MaterialTheme.typography.fontCustomMedium.copy(
+                    platformStyle = PlatformTextStyle(
+                        includeFontPadding = false
+                    )
+                ),
                 fontSize = 12.sp,
                 textAlign = TextAlign.Start,
                 maxLines = 1,

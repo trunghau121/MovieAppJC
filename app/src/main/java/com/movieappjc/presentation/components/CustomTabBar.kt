@@ -40,10 +40,7 @@ fun CustomTabBar(items: () -> List<String>,
     ) {
 
         items().forEachIndexed { index, title ->
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(100.dp)) {
+            Column(modifier = Modifier.fillMaxHeight().width(100.dp)) {
                 MyTabItem(
                     modifier = Modifier,
                     onClick = {
@@ -52,7 +49,7 @@ fun CustomTabBar(items: () -> List<String>,
                     title = title
                 )
                 if (index == selectedItemIndex) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -86,9 +83,7 @@ private fun MyTabItem(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
             text = title,
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,

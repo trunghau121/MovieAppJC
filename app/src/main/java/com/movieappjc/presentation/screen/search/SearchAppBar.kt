@@ -26,10 +26,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,7 @@ import com.movieappjc.theme.fontCustomMedium
 import com.movieappjc.theme.fontCustomNormal
 import com.movieappjc.theme.kColorViolet
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchAppBar(
     valueText: String,
@@ -76,7 +79,10 @@ fun SearchAppBar(
             keyboardActions = KeyboardActions { keyboardController?.hide() },
             textStyle = MaterialTheme.typography.fontCustomMedium.copy(
                 fontSize = 16.sp,
-                color = Color.White
+                color = Color.White,
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false
+                )
             ),
             singleLine = true
         ) { innerTextField ->
@@ -106,7 +112,11 @@ fun SearchAppBar(
                         modifier = Modifier.fillMaxWidth(),
                         color = Color.Gray,
                         fontSize = 16.sp,
-                        style = MaterialTheme.typography.fontCustomNormal,
+                        style = MaterialTheme.typography.fontCustomNormal.copy(
+                            platformStyle = PlatformTextStyle(
+                                includeFontPadding = false
+                            )
+                        ),
                     )
                 }
 
