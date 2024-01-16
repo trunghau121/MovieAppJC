@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MovieDetailAppBar(
     modifier: Modifier = Modifier,
-    isMovieFavorite: () -> Boolean,
+    isMovieFavorite: Boolean,
     onSaveMovie: () -> Unit,
     onBack: () -> Unit
 ) {
     val tintColor = remember(isMovieFavorite) {
-        if(isMovieFavorite()) Color.Red else Color.White
+        if(isMovieFavorite) Color.Red else Color.White
     }
     Row(
         modifier = modifier,

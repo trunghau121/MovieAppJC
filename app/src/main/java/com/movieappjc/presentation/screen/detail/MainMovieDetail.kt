@@ -1,11 +1,8 @@
 package com.movieappjc.presentation.screen.detail
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,38 +17,25 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.core_app.repository.Resource
 import com.movieappjc.R
-import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.presentation.screen.detail.cast_crew.CastCrewList
 import com.movieappjc.presentation.screen.detail.genres.GenreList
-import com.movieappjc.presentation.utils.ComponentUtil
-import com.movieappjc.theme.kColorVulcan
 
 @Composable
 fun MainMovieDetail(
     modifier: Modifier = Modifier,
     data: MovieDetailEntity,
     castState: () -> Resource<List<CastEntity>>,
-    isMovieFavorite: Boolean,
-    openTrailerMovie: () -> Unit,
-    saveFavoriteMovie: () -> Unit,
-    onBack: () -> Unit,
+    openTrailerMovie: () -> Unit
 ) {
 
-    val gradientColors = remember {
-        mutableListOf(
-            kColorVulcan.copy(alpha = 0.2f),
-            kColorVulcan.copy(alpha = 0.1f),
-            kColorVulcan.copy(alpha = 0.0f)
-        )
-    }
     var castList by remember {
         mutableStateOf(listOf<CastEntity>())
     }
     ConstraintLayout(modifier = modifier) {
-        val (backdrop, appbar, gradient, trailer,
-            poster, title , review, time,
+        val (backdrop, trailer, poster,
+            title, review, time,
             overview, genres, cast) = createRefs()
         val startGuideline = createGuidelineFromStart(16.dp)
         val endGuideline = createGuidelineFromEnd(16.dp)
@@ -66,21 +50,6 @@ fun MainMovieDetail(
             contentDescription = data.title
         )
 
-        Box(
-            modifier = Modifier
-                .background(
-                    brush = ComponentUtil.createGradientBrush(gradientColors)
-                )
-                .constrainAs(gradient) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(appbar.bottom)
-                    width = Dimension.fillToConstraints
-                    height = Dimension.fillToConstraints
-                }
-        )
-
         Image(
             modifier = Modifier
                 .size(50.dp)
@@ -88,19 +57,6 @@ fun MainMovieDetail(
                 .constrainAs(trailer) { centerTo(backdrop) },
             imageVector = ImageVector.vectorResource(id = R.drawable.icon_play),
             contentDescription = ""
-        )
-
-        MovieDetailAppBar(
-            modifier = Modifier
-                .padding(top = ScreenUtil.getStatusBarHeight())
-                .constrainAs(appbar) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-            isMovieFavorite = { isMovieFavorite },
-            onSaveMovie = { saveFavoriteMovie() },
-            onBack = { onBack() }
         )
 
         PosterMovieDetail(

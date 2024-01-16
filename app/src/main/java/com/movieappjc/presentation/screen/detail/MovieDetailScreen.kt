@@ -1,17 +1,30 @@
 package com.movieappjc.presentation.screen.detail
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.core_app.extension.pxToDp
 import com.core_app.repository.Resource
+import com.movieappjc.common.screenutil.ScreenUtil
 import com.movieappjc.presentation.components.CircularProgressBar
 import com.movieappjc.presentation.components.ErrorApp
+import com.movieappjc.presentation.utils.ComponentUtil
 import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
+import com.movieappjc.theme.kColorVulcan
 
 @Composable
 fun MovieDetailScreen(
@@ -21,21 +34,48 @@ fun MovieDetailScreen(
     val castState by viewModel.castMovie.collectAsStateWithLifecycle()
     val stateMovieDetail = viewModel.movieDetail.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    val statusBarHeight = ScreenUtil.getStatusBarHeight()
+    val gradientColors = remember {
+        mutableListOf(
+            kColorVulcan.copy(alpha = 0.2f),
+            kColorVulcan.copy(alpha = 0.1f),
+            kColorVulcan.copy(alpha = 0.0f)
+        )
+    }
+
+    var gradientHeight by remember { mutableIntStateOf(0) }
 
     when (val state = stateMovieDetail.value) {
         is Resource.Success -> {
             val data = state.data
-            MainMovieDetail(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState),
-                data = data,
-                castState = { castState },
-                isMovieFavorite = isMovieFavorite,
-                openTrailerMovie = viewModel::openTrailerMovie,
-                saveFavoriteMovie = viewModel::saveFavoriteMovie,
-                onBack = viewModel::onBack
-            )
+            Box(modifier = Modifier.fillMaxSize()){
+                MainMovieDetail(
+                    modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+                    data = data,
+                    castState = { castState },
+                    openTrailerMovie = viewModel::openTrailerMovie
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(gradientHeight.pxToDp() + statusBarHeight)
+                        .background(brush = ComponentUtil.createGradientBrush(gradientColors))
+                )
+
+                MovieDetailAppBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = statusBarHeight)
+                        .onGloballyPositioned { coordinates ->
+                            gradientHeight = coordinates.size.height
+                        },
+                    isMovieFavorite = isMovieFavorite,
+                    onSaveMovie = viewModel::saveFavoriteMovie,
+                    onBack = viewModel::onBack
+                )
+
+            }
         }
 
         is Resource.Error -> {
