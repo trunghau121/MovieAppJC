@@ -3,7 +3,7 @@
 <img src="https://github.com/trunghau121/MovieAppJC/assets/14820422/a5d2032c-8d7c-4317-863b-69361d83e862" width="300" height="630">
 <img src="https://github.com/trunghau121/MovieAppJC/assets/14820422/5b50fb3a-0b14-42b5-8da7-81f1762700ba" width="300" height="630">
 <img src="https://github.com/trunghau121/MovieAppJC/assets/14820422/f6f201f3-8a0b-4db5-81a7-8f33c00be5dc" width="300" height="630">
-<img src="https://github.com/trunghau121/MovieAppJC/assets/14820422/03a9646a-a860-4533-9100-2ad6fb0c1998" width="300" height="630">
+<img src="https://github.com/trunghau121/MovieAppJC/assets/14820422/117c14c2-3ed0-4458-b103-3a0e502b0c70" width="300" height="630">
 <img src="https://github.com/trunghau121/MovieAppJC/assets/14820422/a2f4b410-7d64-4185-81de-e55997923aa4" width="300" height="630">
 <img src="https://github.com/trunghau121/MovieAppJC/assets/14820422/ade5e230-baf0-4540-b68f-7dfb0863c0e9" width="300" height="630">
 
