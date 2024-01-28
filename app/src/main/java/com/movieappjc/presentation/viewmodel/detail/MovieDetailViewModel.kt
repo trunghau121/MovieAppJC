@@ -26,9 +26,9 @@ class MovieDetailViewModel @Inject constructor(
     private val detailMovieUseCase: DetailMovieUseCase,
     private val getCastCrew: CastCrewUseCase,
     private val favoriteMovie: FavoriteMovieUseCase,
-    private val appNavigator: AppNavigator,
+    appNavigator: AppNavigator,
     savedStateHandle: SavedStateHandle
-) : BaseViewModel() {
+) : BaseViewModel(appNavigator) {
     private val _movieDetail = MutableStateFlow<Resource<MovieDetailEntity>>(Resource.Loading())
     val movieDetail = _movieDetail.asStateFlow()
     private val _castMovie = MutableStateFlow<Resource<List<CastEntity>>>(Resource.Loading())
@@ -80,9 +80,9 @@ class MovieDetailViewModel @Inject constructor(
         }
     }
 
-    fun onBack() {
+    fun openPersonDetailScreen(personId: Int) {
         viewModelScope.launch {
-            appNavigator.navigateBack()
+            appNavigator.navigateTo(DestinationApp.PersonDetailScreen(personId))
         }
     }
 

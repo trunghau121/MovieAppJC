@@ -18,8 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
     private val favoriteMovie: FavoriteMovieUseCase,
-    private val appNavigator: AppNavigator
-) : BaseViewModel() {
+    appNavigator: AppNavigator
+) : BaseViewModel(appNavigator) {
     private val _movies = MutableStateFlow<Resource<List<MovieEntity>>>(Resource.Loading())
     val movies = _movies.asStateFlow()
 
@@ -31,12 +31,6 @@ class FavoriteViewModel @Inject constructor(
         viewModelScope.launch {
             favoriteMovie.deleteFavoriteMovie(movieId)
             getFavoriteMovies()
-        }
-    }
-
-    fun onBack(){
-        viewModelScope.launch {
-            appNavigator.navigateBack()
         }
     }
 

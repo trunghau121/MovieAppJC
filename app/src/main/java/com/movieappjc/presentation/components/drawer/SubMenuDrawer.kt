@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,13 +29,13 @@ fun SubMenuDrawer(onClickLanguage: (Locale) -> Unit){
                 .clickable {
                     onClickLanguage(VIETNAMESE)
                 }
-                .padding(start = 40.dp, top = 10.dp, end = 10.dp, bottom = 10.dp),
+                .padding(start = 40.dp, top = 15.dp, end = 10.dp, bottom = 15.dp),
             text = "Vietnamese",
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
             fontSize = 16.sp
         )
-        Divider(color = kColorPrimarySecond)
+        HorizontalDivider(color = kColorPrimarySecond)
         Text(
             modifier = Modifier
                 .padding(start = 40.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)

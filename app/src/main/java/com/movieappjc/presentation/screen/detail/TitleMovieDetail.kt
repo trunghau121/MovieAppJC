@@ -14,7 +14,7 @@ import com.movieappjc.theme.fontCustomSemiBold
 @Composable
 fun TitleMovieDetail(modifier: Modifier = Modifier, title: String) {
     Text(
-        modifier = modifier.padding(horizontal = 10.dp),
+        modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp),
         text = title,
         color = Color.White,
         style = MaterialTheme.typography.fontCustomSemiBold,

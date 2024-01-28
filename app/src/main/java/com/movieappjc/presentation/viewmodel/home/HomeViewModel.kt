@@ -25,8 +25,8 @@ class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase
                                         private val getPopular: PopularUseCase,
                                         private val getPlayingNow: PlayingNowUseCase,
                                         private val comingSoonUseCase: ComingSoonUseCase,
-                                        private val appNavigator: AppNavigator
-    ) : BaseViewModel() {
+                                        appNavigator: AppNavigator
+    ) : BaseViewModel(appNavigator) {
     private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(Loading())
     val movies = _movies.asStateFlow()
 

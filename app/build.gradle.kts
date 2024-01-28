@@ -25,6 +25,7 @@ android {
     defaultConfig {
         applicationId = "com.movieappjc"
         minSdk = 24
+        targetSdk = 34
         versionCode = getVersionCode()
         versionName = appVersion
 

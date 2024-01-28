@@ -1,0 +1,106 @@
+{
+  ConstraintSets: {
+    end: {
+      profile_avatar: {
+        width: 45,
+        height: 45,
+        start: ["icon_back", "end"],
+        top: ["status_bar", "bottom"],
+        bottom: ["icon_back", "bottom"]
+      },
+      gradient: {
+        width: "spread",
+        height: 0,
+        start: ["parent", "start"],
+        end: ["parent", "end"],
+        top: ["parent", "top"]
+      },
+      status_bar: {
+        width: "spread",
+        start: ["parent", "start"],
+        end: ["parent", "end"],
+        top: ["parent", "top"]
+      },
+      icon_back: {
+        width: 45,
+        height: 45,
+        start: ["parent", "start"],
+        top: ["status_bar", "bottom", 10]
+      },
+      profile_name: {
+        width: "spread",
+        top: ["profile_avatar", "top"],
+        bottom: ["profile_avatar", "bottom"],
+        start: ["profile_avatar", "end", 10],
+        end: ["parent", "end", 10]
+      },
+      profile_birthday: {
+        width: "wrap",
+        top: ["profile_name", "bottom", 5],
+        start: ["parent", "end", 10],
+        end: ["parent", "end", 10],
+        alpha: 0.0,
+        visibility: "gone"
+      },
+      profile_place: {
+        width: "wrap",
+        top: ["profile_birthday", "bottom"],
+        start: ["parent", "end", 10],
+        end: ["parent", "end", 10],
+        alpha: 0.0,
+        visibility: "gone"
+      }
+    },
+    start: {
+      profile_avatar: {
+        width: "spread",
+        height: "1:1",
+        start: ["parent", "start"],
+        top: ["parent", "top"],
+        end: ["parent", "end"]
+      },
+      gradient: {
+        width: "spread",
+        height: "spread",
+        start: ["parent", "start"],
+        end: ["parent", "end"],
+        top: ["parent", "top"],
+        bottom: ['icon_back', 'bottom']
+      },
+      status_bar: {
+        width: "spread",
+        start: ["parent", "start"],
+        end: ["parent", "end"],
+        top: ["parent", "top"]
+      },
+      icon_back: {
+        width: 45,
+        height: 45,
+        start: ["parent", "start"],
+        top: ["status_bar", "bottom", 10]
+      },
+      profile_name: {
+        width: "wrap",
+        top: ["profile_avatar", "bottom", 10],
+        start: ["parent", "start", 10],
+        end: ["parent", "end", 10]
+      },
+      profile_birthday: {
+        width: "wrap",
+        top: ["profile_name", "bottom", 5],
+        start: ["parent", "start", 10],
+        end: ["parent", "end", 10],
+        alpha: 1.0,
+        visibility: "visible"
+      },
+      profile_place: {
+        width: "wrap",
+        top: ["profile_birthday", "bottom"],
+        start: ["parent", "start", 10],
+        end: ["parent", "end", 10],
+        alpha: 1.0,
+        visibility: "visible"
+      }
+    }
+  }
+}

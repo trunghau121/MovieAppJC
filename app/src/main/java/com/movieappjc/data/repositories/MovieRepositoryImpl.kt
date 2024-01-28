@@ -8,6 +8,7 @@ import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.domain.entities.MoviesResultEntity
+import com.movieappjc.domain.entities.PersonEntity
 import com.movieappjc.domain.entities.VideoEntity
 import com.movieappjc.domain.repositories.MovieRepository
 import kotlinx.coroutines.flow.Flow
@@ -79,6 +80,23 @@ class MovieRepositoryImpl(
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
             movieRemote.searchMovie(query = name, language = language)
+        }
+    }
+
+    override fun getPersonDetail(personId: Int): Flow<Resource<PersonEntity>> {
+        return getResult {
+            movieRemote.getPersonDetail(personId = personId, language = "")
+        }
+    }
+
+    override fun getMovieCredits(personId: Int): Flow<Resource<List<MovieEntity>>> {
+        return getResult {
+            val language = appLocalDataSource.getPreferredLanguage().first().language
+            movieRemote.getMovieCredits(personId = personId, language = language)
+        }.transform {
+            if (it is Resource.Success) {
+                emit(Resource.Success(it.data.cast))
+            }
         }
     }
 

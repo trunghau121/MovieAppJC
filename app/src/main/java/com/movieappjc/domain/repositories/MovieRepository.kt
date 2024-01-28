@@ -6,6 +6,7 @@ import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.domain.entities.MoviesResultEntity
+import com.movieappjc.domain.entities.PersonEntity
 import com.movieappjc.domain.entities.VideoEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -19,6 +20,8 @@ abstract class MovieRepository: BaseRepository() {
     abstract fun getCastCrew(movieId: Int): Flow<Resource<List<CastEntity>>>
     abstract fun getVideos(movieId: Int): Flow<Resource<List<VideoEntity>>>
     abstract fun searchMovie(name: String): Flow<Resource<MoviesResultEntity>>
+    abstract fun getPersonDetail(personId: Int): Flow<Resource<PersonEntity>>
+    abstract fun getMovieCredits(personId: Int): Flow<Resource<List<MovieEntity>>>
 
     // Functions for Local resources
     abstract suspend fun saveMovie(movieEntity: MovieEntity)

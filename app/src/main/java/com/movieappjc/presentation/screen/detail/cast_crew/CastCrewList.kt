@@ -23,7 +23,11 @@ import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.theme.fontCustomMedium
 
 @Composable
-fun CastCrewList(modifier: Modifier = Modifier, cast: () -> List<CastEntity>) {
+fun CastCrewList(
+    modifier: Modifier = Modifier,
+    cast: () -> List<CastEntity>,
+    openPersonDetailScreen: (Int) -> Unit
+) {
     val sizeItem = 60.dp
     val casts = cast()
     val glidePreload = rememberGlidePreloadingData(
@@ -34,7 +38,7 @@ fun CastCrewList(modifier: Modifier = Modifier, cast: () -> List<CastEntity>) {
     Column(modifier = modifier.height(210.dp)) {
         Text(
             text = LocalLanguages.current.castText(),
-            modifier = Modifier.padding(start = 15.dp, top = 10.dp),
+            modifier = Modifier.padding(start = 15.dp, top = 15.dp),
             color = Color.Gray,
             style = MaterialTheme.typography.fontCustomMedium,
             fontSize = 17.sp,
@@ -51,7 +55,8 @@ fun CastCrewList(modifier: Modifier = Modifier, cast: () -> List<CastEntity>) {
                 CastCrewItem(
                     castEntity = item,
                     sizeItem = sizeItem,
-                    preloadRequest = { preloadRequest }
+                    preloadRequest = { preloadRequest },
+                    openPersonDetailScreen = openPersonDetailScreen
                 )
             }
         }

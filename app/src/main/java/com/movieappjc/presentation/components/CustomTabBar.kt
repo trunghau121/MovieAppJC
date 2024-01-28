@@ -83,7 +83,7 @@ private fun MyTabItem(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 5.dp),
             text = title,
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,

@@ -1,0 +1,134 @@
+package com.movieappjc.presentation.screen.person
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.MotionLayout
+import androidx.constraintlayout.compose.MotionScene
+import com.bumptech.glide.integration.compose.CrossFade
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.movieappjc.R
+import com.movieappjc.common.screenutil.ScreenUtil
+import com.movieappjc.domain.entities.PersonEntity
+import com.movieappjc.presentation.utils.ComponentUtil
+import com.movieappjc.theme.fontCustomMedium
+import com.movieappjc.theme.fontCustomSemiBold
+import com.movieappjc.theme.kColorVulcan
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ProfileHeader(
+    personEntity: PersonEntity,
+    progress: () -> Float,
+    onBack: () -> Unit
+) {
+
+    val context = LocalContext.current
+    val motionScene = remember {
+        context.resources
+            .openRawResource(R.raw.header_person_motion_scene)
+            .readBytes()
+            .decodeToString()
+    }
+
+    val gradientColors = remember {
+        mutableListOf(
+            kColorVulcan.copy(alpha = 0.3f),
+            kColorVulcan.copy(alpha = 0.2f),
+            kColorVulcan.copy(alpha = 0.1f),
+            kColorVulcan.copy(alpha = 0.0f)
+        )
+    }
+
+    MotionLayout(
+        modifier = Modifier.fillMaxWidth(),
+        motionScene = MotionScene(content = motionScene),
+        progress = progress()
+    ) {
+
+        val avatarModifier = remember {
+            Modifier.layoutId("profile_avatar")
+        }
+
+        GlideImage(
+            modifier = avatarModifier,
+            model = personEntity.getProfileUrl(),
+            transition = CrossFade,
+            contentScale = ContentScale.Crop,
+            contentDescription = personEntity.getName()
+        )
+
+        Spacer(modifier = Modifier
+            .height(ScreenUtil.getStatusBarHeight())
+            .layoutId("status_bar"))
+
+        Box(
+            modifier = Modifier
+                .background(
+                    brush = ComponentUtil.createGradientBrush(gradientColors)
+                )
+                .layoutId("gradient")
+        )
+
+        val modifier = remember {
+            Modifier
+                .padding(horizontal = 10.dp)
+                .layoutId("icon_back")
+                .clickable { onBack() }
+        }
+
+        Icon(
+            modifier = modifier,
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "",
+            tint = Color.White
+        )
+
+        Text(
+            modifier = Modifier.layoutId("profile_name"),
+            text = personEntity.getName(),
+            color = Color.White,
+            style = MaterialTheme.typography.fontCustomSemiBold,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Start
+        )
+
+        Text(
+            modifier = Modifier.layoutId("profile_birthday"),
+            text = personEntity.getBirthday(),
+            color = Color.White,
+            style = MaterialTheme.typography.fontCustomMedium,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Start
+        )
+
+        Text(
+            modifier = Modifier.layoutId("profile_place"),
+            text = personEntity.getPlaceOfBirth(),
+            color = Color.White,
+            style = MaterialTheme.typography.fontCustomMedium,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Start
+        )
+    }
+}

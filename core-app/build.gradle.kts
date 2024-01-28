@@ -52,6 +52,7 @@ dependencies {
     api(libs.compose.material3)
     api(libs.lifecycle.compose)
     api(libs.constraintlayout.compose)
+    api(libs.foundation.android)
     api(libs.icons.extended)
 
     api(libs.datastore)

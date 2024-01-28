@@ -39,7 +39,7 @@ fun GenreList(modifier: Modifier = Modifier, genres: () -> List<GenreEntity>) {
                             border = BorderStroke(1.dp, color = Color.LightGray),
                             shape = RoundedCornerShape(16.dp)
                         )
-                        .padding(horizontal = 15.dp, vertical = 3.dp),
+                        .padding(horizontal = 20.dp, vertical = 7.dp),
                     text = it.name,
                     color = Color.LightGray,
                     style = MaterialTheme.typography.fontCustomMedium,

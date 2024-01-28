@@ -26,7 +26,7 @@ fun DrawerItemView(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(start = 10.dp, top = 15.dp, end = 10.dp, bottom = 15.dp),
+            .padding(start = 10.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

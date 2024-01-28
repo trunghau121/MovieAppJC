@@ -19,9 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class TrailerMovieViewModel @Inject constructor(
     private val getVideoTrailer: VideoTrailerUseCase,
-    private val appNavigator: AppNavigator,
+    appNavigator: AppNavigator,
     savedStateHandle: SavedStateHandle
-) : BaseViewModel() {
+) : BaseViewModel(appNavigator) {
     private val _videos = MutableStateFlow<Resource<List<VideoEntity>>>(Resource.Loading())
     val videos = _videos.asStateFlow()
     var movieId = -1
@@ -35,9 +35,5 @@ class TrailerMovieViewModel @Inject constructor(
             _videos.emit(Resource.Loading())
         }
         executeTask(request = { getVideoTrailer(movieId) }, onSuccess = _videos)
-    }
-
-    fun onBack() {
-        viewModelScope.launch { appNavigator.navigateBack() }
     }
 }

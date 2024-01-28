@@ -2,8 +2,10 @@ package com.movieappjc.data.remote
 
 import com.movieappjc.common.constants.Endpoints
 import com.movieappjc.data.models.CastResultModel
+import com.movieappjc.data.models.MovieCreditsResultModel
 import com.movieappjc.data.models.MovieDetailModel
 import com.movieappjc.data.models.MoviesResultModel
+import com.movieappjc.data.models.PersonModel
 import com.movieappjc.data.models.VideoResultModel
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -62,4 +64,18 @@ interface MovieServices {
         @Query("api_key") apiKey: String = Endpoints.apiKey,
         @Query("language") language: String? = null
     ): MoviesResultModel
+
+    @GET("person/{person_id}")
+    suspend fun getPersonDetail(
+        @Path("person_id") personId: Int,
+        @Query("api_key") apiKey: String = Endpoints.apiKey,
+        @Query("language") language: String? = null
+    ): PersonModel
+
+    @GET("person/{person_id}/movie_credits")
+    suspend fun getMovieCredits(
+        @Path("person_id") personId: Int,
+        @Query("api_key") apiKey: String = Endpoints.apiKey,
+        @Query("language") language: String? = null
+    ): MovieCreditsResultModel
 }

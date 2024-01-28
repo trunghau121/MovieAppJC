@@ -2,6 +2,7 @@ package com.core_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.core_app.navigation.AppNavigator
 import com.core_app.repository.HandelError
 import com.core_app.repository.Resource
 import kotlinx.coroutines.Job
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel(val appNavigator: AppNavigator) : ViewModel() {
     fun <T> executeTask(
         request: () -> Flow<T>,
         success: (T) -> Unit,
@@ -34,5 +35,11 @@ abstract class BaseViewModel : ViewModel() {
         }, error = { exception ->
             onSuccess.value = Resource.Error(HandelError().getError(exception))
         })
+    }
+
+    fun onBack(){
+        viewModelScope.launch {
+            appNavigator.navigateBack()
+        }
     }
 }

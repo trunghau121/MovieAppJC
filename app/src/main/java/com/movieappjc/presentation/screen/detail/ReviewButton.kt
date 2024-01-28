@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarHalf
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -25,7 +25,7 @@ fun ReviewButton(modifier: Modifier, voteAverage: Double) {
                     Icons.Filled.Star
                 }
                 voteStarCount in starIndex.toDouble()..(starIndex + 1).toDouble() -> {
-                    Icons.Filled.StarHalf
+                    Icons.AutoMirrored.Filled.StarHalf
                 }
                 else -> {
                     Icons.Filled.StarOutline

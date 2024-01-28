@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,12 +41,16 @@ import com.movieappjc.theme.kColorViolet
 fun CastCrewItem(
     castEntity: CastEntity,
     sizeItem: Dp,
-    preloadRequest: () -> RequestBuilder<Drawable>
+    preloadRequest: () -> RequestBuilder<Drawable>,
+    openPersonDetailScreen: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
             .width(230.dp)
-            .padding(horizontal = 10.dp),
+            .padding(horizontal = 10.dp)
+            .clickable {
+                openPersonDetailScreen(castEntity.id)
+            },
         contentAlignment = Alignment.CenterStart
     ) {
         Column(

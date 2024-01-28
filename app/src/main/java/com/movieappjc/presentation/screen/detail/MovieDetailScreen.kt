@@ -45,6 +45,12 @@ fun MovieDetailScreen(
 
     var gradientHeight by remember { mutableIntStateOf(0) }
 
+    val openPersonDetail = remember {
+        { id: Int ->
+            viewModel.openPersonDetailScreen(id)
+        }
+    }
+
     when (val state = stateMovieDetail.value) {
         is Resource.Success -> {
             val data = state.data
@@ -53,7 +59,8 @@ fun MovieDetailScreen(
                     modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
                     data = data,
                     castState = { castState },
-                    openTrailerMovie = viewModel::openTrailerMovie
+                    openTrailerMovie = viewModel::openTrailerMovie,
+                    openPersonDetailScreen = openPersonDetail
                 )
 
                 Box(

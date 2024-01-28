@@ -10,6 +10,7 @@ import com.core_app.utils.StableHolder
 import com.movieappjc.presentation.screen.detail.MovieDetailScreen
 import com.movieappjc.presentation.screen.favorite.FavoriteMovieScreen
 import com.movieappjc.presentation.screen.home.HomeScreen
+import com.movieappjc.presentation.screen.person.PersonDetailScreen
 import com.movieappjc.presentation.screen.search.SearchMovieScreen
 import com.movieappjc.presentation.screen.trailer_movie.TrailerMovieScreen
 import java.util.Locale
@@ -47,6 +48,13 @@ fun NavHostApp(
 
         composable(destination = DestinationApp.SearchMovieScreen) {
             SearchMovieScreen()
+        }
+
+        composable(
+            destination = DestinationApp.PersonDetailScreen,
+            arguments = listOf(navArgument(DestinationKey.PERSON_ID_KEY) { type = NavType.IntType })
+        ){
+            PersonDetailScreen()
         }
     }
 }

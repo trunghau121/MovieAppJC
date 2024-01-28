@@ -23,8 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchMovieViewModel @Inject constructor(
     private val getSearchMovie: SearchMovieUseCase,
-    private val appNavigator: AppNavigator
-): BaseViewModel() {
+    appNavigator: AppNavigator
+): BaseViewModel(appNavigator) {
     private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(Resource.InitState())
     val movies = _movies.asStateFlow()
     private var job: Job?= null
@@ -64,12 +64,6 @@ class SearchMovieViewModel @Inject constructor(
     fun onNavigateToMovieDetail(movieId: Int) {
         viewModelScope.launch {
             appNavigator.navigateTo(DestinationApp.MovieDetail(movieId))
-        }
-    }
-
-    fun onBack(){
-        viewModelScope.launch {
-            appNavigator.navigateBack()
         }
     }
 

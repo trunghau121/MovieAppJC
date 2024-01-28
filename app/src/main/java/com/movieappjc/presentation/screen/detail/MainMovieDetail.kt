@@ -27,16 +27,15 @@ fun MainMovieDetail(
     modifier: Modifier = Modifier,
     data: MovieDetailEntity,
     castState: () -> Resource<List<CastEntity>>,
-    openTrailerMovie: () -> Unit
+    openTrailerMovie: () -> Unit,
+    openPersonDetailScreen: (Int) -> Unit
 ) {
 
     var castList by remember {
         mutableStateOf(listOf<CastEntity>())
     }
     ConstraintLayout(modifier = modifier) {
-        val (backdrop, trailer, poster,
-            title, review, time,
-            overview, genres, cast) = createRefs()
+        val (backdrop, trailer, poster, title, review, time, overview, genres, cast) = createRefs()
         val startGuideline = createGuidelineFromStart(16.dp)
         val endGuideline = createGuidelineFromEnd(16.dp)
         val castBarrier = createBottomBarrier(overview, genres, time)
@@ -45,16 +44,13 @@ fun MainMovieDetail(
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-            },
-            backdropPath = data.backdropPath,
-            contentDescription = data.title
+            }, backdropPath = data.backdropPath, contentDescription = data.title
         )
 
-        Image(
-            modifier = Modifier
-                .size(50.dp)
-                .clickable { openTrailerMovie() }
-                .constrainAs(trailer) { centerTo(backdrop) },
+        Image(modifier = Modifier
+            .size(50.dp)
+            .clickable { openTrailerMovie() }
+            .constrainAs(trailer) { centerTo(backdrop) },
             imageVector = ImageVector.vectorResource(id = R.drawable.icon_play),
             contentDescription = ""
         )
@@ -63,20 +59,16 @@ fun MainMovieDetail(
             modifier = Modifier.constrainAs(poster) {
                 start.linkTo(backdrop.start, margin = 20.dp)
                 centerAround(backdrop.bottom)
-            },
-            posterUrl = data.getPosterUrl(),
-            contentDescription = data.title
+            }, posterUrl = data.getPosterUrl(), contentDescription = data.title
         )
 
         TitleMovieDetail(
-            modifier = Modifier
-                .constrainAs(title) {
+            modifier = Modifier.constrainAs(title) {
                     top.linkTo(backdrop.bottom)
                     start.linkTo(poster.end)
                     end.linkTo(endGuideline)
                     width = Dimension.fillToConstraints
-                },
-            title = data.title
+                }, title = data.title
         )
 
         ReviewButton(
@@ -98,30 +90,31 @@ fun MainMovieDetail(
             duration = data.duration,
         )
 
-        GenreList(
-            modifier = Modifier.constrainAs(genres) {
-                top.linkTo(time.bottom, margin = 5.dp)
-            },
-            genres = { data.genres }
-        )
+        GenreList(modifier = Modifier.constrainAs(genres) {
+            top.linkTo(time.bottom, margin = 5.dp)
+        }, genres = { data.genres })
 
         if (data.overview.isNotEmpty()) {
             DescriptionMovieDetail(
                 modifier = Modifier.constrainAs(overview) {
-                    top.linkTo(genres.bottom, margin = 10.dp)
-                },
-                overview = data.overview
+                    top.linkTo(genres.bottom, margin = 15.dp)
+                    start.linkTo(parent.start, margin = 15.dp)
+                    end.linkTo(parent.end, margin = 15.dp)
+                    width = Dimension.fillToConstraints
+                }, overview = data.overview
             )
         }
 
         val casts = castState()
         if (casts is Resource.Success && casts.data.isNotEmpty()) {
             castList = casts.data
-            CastCrewList(
-                modifier = Modifier.constrainAs(cast) {
+            CastCrewList(modifier = Modifier.constrainAs(cast) {
+                if (data.overview.isNotEmpty()) {
+                    top.linkTo(overview.bottom, margin = 5.dp)
+                } else {
                     top.linkTo(castBarrier)
-                },
-                cast = { castList }
+                }
+            }, cast = { castList }, openPersonDetailScreen = openPersonDetailScreen
             )
         }
     }
