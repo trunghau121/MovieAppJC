@@ -44,7 +44,9 @@ fun MainMovieDetail(
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-            }, backdropPath = data.backdropPath, contentDescription = data.title
+            },
+            backdropPath = data.backdropPath,
+            contentDescription = data.title
         )
 
         Image(modifier = Modifier
@@ -64,11 +66,11 @@ fun MainMovieDetail(
 
         TitleMovieDetail(
             modifier = Modifier.constrainAs(title) {
-                    top.linkTo(backdrop.bottom)
-                    start.linkTo(poster.end)
-                    end.linkTo(endGuideline)
-                    width = Dimension.fillToConstraints
-                }, title = data.title
+                top.linkTo(backdrop.bottom)
+                start.linkTo(poster.end)
+                end.linkTo(endGuideline)
+                width = Dimension.fillToConstraints
+            }, title = data.title
         )
 
         ReviewButton(
@@ -108,13 +110,16 @@ fun MainMovieDetail(
         val casts = castState()
         if (casts is Resource.Success && casts.data.isNotEmpty()) {
             castList = casts.data
-            CastCrewList(modifier = Modifier.constrainAs(cast) {
-                if (data.overview.isNotEmpty()) {
-                    top.linkTo(overview.bottom, margin = 5.dp)
-                } else {
-                    top.linkTo(castBarrier)
-                }
-            }, cast = { castList }, openPersonDetailScreen = openPersonDetailScreen
+            CastCrewList(
+                modifier = Modifier.constrainAs(cast) {
+                    if (data.overview.isNotEmpty()) {
+                        top.linkTo(overview.bottom, margin = 5.dp)
+                    } else {
+                        top.linkTo(castBarrier)
+                    }
+                },
+                cast = { castList },
+                openPersonDetailScreen = openPersonDetailScreen
             )
         }
     }
