@@ -26,25 +26,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.extension.dpToPx
 import com.core_app.extension.value
-import com.core_app.network.DataState
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
 import com.movieappjc.app.common.constants.noTrailerVideoText
 import com.movieappjc.app.common.localization.LocalLanguages
-import com.movieappjc.domain.entities.VideoEntity
-import com.movieappjc.app.components.ErrorApp
-import com.movieappjc.app.components.CircularProgressBar
-import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
+import com.movieappjc.app.components.ToUI
 import com.movieappjc.app.theme.fontCustomSemiBold
 import com.movieappjc.app.theme.kColorViolet
+import com.movieappjc.domain.entities.VideoEntity
+import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
 
 @Composable
 fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
+    val state by viewModel.videos.collectAsStateWithLifecycle()
     Column {
         TrailerMovieAppBar(onBack = viewModel::onBack)
-        when (val state = viewModel.videos.collectAsStateWithLifecycle().value) {
-            is DataState.Success -> {
-                val videos = state.data.value()
+        state.ToUI(
+            content = {
+                val videos = it.value()
                 if (videos.isNotEmpty()) {
                     ListTrailer(ImmutableHolder(videos))
                 } else {
@@ -58,16 +57,9 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
                         fontSize = 18.sp
                     )
                 }
-            }
-
-            is DataState.Error -> {
-                ErrorApp(error = state.error, onRetry = viewModel::getTrailer)
-            }
-
-            else -> {
-                CircularProgressBar()
-            }
-        }
+            },
+            onRetry = viewModel::getTrailer
+        )
     }
 }
 

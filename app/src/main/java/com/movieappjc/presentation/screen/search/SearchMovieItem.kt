@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -31,11 +30,11 @@ import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.fontCustomNormal
+import com.movieappjc.domain.entities.MovieEntity
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SearchMovieItem(
     movieEntity: MovieEntity,

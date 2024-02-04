@@ -18,13 +18,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.pxToDp
-import com.core_app.network.DataState
 import com.movieappjc.app.common.screenutil.ScreenUtil
-import com.movieappjc.app.components.CircularProgressBar
-import com.movieappjc.app.components.ErrorApp
 import com.movieappjc.app.common.utils.ComponentUtil
-import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
+import com.movieappjc.app.components.ToUI
 import com.movieappjc.app.theme.kColorVulcan
+import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
 
 @Composable
 fun MovieDetailScreen(
@@ -32,7 +30,7 @@ fun MovieDetailScreen(
 ) {
     val isMovieFavorite by viewModel.isMovieFavorite.collectAsStateWithLifecycle()
     val castState by viewModel.castMovie.collectAsStateWithLifecycle()
-    val stateMovieDetail = viewModel.movieDetail.collectAsStateWithLifecycle()
+    val stateMovieDetail by viewModel.movieDetail.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     val statusBarHeight = ScreenUtil.getStatusBarHeight()
     val gradientColors = remember {
@@ -51,12 +49,13 @@ fun MovieDetailScreen(
         }
     }
 
-    when (val state = stateMovieDetail.value) {
-        is DataState.Success -> {
-            val data = state.data
-            Box(modifier = Modifier.fillMaxSize()){
+    stateMovieDetail.ToUI(
+        content = { data ->
+            Box(modifier = Modifier.fillMaxSize()) {
                 MainMovieDetail(
-                    modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState),
                     data = data,
                     castState = { castState },
                     openTrailerMovie = viewModel::openTrailerMovie,
@@ -83,14 +82,7 @@ fun MovieDetailScreen(
                 )
 
             }
-        }
-
-        is DataState.Error -> {
-            ErrorApp(error = state.error, onRetry = viewModel::getMovieDetail)
-        }
-
-        else -> {
-            CircularProgressBar()
-        }
-    }
+        },
+        onRetry = viewModel::getMovieDetail
+    )
 }

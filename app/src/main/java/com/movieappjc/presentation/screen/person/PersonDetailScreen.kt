@@ -27,11 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.core_app.network.DataState
-import com.movieappjc.app.components.CircularProgressBar
-import com.movieappjc.app.components.ErrorApp
-import com.movieappjc.presentation.viewmodel.person.PersonDetailViewModel
+import com.movieappjc.app.components.ToUI
 import com.movieappjc.app.theme.fontCustomNormal
+import com.movieappjc.presentation.viewmodel.person.PersonDetailViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -68,20 +66,17 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
         }
     }
 
-    val onBack = remember {
-        {
-            viewModel.onBack()
-        }
-    }
-
-    when (val state = viewModel.person.collectAsStateWithLifecycle().value) {
-        is DataState.Success -> {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding()
+    val onBack = remember { { viewModel.onBack() } }
+    val state by viewModel.person.collectAsStateWithLifecycle()
+    state.ToUI(
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding()
             ) {
                 ProfileHeader(
-                    personEntity = state.data,
+                    personEntity = it,
                     progress = { progress },
                     onBack = onBack
                 )
@@ -92,24 +87,14 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
                         .padding(horizontal = 15.dp)
                         .anchoredDraggable(anchoredDraggableState, Orientation.Vertical)
                         .nestedScroll(connection),
-                    text = state.data.getBiography(),
+                    text = it.getBiography(),
                     color = Color.LightGray,
                     style = MaterialTheme.typography.fontCustomNormal,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start
                 )
             }
-        }
-
-        is DataState.Error -> {
-            ErrorApp(
-                error = state.error,
-                onRetry = viewModel::getPersonDetail
-            )
-        }
-
-        is DataState.Loading -> {
-            CircularProgressBar()
-        }
-    }
+        },
+        onRetry = viewModel::getPersonDetail
+    )
 }

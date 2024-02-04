@@ -10,18 +10,17 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.value
-import com.core_app.network.DataState
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
-import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.app.components.ErrorApp
-import com.movieappjc.app.components.CircularProgressBar
+import com.movieappjc.app.components.ToUI
 import com.movieappjc.app.components.drawer.NavigationDrawerApp
+import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.presentation.screen.home.movie_carousel.CarouselMovie
 import com.movieappjc.presentation.screen.home.movie_tabbed.MovieList
 import com.movieappjc.presentation.screen.home.movie_tabbed.MovieTabbed
@@ -34,8 +33,9 @@ fun HomeScreen(
     onClickLanguage: (Locale) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    when (val state = homeViewModel.movies.collectAsStateWithLifecycle().value) {
-        is DataState.Success -> {
+    val state by homeViewModel.movies.collectAsStateWithLifecycle()
+    state.ToUI(
+        content = { data ->
             NavigationDrawerApp(
                 drawerState = drawerState,
                 openFavoriteMovie = homeViewModel::openFavoriteMovie,
@@ -44,22 +44,15 @@ fun HomeScreen(
                 HomeContent(
                     StableHolder(homeViewModel),
                     drawerState,
-                    ImmutableHolder(state.data.data)
+                    ImmutableHolder(data.data)
                 )
             }
+        },
+        onRetry = {
+            homeViewModel.getMovies()
+            homeViewModel.loadMovieTabbed(homeViewModel.indexPage)
         }
-
-        is DataState.Error -> {
-            ErrorApp(error = state.error) {
-                homeViewModel.getMovies()
-                homeViewModel.loadMovieTabbed(homeViewModel.indexPage)
-            }
-        }
-
-        else -> {
-            CircularProgressBar()
-        }
-    }
+    )
 }
 
 @Composable
@@ -86,25 +79,19 @@ fun HomeContent(
             Spacer(modifier = Modifier.height(20.dp))
             MovieTabbed(loadMovieTabbed = homeViewModel()::loadMovieTabbed)
             Spacer(modifier = Modifier.height(5.dp))
-            when (val state = homeViewModel().movieTabbed.collectAsStateWithLifecycle().value) {
-                is DataState.Success -> {
+            val state by homeViewModel().movieTabbed.collectAsStateWithLifecycle()
+            state.ToUI(
+                content = {
                     MovieList(
-                        ImmutableHolder(state.data.data.value()),
+                        ImmutableHolder(it.data.value()),
                         modifier = Modifier.weight(1f),
                         onNavigateToMovieDetail = homeViewModel()::onNavigateToMovieDetail
                     )
+                },
+                onRetry = {
+                    homeViewModel().loadMovieTabbed(homeViewModel().indexPage)
                 }
-
-                is DataState.Error -> {
-                    ErrorApp(error = state.error) {
-                        homeViewModel().loadMovieTabbed(homeViewModel().indexPage)
-                    }
-                }
-
-                else -> {
-                    CircularProgressBar()
-                }
-            }
+            )
         }
     }
 }
