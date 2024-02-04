@@ -16,7 +16,8 @@
 | 💉 DI (Android)                | [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)                        |
 | 🌊 Async            | [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) + [Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/)                |
 | 🌐 Networking        | [Retrofit](https://square.github.io/retrofit/)                        |
-| 📄 Parsing            | [Gson](https://github.com/google/gson)                            |
+| 📄 Database Local            | [Room](https://developer.android.com/jetpack/androidx/releases/room)                            |
+| 📄 Parsing            | [Moshi](https://github.com/square/moshi)                            |
 
 ## Architecture
 
