@@ -17,10 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
-import com.movieappjc.common.constants.castText
-import com.movieappjc.common.localization.LocalLanguages
+import com.movieappjc.app.common.constants.castText
+import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.domain.entities.CastEntity
-import com.movieappjc.theme.fontCustomMedium
+import com.movieappjc.app.theme.fontCustomMedium
 
 @Composable
 fun CastCrewList(

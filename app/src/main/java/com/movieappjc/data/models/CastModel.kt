@@ -1,33 +1,39 @@
 package com.movieappjc.data.models
 
-import com.google.gson.annotations.SerializedName
+import com.core_app.extension.value
 import com.movieappjc.domain.entities.CastEntity
+import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CastModel(
-    @SerializedName("adult")
+    @Json(name = "adult")
     val adult: Boolean?,
-    @SerializedName("cast_id")
+    @Json(name = "cast_id")
     val castId: Int?,
-    @SerializedName("character")
-    override val character: String,
-    @SerializedName("credit_id")
+    @Json(name = "character")
+    private val _character: String?,
+    @Json(name = "credit_id")
     val creditId: String?,
-    @SerializedName("gender")
+    @Json(name = "gender")
     val gender: Int?,
-    @SerializedName("id")
-    override val id: Int,
-    @SerializedName("known_for_department")
+    @Json(name = "id")
+    private val _id: Int?,
+    @Json(name = "known_for_department")
     val knownForDepartment: String?,
-    @SerializedName("name")
-    override val name: String,
-    @SerializedName("order")
+    @Json(name = "name")
+    private val _name: String?,
+    @Json(name = "order")
     val order: Int?,
-    @SerializedName("original_name")
+    @Json(name = "original_name")
     val originalName: String?,
-    @SerializedName("popularity")
+    @Json(name = "popularity")
     val popularity: Double?,
-    @SerializedName("profile_path")
-    override val profilePath: String
-): CastEntity
+    @Json(name = "profile_path")
+    private val _profilePath: String?
+): CastEntity {
+    override val id: Int get() = _id.value()
+    override val name: String get() = _name.value()
+    override val character: String get() = _character.value()
+    override val profilePath: String get() = _profilePath.value()
+}

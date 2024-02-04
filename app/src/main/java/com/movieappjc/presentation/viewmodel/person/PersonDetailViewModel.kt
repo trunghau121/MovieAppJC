@@ -1,18 +1,16 @@
 package com.movieappjc.presentation.viewmodel.person
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
+import com.core_app.base.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
-import com.core_app.repository.Resource
-import com.core_app.viewmodel.BaseViewModel
+import com.core_app.network.DataState
 import com.movieappjc.domain.entities.PersonEntity
 import com.movieappjc.domain.usecases.PersonDetailUseCase
-import com.movieappjc.presentation.route.DestinationApp
-import com.movieappjc.presentation.route.DestinationKey
+import com.movieappjc.app.route.DestinationApp
+import com.movieappjc.app.route.DestinationKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +20,7 @@ class PersonDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel(appNavigator) {
 
-    private val _person = MutableStateFlow<Resource<PersonEntity>>(Resource.Loading())
+    private val _person = MutableStateFlow<DataState<PersonEntity>>(DataState.Loading())
     val person = _person.asStateFlow()
     private var personId: Int = 0
 
@@ -32,12 +30,10 @@ class PersonDetailViewModel @Inject constructor(
     }
 
     fun getPersonDetail(){
-        executeTask(request = { personDetailUseCase(personId) }, onSuccess = _person)
+        executeTask({ personDetailUseCase(personId) }, _person)
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {
-        viewModelScope.launch {
-            appNavigator.navigateTo(DestinationApp.MovieDetail(movieId))
-        }
+        navigateTo(DestinationApp.MovieDetail(movieId))
     }
 }

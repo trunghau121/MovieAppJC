@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.movieappjc.common.constants.showLessText
-import com.movieappjc.common.constants.showMoreText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.theme.fontCustomLight
+import com.movieappjc.app.common.constants.showLessText
+import com.movieappjc.app.common.constants.showMoreText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.theme.fontCustomLight
 import com.webtoonscorp.android.readmore.foundation.ToggleArea
 import com.webtoonscorp.android.readmore.material.ReadMoreText
 

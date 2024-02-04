@@ -15,13 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.value
-import com.core_app.repository.Resource
+import com.core_app.network.DataState
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.components.ErrorApp
-import com.movieappjc.presentation.components.CircularProgressBar
-import com.movieappjc.presentation.components.drawer.NavigationDrawerApp
+import com.movieappjc.app.components.ErrorApp
+import com.movieappjc.app.components.CircularProgressBar
+import com.movieappjc.app.components.drawer.NavigationDrawerApp
 import com.movieappjc.presentation.screen.home.movie_carousel.CarouselMovie
 import com.movieappjc.presentation.screen.home.movie_tabbed.MovieList
 import com.movieappjc.presentation.screen.home.movie_tabbed.MovieTabbed
@@ -35,7 +35,7 @@ fun HomeScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     when (val state = homeViewModel.movies.collectAsStateWithLifecycle().value) {
-        is Resource.Success -> {
+        is DataState.Success -> {
             NavigationDrawerApp(
                 drawerState = drawerState,
                 openFavoriteMovie = homeViewModel::openFavoriteMovie,
@@ -49,7 +49,7 @@ fun HomeScreen(
             }
         }
 
-        is Resource.Error -> {
+        is DataState.Error -> {
             ErrorApp(error = state.error) {
                 homeViewModel.getMovies()
                 homeViewModel.loadMovieTabbed(homeViewModel.indexPage)
@@ -87,7 +87,7 @@ fun HomeContent(
             MovieTabbed(loadMovieTabbed = homeViewModel()::loadMovieTabbed)
             Spacer(modifier = Modifier.height(5.dp))
             when (val state = homeViewModel().movieTabbed.collectAsStateWithLifecycle().value) {
-                is Resource.Success -> {
+                is DataState.Success -> {
                     MovieList(
                         ImmutableHolder(state.data.data.value()),
                         modifier = Modifier.weight(1f),
@@ -95,7 +95,7 @@ fun HomeContent(
                     )
                 }
 
-                is Resource.Error -> {
+                is DataState.Error -> {
                     ErrorApp(error = state.error) {
                         homeViewModel().loadMovieTabbed(homeViewModel().indexPage)
                     }

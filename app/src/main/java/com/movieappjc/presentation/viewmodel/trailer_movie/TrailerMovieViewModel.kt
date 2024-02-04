@@ -2,17 +2,15 @@ package com.movieappjc.presentation.viewmodel.trailer_movie
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
-import com.core_app.repository.Resource
-import com.core_app.viewmodel.BaseViewModel
+import com.core_app.base.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
+import com.core_app.network.DataState
 import com.movieappjc.domain.entities.VideoEntity
 import com.movieappjc.domain.usecases.VideoTrailerUseCase
-import com.movieappjc.presentation.route.DestinationKey
+import com.movieappjc.app.route.DestinationKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Stable
@@ -22,7 +20,7 @@ class TrailerMovieViewModel @Inject constructor(
     appNavigator: AppNavigator,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel(appNavigator) {
-    private val _videos = MutableStateFlow<Resource<List<VideoEntity>>>(Resource.Loading())
+    private val _videos = MutableStateFlow<DataState<List<VideoEntity>>>(DataState.Loading())
     val videos = _videos.asStateFlow()
     var movieId = -1
     init {
@@ -31,9 +29,9 @@ class TrailerMovieViewModel @Inject constructor(
     }
 
     fun getTrailer(){
-        viewModelScope.launch {
-            _videos.emit(Resource.Loading())
+        safeLaunch {
+            _videos.emit(DataState.Loading())
         }
-        executeTask(request = { getVideoTrailer(movieId) }, onSuccess = _videos)
+        executeTask({ getVideoTrailer(movieId) }, _videos)
     }
 }

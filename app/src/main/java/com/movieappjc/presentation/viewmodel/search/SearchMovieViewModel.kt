@@ -1,13 +1,12 @@
 package com.movieappjc.presentation.viewmodel.search
 
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.viewModelScope
+import com.core_app.base.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
-import com.core_app.repository.Resource
-import com.core_app.viewmodel.BaseViewModel
+import com.core_app.network.DataState
 import com.movieappjc.domain.entities.MoviesResultEntity
 import com.movieappjc.domain.usecases.SearchMovieUseCase
-import com.movieappjc.presentation.route.DestinationApp
+import com.movieappjc.app.route.DestinationApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -24,15 +22,15 @@ import javax.inject.Inject
 class SearchMovieViewModel @Inject constructor(
     private val getSearchMovie: SearchMovieUseCase,
     appNavigator: AppNavigator
-): BaseViewModel(appNavigator) {
-    private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(Resource.InitState())
+) : BaseViewModel(appNavigator) {
+    private val _movies = MutableStateFlow<DataState<MoviesResultEntity>>(DataState.InitState())
     val movies = _movies.asStateFlow()
-    private var job: Job?= null
+    private var job: Job? = null
     private val _textSearch = MutableStateFlow("")
     val textSearch: StateFlow<String> = _textSearch.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        safeLaunch {
             textSearch.debounce(300).collect { query ->
                 searchMovie(query)
             }
@@ -43,28 +41,26 @@ class SearchMovieViewModel @Inject constructor(
         _textSearch.value = text
     }
 
-    fun reloadSearchMovie(){
+    fun reloadSearchMovie() {
         searchMovie(textSearch.value)
     }
 
-    private fun searchMovie(keySearch: String){
+    private fun searchMovie(keySearch: String) {
         job?.cancel()
         if (keySearch.isNotEmpty()) {
-            viewModelScope.launch {
-                _movies.emit(Resource.Loading())
-                job = executeTask(request = { getSearchMovie(keySearch) }, _movies)
+            safeLaunch {
+                _movies.emit(DataState.Loading())
+                job = executeTask({ getSearchMovie(keySearch) }, _movies)
             }
-        }else {
-            viewModelScope.launch {
-                _movies.emit(Resource.InitState())
+        } else {
+            safeLaunch {
+                _movies.emit(DataState.InitState())
             }
         }
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {
-        viewModelScope.launch {
-            appNavigator.navigateTo(DestinationApp.MovieDetail(movieId))
-        }
+        navigateTo(DestinationApp.MovieDetail(movieId))
     }
 
     override fun onCleared() {

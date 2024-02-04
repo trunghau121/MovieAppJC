@@ -3,8 +3,8 @@ coreKtxVersion = "1.12.0"
 composeVersion = "1.6.0"
 composeMaterial3Version = "1.2.0-rc01"
 activityComposeVersion = "1.8.2"
+moshiKotlinVersion = "1.15.1"
 okhttpVersion = "4.12.0"
-gsonVersion = "2.10.1"
 glideVersion = "5.0.0-rc01"
 retrofitVersion = "2.9.0"
 lifecycleVersion = "2.7.0"
@@ -17,12 +17,15 @@ glideComposeVersion = "1.0.0-beta01"
 dataStoreVersion = "1.0.0"
 navigationVersion = "2.7.6"
 readmoreVersion = "1.5.2"
+securityCryptoKtxVersion = "1.1.0-alpha06"
+timberVersion = "5.0.1"
 youtubeplayerVersion = "12.1.0"
 roomVersion = "2.6.1"
 constraintlayoutComposeVersion = "1.1.0-alpha13"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
+androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtxVersion" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleVersion" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "lifecycleVersion" }
 
@@ -31,6 +34,7 @@ compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", ver
 compose-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "composeVersion" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "composeMaterial3Version" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityComposeVersion" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlinVersion" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationVersion" }
 lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleComposeVersion" }
 constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutComposeVersion" }
@@ -51,10 +55,8 @@ coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttpVersion" }
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpVersion" }
 
-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gsonVersion" }
-
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }
-retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion" }
+converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofitVersion" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltVersion" }
@@ -62,6 +64,7 @@ hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref =
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltCompilerVersion" }
 
 readmore-material = { group = "com.webtoonscorp.android", name = "readmore-material", version.ref = "readmoreVersion" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 youtubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "youtubeplayerVersion" }
 
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }

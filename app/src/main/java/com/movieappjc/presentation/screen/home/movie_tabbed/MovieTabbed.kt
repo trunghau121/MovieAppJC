@@ -11,11 +11,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.movieappjc.common.constants.nowText
-import com.movieappjc.common.constants.popularText
-import com.movieappjc.common.constants.soonText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.presentation.components.CustomTabBar
+import com.movieappjc.app.common.constants.nowText
+import com.movieappjc.app.common.constants.popularText
+import com.movieappjc.app.common.constants.soonText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.components.CustomTabBar
 
 @Composable
 fun MovieTabbed(loadMovieTabbed: (Int) -> Unit) {

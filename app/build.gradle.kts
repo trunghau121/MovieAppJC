@@ -96,9 +96,7 @@ dependencies {
     implementation(libs.readmore.material)
     implementation(libs.youtubeplayer)
     // Room
-    implementation(libs.room.runtime)
     ksp(libs.room.compiler)
-    implementation(libs.room.ktx)
 
     // Hilt
     implementation(libs.hilt.android)

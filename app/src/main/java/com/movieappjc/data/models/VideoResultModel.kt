@@ -1,10 +1,10 @@
 package com.movieappjc.data.models
 
 import androidx.compose.runtime.Stable
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 @Stable
 data class VideoResultModel(
-    @SerializedName("results")
+    @Json(name = "results")
     val videos: List<VideoModel>
 )

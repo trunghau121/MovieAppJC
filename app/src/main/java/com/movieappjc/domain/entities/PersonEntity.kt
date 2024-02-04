@@ -1,7 +1,7 @@
 package com.movieappjc.domain.entities
 
 import android.os.Parcelable
-import com.movieappjc.common.constants.Endpoints
+import com.movieappjc.app.common.constants.Endpoints
 
 abstract class PersonEntity : Parcelable {
     abstract fun getId(): Int

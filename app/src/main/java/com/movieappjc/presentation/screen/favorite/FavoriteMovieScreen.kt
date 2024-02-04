@@ -17,11 +17,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.extension.dpToPx
-import com.core_app.repository.Resource
-import com.movieappjc.common.constants.noFavoriteMovieText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.common.screenutil.ScreenUtil
-import com.movieappjc.presentation.components.AppEmptyText
+import com.core_app.network.DataState
+import com.movieappjc.app.common.constants.noFavoriteMovieText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.common.screenutil.ScreenUtil
+import com.movieappjc.app.components.AppEmptyText
 import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 
 @Composable
@@ -34,8 +34,8 @@ fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
     }
     Column {
         FavoriteAppBar(onBack = viewModel::onBack)
-        if (state is Resource.Success) {
-            val movies = (state as Resource.Success).data
+        if (state is DataState.Success) {
+            val movies = (state as DataState.Success).data
             if (movies.isNotEmpty()) {
                 val glidePreload = rememberGlidePreloadingData(
                     data = movies, preloadImageSize = Size(widthItem.dpToPx(), heightItem.dpToPx())

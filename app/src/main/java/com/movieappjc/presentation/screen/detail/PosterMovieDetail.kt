@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.movieappjc.common.screenutil.ScreenUtil
-import com.movieappjc.theme.kColorViolet
+import com.movieappjc.app.common.screenutil.ScreenUtil
+import com.movieappjc.app.theme.kColorViolet
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

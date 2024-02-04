@@ -22,9 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.movieappjc.R
-import com.movieappjc.common.constants.minutesText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.theme.fontCustomMedium
+import com.movieappjc.app.common.constants.minutesText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.theme.fontCustomMedium
 
 @Composable
 fun TimeMovieDetail(

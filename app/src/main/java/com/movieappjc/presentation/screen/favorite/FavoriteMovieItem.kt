@@ -23,7 +23,7 @@ import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.theme.kColorViolet
+import com.movieappjc.app.theme.kColorViolet
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

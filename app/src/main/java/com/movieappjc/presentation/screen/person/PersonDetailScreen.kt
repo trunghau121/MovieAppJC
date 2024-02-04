@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.core_app.repository.Resource
-import com.movieappjc.presentation.components.CircularProgressBar
-import com.movieappjc.presentation.components.ErrorApp
+import com.core_app.network.DataState
+import com.movieappjc.app.components.CircularProgressBar
+import com.movieappjc.app.components.ErrorApp
 import com.movieappjc.presentation.viewmodel.person.PersonDetailViewModel
-import com.movieappjc.theme.fontCustomNormal
+import com.movieappjc.app.theme.fontCustomNormal
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -75,7 +75,7 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
     }
 
     when (val state = viewModel.person.collectAsStateWithLifecycle().value) {
-        is Resource.Success -> {
+        is DataState.Success -> {
             Column(modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding()
@@ -101,14 +101,14 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
             }
         }
 
-        is Resource.Error -> {
+        is DataState.Error -> {
             ErrorApp(
                 error = state.error,
                 onRetry = viewModel::getPersonDetail
             )
         }
 
-        is Resource.Loading -> {
+        is DataState.Loading -> {
             CircularProgressBar()
         }
     }

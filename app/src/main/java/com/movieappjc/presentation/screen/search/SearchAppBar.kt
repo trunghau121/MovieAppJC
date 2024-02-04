@@ -34,11 +34,11 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.movieappjc.common.constants.enterSearchText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.theme.fontCustomMedium
-import com.movieappjc.theme.fontCustomNormal
-import com.movieappjc.theme.kColorViolet
+import com.movieappjc.app.common.constants.enterSearchText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.theme.fontCustomMedium
+import com.movieappjc.app.theme.fontCustomNormal
+import com.movieappjc.app.theme.kColorViolet
 
 @Composable
 fun SearchAppBar(

@@ -21,9 +21,9 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.core_app.extension.dpToPx
 import com.core_app.utils.ImmutableHolder
-import com.movieappjc.common.screenutil.ScreenUtil
+import com.movieappjc.app.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.presentation.utils.pagerAnimation
+import com.movieappjc.app.common.utils.pagerAnimation
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

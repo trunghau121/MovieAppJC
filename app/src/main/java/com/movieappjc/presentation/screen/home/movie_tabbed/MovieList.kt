@@ -9,7 +9,7 @@ import androidx.compose.ui.geometry.Size
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.extension.dpToPx
 import com.core_app.utils.ImmutableHolder
-import com.movieappjc.common.screenutil.ScreenUtil
+import com.movieappjc.app.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
 
 @Composable

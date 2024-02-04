@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.core_app.utils.ImmutableHolder
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.theme.fontCustomSemiBold
+import com.movieappjc.app.theme.fontCustomSemiBold
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

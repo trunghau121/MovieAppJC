@@ -1,15 +1,12 @@
 package com.movieappjc.data.local
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
+import com.core_app.room.BaseDao
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface MovieDao {
-    @Insert
-    suspend fun insert(movie : MovieTable)
-
+interface MovieDao: BaseDao<MovieTable> {
     @Query("DELETE FROM MovieTable WHERE id=:id")
     suspend fun delete(id: Int)
 

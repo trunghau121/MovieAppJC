@@ -18,13 +18,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.pxToDp
-import com.core_app.repository.Resource
-import com.movieappjc.common.screenutil.ScreenUtil
-import com.movieappjc.presentation.components.CircularProgressBar
-import com.movieappjc.presentation.components.ErrorApp
-import com.movieappjc.presentation.utils.ComponentUtil
+import com.core_app.network.DataState
+import com.movieappjc.app.common.screenutil.ScreenUtil
+import com.movieappjc.app.components.CircularProgressBar
+import com.movieappjc.app.components.ErrorApp
+import com.movieappjc.app.common.utils.ComponentUtil
 import com.movieappjc.presentation.viewmodel.detail.MovieDetailViewModel
-import com.movieappjc.theme.kColorVulcan
+import com.movieappjc.app.theme.kColorVulcan
 
 @Composable
 fun MovieDetailScreen(
@@ -52,7 +52,7 @@ fun MovieDetailScreen(
     }
 
     when (val state = stateMovieDetail.value) {
-        is Resource.Success -> {
+        is DataState.Success -> {
             val data = state.data
             Box(modifier = Modifier.fillMaxSize()){
                 MainMovieDetail(
@@ -85,7 +85,7 @@ fun MovieDetailScreen(
             }
         }
 
-        is Resource.Error -> {
+        is DataState.Error -> {
             ErrorApp(error = state.error, onRetry = viewModel::getMovieDetail)
         }
 

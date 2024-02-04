@@ -26,13 +26,13 @@ import androidx.compose.ui.window.Dialog
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movieappjc.R
-import com.movieappjc.common.constants.okayText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.theme.fontCustomMedium
-import com.movieappjc.theme.fontCustomNormal
-import com.movieappjc.theme.fontCustomSemiBold
-import com.movieappjc.theme.kColorViolet
-import com.movieappjc.theme.kColorVulcan
+import com.movieappjc.app.common.constants.okayText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.theme.fontCustomMedium
+import com.movieappjc.app.theme.fontCustomNormal
+import com.movieappjc.app.theme.fontCustomSemiBold
+import com.movieappjc.app.theme.kColorViolet
+import com.movieappjc.app.theme.kColorVulcan
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

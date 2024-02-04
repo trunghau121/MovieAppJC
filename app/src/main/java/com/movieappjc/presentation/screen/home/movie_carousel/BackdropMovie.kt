@@ -14,9 +14,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.movieappjc.common.constants.Endpoints
+import com.movieappjc.app.common.constants.Endpoints
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.theme.kColorPrimarySecond
+import com.movieappjc.app.theme.kColorPrimarySecond
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

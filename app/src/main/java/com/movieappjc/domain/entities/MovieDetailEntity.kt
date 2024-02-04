@@ -2,7 +2,7 @@ package com.movieappjc.domain.entities
 
 import android.os.Parcelable
 import androidx.compose.runtime.Stable
-import com.movieappjc.common.constants.Endpoints
+import com.movieappjc.app.common.constants.Endpoints
 
 @Stable
 interface MovieDetailEntity : Parcelable {

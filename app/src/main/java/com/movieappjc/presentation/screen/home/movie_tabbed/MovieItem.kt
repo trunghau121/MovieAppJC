@@ -25,7 +25,7 @@ import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.theme.fontCustomSemiBold
+import com.movieappjc.app.theme.fontCustomSemiBold
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

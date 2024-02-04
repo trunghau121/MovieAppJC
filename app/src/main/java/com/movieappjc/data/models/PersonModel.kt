@@ -1,33 +1,33 @@
 package com.movieappjc.data.models
 
 import com.core_app.extension.value
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 import com.movieappjc.domain.entities.PersonEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PersonModel(
-    @SerializedName("adult")
+    @Json(name = "adult")
     val adult: Boolean?,
-    @SerializedName("biography")
+    @Json(name = "biography")
     private val biography: String?,
-    @SerializedName("birthday")
+    @Json(name = "birthday")
     private val birthday: String?,
-    @SerializedName("gender")
+    @Json(name = "gender")
     val gender: Int?,
-    @SerializedName("id")
+    @Json(name = "id")
     private val id: Int?,
-    @SerializedName("imdb_id")
+    @Json(name = "imdb_id")
     val imdbId: String?,
-    @SerializedName("known_for_department")
+    @Json(name = "known_for_department")
     private val knownForDepartment: String?,
-    @SerializedName("name")
+    @Json(name = "name")
     private val name: String?,
-    @SerializedName("place_of_birth")
+    @Json(name = "place_of_birth")
     private val placeOfBirth: String?,
-    @SerializedName("popularity")
+    @Json(name = "popularity")
     private val popularity: Double?,
-    @SerializedName("profile_path")
+    @Json(name = "profile_path")
     private val profilePath: String?
 ): PersonEntity(){
     override fun getId(): Int = id.value()

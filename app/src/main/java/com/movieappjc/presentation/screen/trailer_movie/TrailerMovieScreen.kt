@@ -26,24 +26,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.extension.dpToPx
 import com.core_app.extension.value
-import com.core_app.repository.Resource
+import com.core_app.network.DataState
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
-import com.movieappjc.common.constants.noTrailerVideoText
-import com.movieappjc.common.localization.LocalLanguages
+import com.movieappjc.app.common.constants.noTrailerVideoText
+import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.domain.entities.VideoEntity
-import com.movieappjc.presentation.components.ErrorApp
-import com.movieappjc.presentation.components.CircularProgressBar
+import com.movieappjc.app.components.ErrorApp
+import com.movieappjc.app.components.CircularProgressBar
 import com.movieappjc.presentation.viewmodel.trailer_movie.TrailerMovieViewModel
-import com.movieappjc.theme.fontCustomSemiBold
-import com.movieappjc.theme.kColorViolet
+import com.movieappjc.app.theme.fontCustomSemiBold
+import com.movieappjc.app.theme.kColorViolet
 
 @Composable
 fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
     Column {
         TrailerMovieAppBar(onBack = viewModel::onBack)
         when (val state = viewModel.videos.collectAsStateWithLifecycle().value) {
-            is Resource.Success -> {
+            is DataState.Success -> {
                 val videos = state.data.value()
                 if (videos.isNotEmpty()) {
                     ListTrailer(ImmutableHolder(videos))
@@ -60,7 +60,7 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
                 }
             }
 
-            is Resource.Error -> {
+            is DataState.Error -> {
                 ErrorApp(error = state.error, onRetry = viewModel::getTrailer)
             }
 

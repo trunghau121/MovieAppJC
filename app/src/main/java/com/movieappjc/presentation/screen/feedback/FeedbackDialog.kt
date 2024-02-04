@@ -24,16 +24,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.movieappjc.common.constants.cancelText
-import com.movieappjc.common.constants.descriptionFeedbackText
-import com.movieappjc.common.constants.sendText
-import com.movieappjc.common.constants.titleFeedbackText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.presentation.components.AppButton
-import com.movieappjc.theme.fontCustomNormal
-import com.movieappjc.theme.fontCustomSemiBold
-import com.movieappjc.theme.kColorPrimarySecond
-import com.movieappjc.theme.kColorVulcan
+import com.movieappjc.app.common.constants.cancelText
+import com.movieappjc.app.common.constants.descriptionFeedbackText
+import com.movieappjc.app.common.constants.sendText
+import com.movieappjc.app.common.constants.titleFeedbackText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.components.AppButton
+import com.movieappjc.app.theme.fontCustomNormal
+import com.movieappjc.app.theme.fontCustomSemiBold
+import com.movieappjc.app.theme.kColorPrimarySecond
+import com.movieappjc.app.theme.kColorVulcan
 
 @Composable
 fun FeedbackDialog(

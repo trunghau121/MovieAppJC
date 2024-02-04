@@ -57,6 +57,7 @@ dependencies {
 
     api(libs.datastore)
     api(libs.datastore.preferences)
+    api(libs.androidx.security.crypto.ktx)
 
     api(libs.glideCompose)
     api(libs.glide)
@@ -66,10 +67,9 @@ dependencies {
     api(libs.okhttp3)
     api(libs.okhttp3.logging.interceptor)
 
-    api(libs.gson)
-
+    api(libs.moshi.kotlin)
     api(libs.retrofit)
-    api(libs.retrofit.converter.gson)
+    api(libs.converter.moshi)
 
     api(libs.coroutines.core)
     api(libs.coroutines.android)
@@ -77,4 +77,10 @@ dependencies {
     api(libs.androidx.lifecycle.runtime)
 
     api(libs.navigation.compose)
+
+    api(libs.timber)
+
+    // Room
+    api(libs.room.runtime)
+    api(libs.room.ktx)
 }

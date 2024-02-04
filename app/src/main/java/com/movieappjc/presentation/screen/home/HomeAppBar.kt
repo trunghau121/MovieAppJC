@@ -21,8 +21,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.movieappjc.R
-import com.movieappjc.common.constants.movieText
-import com.movieappjc.theme.fontCustomSemiBold
+import com.movieappjc.app.common.constants.movieText
+import com.movieappjc.app.theme.fontCustomSemiBold
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

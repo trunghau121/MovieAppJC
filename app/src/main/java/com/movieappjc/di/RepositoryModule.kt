@@ -1,6 +1,6 @@
 package com.movieappjc.di
 
-import com.core_app.datastore.PreferenceDataStoreHelper
+import com.core_app.pref.CacheManager
 import com.movieappjc.data.data_sources.AppLocalDataSource
 import com.movieappjc.data.data_sources.AppLocalDataSourceImpl
 import com.movieappjc.data.data_sources.MovieLocalDataSource
@@ -20,10 +20,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
+
     @Provides
     @Singleton
-    fun provideAppLocalDataSource(dataStoreHelper: PreferenceDataStoreHelper): AppLocalDataSource{
-        return AppLocalDataSourceImpl(dataStoreHelper)
+    fun provideAppLocalDataSource(cacheManager: CacheManager): AppLocalDataSource{
+        return AppLocalDataSourceImpl(cacheManager)
     }
 
     @Provides

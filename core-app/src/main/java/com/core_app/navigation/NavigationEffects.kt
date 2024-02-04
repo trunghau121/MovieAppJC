@@ -13,10 +13,10 @@ fun NavigationEffects(
     navigationChannel: Channel<NavigationIntent>,
     navHostController: NavHostController
 ) {
-    val activity = (LocalContext.current as? Activity)
+    val activity = (LocalContext.current as Activity)
     LaunchedEffect(activity, navHostController, navigationChannel) {
         navigationChannel.receiveAsFlow().collect { intent ->
-            if (activity?.isFinishing == true) {
+            if (activity.isFinishing) {
                 return@collect
             }
             when (intent) {

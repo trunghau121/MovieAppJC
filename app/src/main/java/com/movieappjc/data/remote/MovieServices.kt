@@ -1,6 +1,6 @@
 package com.movieappjc.data.remote
 
-import com.movieappjc.common.constants.Endpoints
+import com.movieappjc.app.common.constants.Endpoints
 import com.movieappjc.data.models.CastResultModel
 import com.movieappjc.data.models.MovieCreditsResultModel
 import com.movieappjc.data.models.MovieDetailModel

@@ -1,22 +1,20 @@
 package com.movieappjc.presentation.viewmodel.home
 
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.viewModelScope
-import com.core_app.repository.Resource
-import com.core_app.repository.Resource.Loading
-import com.core_app.viewmodel.BaseViewModel
+import com.core_app.base.viewmodel.BaseViewModel
+import com.core_app.navigation.AppNavigator
+import com.core_app.network.DataState
+import com.core_app.network.DataState.Loading
 import com.movieappjc.domain.entities.MoviesResultEntity
 import com.movieappjc.domain.usecases.ComingSoonUseCase
 import com.movieappjc.domain.usecases.PlayingNowUseCase
 import com.movieappjc.domain.usecases.PopularUseCase
 import com.movieappjc.domain.usecases.TrendingUseCase
-import com.core_app.navigation.AppNavigator
-import com.movieappjc.presentation.route.DestinationApp
+import com.movieappjc.app.route.DestinationApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Stable
@@ -27,10 +25,10 @@ class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase
                                         private val comingSoonUseCase: ComingSoonUseCase,
                                         appNavigator: AppNavigator
     ) : BaseViewModel(appNavigator) {
-    private val _movies = MutableStateFlow<Resource<MoviesResultEntity>>(Loading())
+    private val _movies = MutableStateFlow<DataState<MoviesResultEntity>>(Loading())
     val movies = _movies.asStateFlow()
 
-    private val _movieTabbed = MutableStateFlow<Resource<MoviesResultEntity>>(Loading())
+    private val _movieTabbed = MutableStateFlow<DataState<MoviesResultEntity>>(Loading())
     val movieTabbed = _movieTabbed.asStateFlow()
     private var job: Job?= null
     private var jobTab: Job?= null
@@ -40,10 +38,10 @@ class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase
         getMovies()
     }
     fun getMovies() {
-        viewModelScope.launch {
+        safeLaunch {
             _movies.emit(Loading())
         }
-        job = executeTask(request = { getTrending() }, onSuccess = _movies)
+        job = executeTask({ getTrending() }, _movies)
     }
 
     fun loadMovieTabbed(indexPage: Int){
@@ -66,21 +64,15 @@ class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {
-        viewModelScope.launch {
-            appNavigator.navigateTo(DestinationApp.MovieDetail(movieId))
-        }
+        navigateTo(DestinationApp.MovieDetail(movieId))
     }
 
     fun openFavoriteMovie() {
-        viewModelScope.launch {
-            appNavigator.navigateTo(DestinationApp.FavoriteMovieScreen.fullRoute)
-        }
+        navigateTo(DestinationApp.FavoriteMovieScreen.fullRoute)
     }
 
     fun openSearchMovie() {
-        viewModelScope.launch {
-            appNavigator.navigateTo(DestinationApp.SearchMovieScreen.fullRoute)
-        }
+        navigateTo(DestinationApp.SearchMovieScreen.fullRoute)
     }
 
     override fun onCleared() {

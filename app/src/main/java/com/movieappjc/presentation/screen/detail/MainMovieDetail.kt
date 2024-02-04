@@ -15,7 +15,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.core_app.repository.Resource
+import com.core_app.network.DataState
 import com.movieappjc.R
 import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
@@ -26,7 +26,7 @@ import com.movieappjc.presentation.screen.detail.genres.GenreList
 fun MainMovieDetail(
     modifier: Modifier = Modifier,
     data: MovieDetailEntity,
-    castState: () -> Resource<List<CastEntity>>,
+    castState: () -> DataState<List<CastEntity>>,
     openTrailerMovie: () -> Unit,
     openPersonDetailScreen: (Int) -> Unit
 ) {
@@ -108,7 +108,7 @@ fun MainMovieDetail(
         }
 
         val casts = castState()
-        if (casts is Resource.Success && casts.data.isNotEmpty()) {
+        if (casts is DataState.Success && casts.data.isNotEmpty()) {
             castList = casts.data
             CastCrewList(
                 modifier = Modifier.constrainAs(cast) {

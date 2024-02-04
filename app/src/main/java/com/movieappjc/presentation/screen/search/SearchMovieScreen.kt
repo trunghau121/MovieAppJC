@@ -14,12 +14,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
 import com.core_app.extension.dpToPx
-import com.core_app.repository.Resource
-import com.movieappjc.common.constants.noMoviesSearchedText
-import com.movieappjc.common.localization.LocalLanguages
-import com.movieappjc.presentation.components.AppEmptyText
-import com.movieappjc.presentation.components.ErrorApp
-import com.movieappjc.presentation.components.CircularProgressBar
+import com.core_app.network.DataState
+import com.movieappjc.app.common.constants.noMoviesSearchedText
+import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.components.AppEmptyText
+import com.movieappjc.app.components.ErrorApp
+import com.movieappjc.app.components.CircularProgressBar
 import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 
 @Composable
@@ -33,7 +33,7 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
             onBack = viewModel::onBack
         )
         when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {
-            is Resource.Success -> {
+            is DataState.Success -> {
                 val data = state.data.data
                 if (data.isNotEmpty()) {
                     val glidePreload = rememberGlidePreloadingData(
@@ -58,11 +58,11 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
                 }
             }
 
-            is Resource.Error -> {
+            is DataState.Error -> {
                 ErrorApp(error = state.error, onRetry = viewModel::reloadSearchMovie)
             }
 
-            is Resource.Loading -> {
+            is DataState.Loading -> {
                 Box(modifier = Modifier.height(200.dp)) {
                     CircularProgressBar()
                 }

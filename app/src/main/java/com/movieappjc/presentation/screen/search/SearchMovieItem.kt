@@ -32,8 +32,8 @@ import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.movieappjc.domain.entities.MovieEntity
-import com.movieappjc.theme.fontCustomMedium
-import com.movieappjc.theme.fontCustomNormal
+import com.movieappjc.app.theme.fontCustomMedium
+import com.movieappjc.app.theme.fontCustomNormal
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalComposeUiApi::class)
 @Composable

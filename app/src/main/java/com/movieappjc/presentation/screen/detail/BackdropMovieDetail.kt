@@ -13,8 +13,8 @@ import com.bumptech.glide.integration.compose.CrossFade
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.core_app.extension.value
-import com.movieappjc.common.constants.Endpoints
-import com.movieappjc.common.screenutil.ScreenUtil
+import com.movieappjc.app.common.constants.Endpoints
+import com.movieappjc.app.common.screenutil.ScreenUtil
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
