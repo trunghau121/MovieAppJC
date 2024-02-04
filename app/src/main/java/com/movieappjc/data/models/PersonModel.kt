@@ -3,8 +3,10 @@ package com.movieappjc.data.models
 import com.core_app.extension.value
 import com.squareup.moshi.Json
 import com.movieappjc.domain.entities.PersonEntity
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 
+@JsonClass(generateAdapter = false)
 @Parcelize
 data class PersonModel(
     @Json(name = "adult")

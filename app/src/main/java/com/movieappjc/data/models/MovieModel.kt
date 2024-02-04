@@ -4,8 +4,10 @@ import androidx.compose.runtime.Stable
 import com.core_app.extension.value
 import com.movieappjc.domain.entities.MovieEntity
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 
+@JsonClass(generateAdapter = false)
 @Stable
 @Parcelize
 data class MovieModel(

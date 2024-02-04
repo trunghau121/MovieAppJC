@@ -7,8 +7,10 @@ import com.movieappjc.data.local.MovieTable
 import com.movieappjc.domain.entities.GenreEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.domain.entities.MovieEntity
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 
+@JsonClass(generateAdapter = false)
 @Parcelize
 @Stable
 data class MovieDetailModel(

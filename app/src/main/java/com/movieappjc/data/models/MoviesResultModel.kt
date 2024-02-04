@@ -5,7 +5,9 @@ import com.core_app.extension.value
 import com.movieappjc.domain.entities.MovieEntity
 import com.squareup.moshi.Json
 import com.movieappjc.domain.entities.MoviesResultEntity
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = false)
 @Stable
 class MoviesResultModel(
     @Json(name = "page")
