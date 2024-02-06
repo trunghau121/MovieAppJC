@@ -11,6 +11,8 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
+import com.core_app.utils.blur_glide.BlurGlideLoader
+import com.core_app.utils.blur_glide.BlurGlideModel
 import okhttp3.OkHttpClient
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
@@ -28,5 +30,11 @@ class GlideModule: AppGlideModule() {
 
         val factory = OkHttpUrlLoader.Factory(client)
         registry.append(GlideUrl::class.java, InputStream::class.java, factory)
+
+        registry.append(
+            BlurGlideModel::class.java,
+            InputStream::class.java,
+            BlurGlideLoader.Factory()
+        )
     }
 }

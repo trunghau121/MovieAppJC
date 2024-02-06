@@ -29,9 +29,7 @@ object HandelError{
                             return Pair(ErrorType.FROM_API, mgs)
                         }
                     }
-                } catch (e: Exception) {
-                    throwable.printStackTrace()
-                }
+                } catch (_: Exception) {}
                 return Pair(ErrorType.UNKNOW, "")
             }
             return Pair(ErrorType.UNKNOW, "")

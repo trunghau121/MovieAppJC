@@ -21,6 +21,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 private const val BASE_URL = "base_url"
+private const val IS_CACHE = "is_cache"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,6 +32,13 @@ class RemoteModule {
     @Named(value = BASE_URL)
     fun provideBaseUrl(networkConfig: NetworkConfig): String {
         return networkConfig.baseUrl()
+    }
+
+    @Provides
+    @Singleton
+    @Named(value = IS_CACHE)
+    fun provideCacheUrl(networkConfig: NetworkConfig): Boolean {
+        return networkConfig.isCache()
     }
 
     @Provides
@@ -56,10 +64,11 @@ class RemoteModule {
     fun provideOkHttpClient(
         @ApplicationContext context: Context,
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        httpRequestInterceptor: HttpRequestInterceptor
+        httpRequestInterceptor: HttpRequestInterceptor,
+        @Named(value = IS_CACHE) isCache: Boolean,
     ): OkHttpClient {
         return createOkHttpClient(
-            isCache = true,
+            isCache = isCache,
             interceptors = arrayOf(
                 httpLoggingInterceptor,
                 httpRequestInterceptor

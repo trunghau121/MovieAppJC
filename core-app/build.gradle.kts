@@ -83,4 +83,6 @@ dependencies {
     // Room
     api(libs.room.runtime)
     api(libs.room.ktx)
+    api("jp.wasabeef:glide-transformations:4.3.0")
+
 }

@@ -13,7 +13,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-private const val CLIENT_TIME_OUT = 60L
+private const val CLIENT_TIME_OUT = 30L
 private const val CLIENT_CACHE_SIZE = 10 * 1024 * 1024L
 private const val CLIENT_CACHE_DIRECTORY = "http"
 

@@ -8,12 +8,11 @@ class MovieJCNetworkConfig : NetworkConfig() {
     override fun baseUrl(): String {
         return Endpoints.apiUrl
     }
-
-    override fun timeOut(): Long {
-        return 30L
-    }
-
     override fun isDev(): Boolean {
         return BuildConfig.DEBUG
+    }
+
+    override fun isCache(): Boolean {
+        return true
     }
 }
