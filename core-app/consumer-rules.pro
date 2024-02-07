@@ -123,9 +123,3 @@
 -keepclassmembers class com.movieappjc.data.models.** { *; }
 # End OkHttp, Retrofit and Moshi
 
-# Start androidx.security:security-crypto-ktx
--dontwarn com.google.api.client.http.**
--dontwarn org.joda.time.**
--dontwarn com.google.errorprone.annotations.*
-# End androidx.security:security-crypto-ktx
-

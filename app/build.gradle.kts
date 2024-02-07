@@ -38,10 +38,10 @@ android {
 
     signingConfigs {
         create("product") {
-            keyAlias = properties.getProperty("keyAlias")
-            keyPassword = properties.getProperty("keyPassword")
+            keyAlias = "test"
+            keyPassword = "test@#123"
             storeFile = project.rootProject.file("keystore/test_keys.jks")
-            storePassword = properties.getProperty("storePassword")
+            storePassword = "test@#123"
         }
     }
 

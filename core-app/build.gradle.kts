@@ -57,12 +57,12 @@ dependencies {
 
     api(libs.datastore)
     api(libs.datastore.preferences)
-    api(libs.androidx.security.crypto.ktx)
 
     api(libs.glideCompose)
     api(libs.glide)
     ksp(libs.glide.ksp)
     api(libs.glide.okhttp3.integration)
+    api(libs.glide.transformations)
 
     api(libs.okhttp3)
     api(libs.okhttp3.logging.interceptor)
@@ -83,6 +83,5 @@ dependencies {
     // Room
     api(libs.room.runtime)
     api(libs.room.ktx)
-    api("jp.wasabeef:glide-transformations:4.3.0")
 
 }
