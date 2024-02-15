@@ -13,4 +13,5 @@ interface MovieEntity : Parcelable {
     val overview: String
 
     fun getPosterUrl():String = "${Endpoints.baseUrlImage}${posterPath}"
+    fun getBackdropUrl():String = "${Endpoints.baseUrlImage200}${backdropPath}"
 }

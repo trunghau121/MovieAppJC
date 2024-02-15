@@ -6,14 +6,12 @@ import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.data.DataFetcher
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
 import jp.wasabeef.glide.transformations.BlurTransformation
 import timber.log.Timber
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.util.Timer
 
 class BlurGlideFetcher(
     private val model: BlurGlideModel,
@@ -27,8 +25,6 @@ class BlurGlideFetcher(
             target = request
                 .asBitmap()
                 .load(model.url)
-                .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .transform(BlurTransformation(model.radius, model.sampling))
                 .submit(width, height)
             callback.onDataReady(toInputStream(target!!.get()))

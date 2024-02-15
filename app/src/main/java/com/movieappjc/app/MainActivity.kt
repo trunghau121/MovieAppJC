@@ -28,11 +28,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var appRepository: AppRepository
+    @Inject
+    lateinit var appRepository: AppRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent{
-            MyApp(appRepository = appRepository){
+        setContent {
+            MyApp(appRepository = appRepository) {
                 MainScreen(onClickLanguage = it)
             }
         }
@@ -40,18 +41,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(appRepository: AppRepository, content: @Composable ((Locale) -> Unit) -> Unit){
+fun MyApp(appRepository: AppRepository, content: @Composable ((Locale) -> Unit) -> Unit) {
     MovieAppJCTheme {
         val coroutineScope = rememberCoroutineScope()
         var locale by remember { mutableStateOf(Locale.getDefault()) }
-        LaunchedEffect(true){
+        LaunchedEffect(true) {
             val language = appRepository.getPreferredLanguage().first()
             if (locale != language)
                 locale = language
         }
         supportedLocalesNow
         LocalizationApp(locale = { locale }) {
-            Surface(modifier = Modifier.fillMaxSize().navigationBarsPadding(), color = kColorVulcan) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
+                color = kColorVulcan
+            ) {
                 content {
                     if (locale != it) {
                         coroutineScope.launch {
