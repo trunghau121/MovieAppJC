@@ -17,15 +17,14 @@ glideComposeVersion = "1.0.0-beta01"
 dataStoreVersion = "1.0.0"
 navigationVersion = "2.7.7"
 readmoreVersion = "1.5.2"
-securityCryptoKtxVersion = "1.1.0-alpha06"
 timberVersion = "5.0.1"
 youtubeplayerVersion = "12.1.0"
 roomVersion = "2.6.1"
 constraintlayoutComposeVersion = "1.1.0-alpha13"
+glideTransformationsVersion = "4.3.0"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
-androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtxVersion" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleVersion" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "lifecycleVersion" }
 
@@ -48,6 +47,7 @@ datastore = { group = "androidx.datastore", name = "datastore", version.ref = "d
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glideVersion" }
 glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glideVersion" }
 glide-okhttp3-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glideVersion" }
+glide-transformations = { module = "jp.wasabeef:glide-transformations", version.ref = "glideTransformationsVersion" }
 
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutinesVersion" }
