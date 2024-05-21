@@ -26,8 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.aboutDescriptionText
 import com.movieappjc.app.common.constants.aboutText
@@ -35,13 +34,12 @@ import com.movieappjc.app.common.constants.favoriteMoviesText
 import com.movieappjc.app.common.constants.feedbackText
 import com.movieappjc.app.common.constants.languageText
 import com.movieappjc.app.common.localization.LocalLanguages
+import com.movieappjc.app.theme.kColorVulcan
 import com.movieappjc.presentation.screen.about.AboutDialog
 import com.movieappjc.presentation.screen.feedback.FeedbackDialog
-import com.movieappjc.app.theme.kColorVulcan
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun NavigationDrawerApp(
     drawerState: DrawerState,
@@ -71,7 +69,7 @@ fun NavigationDrawerApp(
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(40.dp))
-                    GlideImage(
+                    AsyncImage(
                         modifier = Modifier.fillMaxWidth().height(23.dp),
                         model = R.drawable.ic_horizontal_logo,
                         contentDescription = "",

@@ -15,16 +15,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
-import com.core_app.extension.dpToPx
 import com.core_app.extension.value
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
@@ -72,12 +69,6 @@ private fun ListTrailer(
     var videoId by remember { mutableStateOf("") }
     if (videoId.isEmpty()) videoId = videos()[0].key
 
-    val glidePreload = rememberGlidePreloadingData(
-        data = videos(), preloadImageSize = Size(sizeItem.dpToPx(), sizeItem.dpToPx())
-    ) { item, requestBuilder ->
-        requestBuilder.load(item.getThumbnail())
-    }
-
     LazyColumn {
         stickyHeader {
             TrailerYoutubePlayer(
@@ -85,15 +76,14 @@ private fun ListTrailer(
                 lifecycleOwner = StableHolder(LocalLifecycleOwner.current)
             )
         }
-        items(glidePreload.size, key = { videos()[it].key }) { index ->
-            val (item, preloadRequest) = glidePreload[index]
+        items(videos().size, key = { videos()[it].key }) { index ->
+            val item = videos()[index]
             TrailerItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(if (item.key == videoId) kColorViolet else Color.Transparent),
                 item = item,
-                sizeItem = sizeItem,
-                preloadRequest = { preloadRequest }
+                sizeItem = sizeItem
             ) {
                 videoId = it
             }

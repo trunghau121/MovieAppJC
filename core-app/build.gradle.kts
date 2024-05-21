@@ -5,6 +5,7 @@ plugins {
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -32,18 +33,17 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
-    }
-    buildFeatures {
         buildConfig = true
     }
 }
 
+composeCompiler {
+    enableStrongSkippingMode = true
+}
+
 dependencies {
     api(libs.androidx.ktx)
+    api(libs.kotlinx.serialization.json)
 
     api(libs.activity.compose)
     api(libs.compose.ui)
@@ -58,11 +58,8 @@ dependencies {
     api(libs.datastore)
     api(libs.datastore.preferences)
 
-    api(libs.glideCompose)
-    api(libs.glide)
-    ksp(libs.glide.ksp)
-    api(libs.glide.okhttp3.integration)
-    api(libs.glide.transformations)
+    api(libs.coil.compose)
+    api(libs.coil.transformations)
 
     api(libs.okhttp3)
     api(libs.okhttp3.logging.interceptor)
@@ -83,5 +80,6 @@ dependencies {
     // Room
     api(libs.room.runtime)
     api(libs.room.ktx)
+    api(libs.androidx.fragment.ktx)
 
 }

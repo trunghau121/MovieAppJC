@@ -2,17 +2,17 @@ package com.movieappjc.presentation.viewmodel.detail
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import com.core_app.base.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
 import com.core_app.network.DataState
 import com.core_app.network.HandelError
+import com.movieappjc.app.route.Routes
 import com.movieappjc.domain.entities.CastEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
 import com.movieappjc.domain.usecases.CastCrewUseCase
 import com.movieappjc.domain.usecases.DetailMovieUseCase
 import com.movieappjc.domain.usecases.FavoriteMovieUseCase
-import com.movieappjc.app.route.DestinationApp
-import com.movieappjc.app.route.DestinationKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,7 +36,7 @@ class MovieDetailViewModel @Inject constructor(
     val isMovieFavorite = _isMovieFavorite.asStateFlow()
 
     init {
-        movieId = savedStateHandle.get<Int>(DestinationKey.MOVIE_ID_KEY) ?: -1
+        movieId = savedStateHandle.toRoute<Routes.MovieDetail>().movieId
         getMovieDetail()
         safeLaunch {
             checkMovieFavorite()
@@ -79,10 +79,10 @@ class MovieDetailViewModel @Inject constructor(
     }
 
     fun openPersonDetailScreen(personId: Int) {
-        navigateTo(DestinationApp.PersonDetailScreen(personId))
+        navigateTo(Routes.PersonDetailScreen(personId))
     }
 
     fun openTrailerMovie() {
-        navigateTo(DestinationApp.TrailerMovie(movieId))
+        navigateTo(Routes.TrailerMovie(movieId))
     }
 }

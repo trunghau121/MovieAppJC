@@ -5,12 +5,12 @@ import com.core_app.base.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
 import com.core_app.network.DataState
 import com.core_app.network.DataState.Loading
+import com.movieappjc.app.route.Routes
 import com.movieappjc.domain.entities.MoviesResultEntity
 import com.movieappjc.domain.usecases.ComingSoonUseCase
 import com.movieappjc.domain.usecases.PlayingNowUseCase
 import com.movieappjc.domain.usecases.PopularUseCase
 import com.movieappjc.domain.usecases.TrendingUseCase
-import com.movieappjc.app.route.DestinationApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,15 +64,15 @@ class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {
-        navigateTo(DestinationApp.MovieDetail(movieId))
+        navigateTo(Routes.MovieDetail(movieId))
     }
 
     fun openFavoriteMovie() {
-        navigateTo(DestinationApp.FavoriteMovieScreen.fullRoute)
+        navigateTo(Routes.FavoriteMovieScreen)
     }
 
     fun openSearchMovie() {
-        navigateTo(DestinationApp.SearchMovieScreen.fullRoute)
+        navigateTo(Routes.SearchMovieScreen)
     }
 
     override fun onCleared() {

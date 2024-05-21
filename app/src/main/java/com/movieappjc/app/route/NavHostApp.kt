@@ -2,10 +2,8 @@ package com.movieappjc.app.route
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
+import androidx.navigation.compose.composable
 import com.core_app.navigation.NavHost
-import com.core_app.navigation.composable
 import com.core_app.utils.StableHolder
 import com.movieappjc.presentation.screen.detail.MovieDetailScreen
 import com.movieappjc.presentation.screen.favorite.FavoriteMovieScreen
@@ -22,38 +20,29 @@ fun NavHostApp(
 ) {
     NavHost(
         navController = navController(),
-        startDestination = DestinationApp.HomeScreen
+        startDestination = Routes.HomeScreen
     ) {
-        composable(destination = DestinationApp.HomeScreen) {
+        composable<Routes.HomeScreen> {
             HomeScreen(onClickLanguage = onClickLanguage)
         }
 
-        composable(
-            destination = DestinationApp.MovieDetail,
-            arguments = listOf(navArgument(DestinationKey.MOVIE_ID_KEY) { type = NavType.IntType })
-        ) {
+        composable<Routes.MovieDetail> {
             MovieDetailScreen()
         }
 
-        composable(
-            destination = DestinationApp.TrailerMovie,
-            arguments = listOf(navArgument(DestinationKey.MOVIE_ID_KEY) { type = NavType.IntType })
-        ) {
+        composable<Routes.TrailerMovie> {
             TrailerMovieScreen()
         }
 
-        composable(destination = DestinationApp.FavoriteMovieScreen) {
+        composable<Routes.FavoriteMovieScreen> {
             FavoriteMovieScreen()
         }
 
-        composable(destination = DestinationApp.SearchMovieScreen) {
+        composable<Routes.SearchMovieScreen> {
             SearchMovieScreen()
         }
 
-        composable(
-            destination = DestinationApp.PersonDetailScreen,
-            arguments = listOf(navArgument(DestinationKey.PERSON_ID_KEY) { type = NavType.IntType })
-        ){
+        composable<Routes.PersonDetailScreen> {
             PersonDetailScreen()
         }
     }

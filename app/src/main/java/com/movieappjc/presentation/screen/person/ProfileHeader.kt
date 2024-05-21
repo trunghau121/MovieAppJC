@@ -24,18 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
-import com.bumptech.glide.integration.compose.CrossFade
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.movieappjc.R
 import com.movieappjc.app.common.screenutil.ScreenUtil
-import com.movieappjc.domain.entities.PersonEntity
 import com.movieappjc.app.common.utils.ComponentUtil
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.fontCustomSemiBold
 import com.movieappjc.app.theme.kColorVulcan
+import com.movieappjc.domain.entities.PersonEntity
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ProfileHeader(
     personEntity: PersonEntity,
@@ -70,10 +68,12 @@ fun ProfileHeader(
             Modifier.layoutId("profile_avatar")
         }
 
-        GlideImage(
+        AsyncImage(
             modifier = avatarModifier,
-            model = personEntity.getProfileUrl(),
-            transition = CrossFade,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(personEntity.getProfileUrl())
+                .crossfade(true)
+                .build(),
             contentScale = ContentScale.Crop,
             contentDescription = personEntity.getName()
         )

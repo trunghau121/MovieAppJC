@@ -1,6 +1,5 @@
 package com.movieappjc.presentation.screen.home.movie_carousel
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,18 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.CrossFade
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.core_app.extension.dpToPx
 import com.core_app.utils.ImmutableHolder
 import com.movieappjc.app.common.screenutil.ScreenUtil
-import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.app.common.utils.pagerAnimation
+import com.movieappjc.domain.entities.MovieEntity
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CarouselMovieList(
     movies: ImmutableHolder<List<MovieEntity>>,
@@ -49,7 +47,6 @@ fun CarouselMovieList(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun PosterCard(
     modifier: Modifier = Modifier,
@@ -57,15 +54,17 @@ private fun PosterCard(
     heightItem: Dp,
     onNavigateToMovieDetail: (Int) -> Unit,
 ) {
-    GlideImage(
+    AsyncImage(
         modifier = modifier
             .fillMaxWidth()
             .height(heightItem)
             .clip(RoundedCornerShape(15.dp))
             .background(color = Color.LightGray)
             .clickable { onNavigateToMovieDetail(movie.id) },
-        model = movie.getPosterUrl(),
-        transition = CrossFade,
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(movie.getPosterUrl())
+            .crossfade(true)
+            .build(),
         contentScale = ContentScale.Crop,
         contentDescription = movie.title
     )

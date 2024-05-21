@@ -27,7 +27,7 @@ abstract class BaseViewModel(val appNavigator: AppNavigator) : ViewModel() {
     }
 
     protected fun navigateTo(
-        route: String,
+        route: Any,
         popUpToRoute: String? = null,
         inclusive: Boolean = false,
         isSingleTop: Boolean = false,

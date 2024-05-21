@@ -11,14 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.CrossFade
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.movieappjc.app.common.screenutil.ScreenUtil
 import com.movieappjc.app.theme.kColorViolet
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PosterMovieDetail(
     modifier: Modifier = Modifier,
@@ -27,7 +26,7 @@ fun PosterMovieDetail(
 ) {
     val heightScreen = ScreenUtil.getScreenHeight()
     val heightPoster = heightScreen.div(4.16f)
-    GlideImage(
+    AsyncImage(
         modifier = modifier
             .width((heightPoster.div(1.4f)))
             .height(heightPoster)
@@ -37,8 +36,10 @@ fun PosterMovieDetail(
             )
             .clip(shape = RoundedCornerShape(15.dp))
             .background(color = Color.LightGray),
-        model = posterUrl,
-        transition = CrossFade,
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(posterUrl)
+            .crossfade(true)
+            .build(),
         contentScale = ContentScale.Crop,
         contentDescription = contentDescription
     )

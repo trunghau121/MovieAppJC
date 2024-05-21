@@ -9,7 +9,7 @@ class AppNavigatorImpl : AppNavigator {
         onBufferOverflow = BufferOverflow.DROP_LATEST,
     )
 
-    override suspend fun navigateBack(route: String?, inclusive: Boolean) {
+    override suspend fun navigateBack(route: Any?, inclusive: Boolean) {
         navigationChannel.send(
             NavigationIntent.NavigateBack(
                 route = route,
@@ -18,7 +18,7 @@ class AppNavigatorImpl : AppNavigator {
         )
     }
 
-    override fun tryNavigateBack(route: String?, inclusive: Boolean) {
+    override fun tryNavigateBack(route: Any?, inclusive: Boolean) {
         navigationChannel.trySend(
             NavigationIntent.NavigateBack(
                 route = route,
@@ -28,8 +28,8 @@ class AppNavigatorImpl : AppNavigator {
     }
 
     override suspend fun navigateTo(
-        route: String,
-        popUpToRoute: String?,
+        route: Any,
+        popUpToRoute: Any?,
         inclusive: Boolean,
         isSingleTop: Boolean
     ) {
@@ -44,8 +44,8 @@ class AppNavigatorImpl : AppNavigator {
     }
 
     override fun tryNavigateTo(
-        route: String,
-        popUpToRoute: String?,
+        route: Any,
+        popUpToRoute: Any?,
         inclusive: Boolean,
         isSingleTop: Boolean
     ) {

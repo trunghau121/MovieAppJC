@@ -4,9 +4,9 @@ import androidx.compose.runtime.Stable
 import com.core_app.base.viewmodel.BaseViewModel
 import com.core_app.navigation.AppNavigator
 import com.core_app.network.DataState
+import com.movieappjc.app.route.Routes
 import com.movieappjc.domain.entities.MoviesResultEntity
 import com.movieappjc.domain.usecases.SearchMovieUseCase
-import com.movieappjc.app.route.DestinationApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -60,7 +60,7 @@ class SearchMovieViewModel @Inject constructor(
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {
-        navigateTo(DestinationApp.MovieDetail(movieId))
+        navigateTo(Routes.MovieDetail(movieId))
     }
 
     override fun onCleared() {

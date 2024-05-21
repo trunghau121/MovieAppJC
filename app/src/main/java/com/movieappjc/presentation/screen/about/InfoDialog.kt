@@ -23,8 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.okayText
 import com.movieappjc.app.common.localization.LocalLanguages
@@ -34,7 +33,6 @@ import com.movieappjc.app.theme.fontCustomSemiBold
 import com.movieappjc.app.theme.kColorViolet
 import com.movieappjc.app.theme.kColorVulcan
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AboutDialog(
     title: String,
@@ -75,7 +73,7 @@ fun AboutDialog(
                         fontSize = 16.sp
                     )
                     Spacer(modifier = Modifier.height(15.dp))
-                    GlideImage(
+                    AsyncImage(
                         modifier = Modifier.height(20.dp),
                         model = R.drawable.ic_horizontal_logo,
                         contentDescription = "",

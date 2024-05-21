@@ -11,12 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
-import com.core_app.extension.dpToPx
 import com.movieappjc.app.common.constants.noFavoriteMovieText
 import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.app.common.screenutil.ScreenUtil
@@ -27,7 +24,13 @@ import com.movieappjc.presentation.viewmodel.favorite.FavoriteViewModel
 @Composable
 fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
     val state by viewModel.movies.collectAsStateWithLifecycle()
-    val widthItem = (ScreenUtil.getScreenWidth() / 2) - 16.dp
+    val widthScreen = ScreenUtil.getScreenWidth()
+    val columns =  when {
+        widthScreen > 700.dp -> 5
+        widthScreen > 600.dp -> 4
+        else -> 2
+    }
+    val widthItem = (widthScreen / columns) - 16.dp
     val heightItem = widthItem.times(1.5f)
     LaunchedEffect(true) {
         viewModel.getFavoriteMovies()
@@ -36,25 +39,18 @@ fun FavoriteMovieScreen(viewModel: FavoriteViewModel = hiltViewModel()) {
         FavoriteAppBar(onBack = viewModel::onBack)
         state.ToUI({ data ->
             if (data.isNotEmpty()) {
-                val glidePreload = rememberGlidePreloadingData(
-                    data = data,
-                    preloadImageSize = Size(widthItem.dpToPx(), heightItem.dpToPx())
-                ) { item, requestBuilder ->
-                    requestBuilder.load(item.getPosterUrl())
-                }
                 LazyVerticalGrid(
                     modifier = Modifier.fillMaxSize(),
-                    columns = GridCells.Fixed(2),
+                    columns = GridCells.Fixed(columns),
                     contentPadding = PaddingValues(5.dp)
                 ) {
-                    items(glidePreload.size, key = { data[it].id }) {
-                        val (item, preloadRequest) = glidePreload[it]
+                    items(data.size, key = { data[it].id }) {
+                        val item = data[it]
                         FavoriteMovieItem(
                             modifier = Modifier
                                 .width(widthItem)
                                 .height(heightItem),
                             movieEntity = item,
-                            preloadRequest = { preloadRequest },
                             onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail,
                             onDelete = viewModel::deleteFavoriteMovie
                         )

@@ -6,6 +6,8 @@ plugins {
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 val keystoreProperties = project.rootProject.file("key.properties")
@@ -76,19 +78,15 @@ android {
         buildConfig = true
     }
 
-    buildFeatures {
-        compose = true
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
-    }
+composeCompiler {
+    enableStrongSkippingMode = true
 }
 
 dependencies {

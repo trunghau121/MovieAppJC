@@ -1,5 +1,7 @@
 package com.movieappjc.presentation.screen.person
 
+import androidx.compose.animation.SplineBasedFloatDecayAnimationSpec
+import androidx.compose.animation.core.generateDecayAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -23,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,7 +51,14 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
             anchors = anchors,
             positionalThreshold = { distance: Float -> distance * 0.5f },
             velocityThreshold = { with(density) { 100.dp.toPx() } },
-            animationSpec = tween(),
+            snapAnimationSpec = tween(),
+            decayAnimationSpec =  SplineBasedFloatDecayAnimationSpec(object: Density {
+                override val density: Float
+                    get() = 3f
+                override val fontScale: Float
+                    get() = 3f
+
+            }).generateDecayAnimationSpec(),
         )
     }
 

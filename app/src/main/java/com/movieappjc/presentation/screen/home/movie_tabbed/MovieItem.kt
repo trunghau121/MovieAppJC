@@ -1,6 +1,5 @@
 package com.movieappjc.presentation.screen.home.movie_tabbed
 
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,23 +15,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.integration.compose.CrossFade
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.movieappjc.domain.entities.MovieEntity
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.movieappjc.app.theme.fontCustomSemiBold
+import com.movieappjc.domain.entities.MovieEntity
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MovieItem(
     modifier: Modifier = Modifier,
     movieEntity: MovieEntity,
-    preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit
 ) {
     Column(
@@ -40,19 +36,19 @@ fun MovieItem(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        GlideImage(
+        AsyncImage(
             modifier = Modifier
                 .weight(1f)
                 .clip(shape = RoundedCornerShape(15.dp))
                 .background(color = Color.LightGray)
                 .clickable { onNavigateToMovieDetail(movieEntity.id) },
-            model = movieEntity.getPosterUrl(),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(movieEntity.getPosterUrl())
+                .crossfade(true)
+                .build(),
             contentScale = ContentScale.Crop,
-            transition = CrossFade,
             contentDescription = movieEntity.title
-        ) { primaryRequest ->
-            primaryRequest.thumbnail(preloadRequest())
-        }
+        )
         Text(
             modifier = Modifier.fillMaxWidth().padding(6.dp),
             text = movieEntity.title,

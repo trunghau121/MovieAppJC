@@ -1,6 +1,5 @@
 package com.movieappjc.presentation.screen.favorite
 
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,20 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.integration.compose.CrossFade
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.movieappjc.domain.entities.MovieEntity
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.movieappjc.app.theme.kColorViolet
+import com.movieappjc.domain.entities.MovieEntity
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun FavoriteMovieItem(
     modifier: Modifier = Modifier,
     movieEntity: MovieEntity,
-    preloadRequest: () -> RequestBuilder<Drawable>,
     onNavigateToMovieDetail: (Int) -> Unit,
     onDelete: (Int) -> Unit
 ) {
@@ -40,15 +36,15 @@ fun FavoriteMovieItem(
         border = BorderStroke(2.dp, color = kColorViolet)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            GlideImage(
+            AsyncImage(
                 modifier = Modifier.fillMaxSize(),
-                model = movieEntity.getPosterUrl(),
-                transition = CrossFade,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(movieEntity.getPosterUrl())
+                    .crossfade(true)
+                    .build(),
                 contentScale = ContentScale.Crop,
                 contentDescription = movieEntity.title
-            ) { primaryRequest ->
-                primaryRequest.thumbnail(preloadRequest())
-            }
+            )
             Icon(
                 modifier = Modifier
                     .size(45.dp)

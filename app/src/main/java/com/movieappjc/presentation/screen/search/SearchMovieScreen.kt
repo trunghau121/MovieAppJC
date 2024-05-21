@@ -8,18 +8,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.bumptech.glide.integration.compose.rememberGlidePreloadingData
-import com.core_app.extension.dpToPx
 import com.core_app.network.DataState
 import com.movieappjc.app.common.constants.noMoviesSearchedText
 import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.app.components.AppEmptyText
-import com.movieappjc.app.components.ErrorApp
 import com.movieappjc.app.components.CircularProgressBar
+import com.movieappjc.app.components.ErrorApp
 import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 
 @Composable
@@ -36,19 +33,12 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
             is DataState.Success -> {
                 val data = state.data.data
                 if (data.isNotEmpty()) {
-                    val glidePreload = rememberGlidePreloadingData(
-                        data = data, preloadImageSize = Size(sizeItem.dpToPx(), sizeItem.dpToPx())
-                    ) { item, requestBuilder ->
-                        requestBuilder.load(item.getPosterUrl())
-                    }
-
                     LazyColumn(modifier = Modifier.imePadding()) {
-                        items(glidePreload.size, key = { data[it].id }) {
-                            val (item, preloadRequest) = glidePreload[it]
+                        items(data.size, key = { data[it].id }) {
+                            val item = data[it]
                             SearchMovieItem(
                                 movieEntity = item,
                                 sizeItem = sizeItem,
-                                preloadRequest = { preloadRequest },
                                 onNavigateToMovieDetail = viewModel::onNavigateToMovieDetail
                             )
                         }

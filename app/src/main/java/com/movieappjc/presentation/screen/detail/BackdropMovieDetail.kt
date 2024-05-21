@@ -9,14 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import com.bumptech.glide.integration.compose.CrossFade
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.core_app.extension.value
 import com.movieappjc.app.common.constants.Endpoints
 import com.movieappjc.app.common.screenutil.ScreenUtil
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BackdropMovieDetail(
     modifier: Modifier = Modifier,
@@ -26,7 +25,7 @@ fun BackdropMovieDetail(
     val heightScreen = ScreenUtil.getScreenHeight()
     val heightTotal = heightScreen.div(2.3f)
 
-    GlideImage(
+    AsyncImage(
         modifier = modifier
             .fillMaxSize()
             .height(heightTotal)
@@ -37,9 +36,11 @@ fun BackdropMovieDetail(
                 )
             )
             .background(color = Color.LightGray),
-        model = "${Endpoints.urlOriginalImage}${backdropPath.value()}",
-        transition = CrossFade,
-        contentScale = ContentScale.FillHeight,
+        model = ImageRequest.Builder(LocalContext.current)
+            .data("${Endpoints.urlOriginalImage}${backdropPath.value()}")
+            .crossfade(true)
+            .build(),
+        contentScale = ContentScale.Crop,
         contentDescription = contentDescription
     )
 }
