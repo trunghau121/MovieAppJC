@@ -1,5 +1,6 @@
 package com.movieappjc.app
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.movieappjc.R
 import com.movieappjc.app.common.constants.supportedLocalesNow
 import com.movieappjc.app.common.localization.LocalizationApp
 import com.movieappjc.domain.repositories.AppRepository
@@ -32,6 +34,12 @@ class MainActivity : ComponentActivity() {
     lateinit var appRepository: AppRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = if (resources.getBoolean(R.bool.isTablet)) {
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+
         setContent {
             MyApp(appRepository = appRepository) {
                 MainScreen(onClickLanguage = it)

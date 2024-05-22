@@ -12,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(val appNavigator: AppNavigator) : ViewModel() {
@@ -55,10 +56,10 @@ abstract class BaseViewModel(val appNavigator: AppNavigator) : ViewModel() {
         request: () -> Flow<DataState<T>>,
         onSuccess: MutableStateFlow<DataState<T>>
     ): Job {
-        return executeTask(request, success = {
-            onSuccess.value = it
+        return executeTask(request, success = { data ->
+            onSuccess.update { data }
         }, error = { exception ->
-            onSuccess.value = DataState.Error(HandelError.getError(exception))
+            onSuccess.update { DataState.Error(HandelError.getError(exception)) }
         })
     }
 

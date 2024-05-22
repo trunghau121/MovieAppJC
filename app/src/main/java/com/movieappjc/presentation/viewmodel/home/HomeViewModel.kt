@@ -50,17 +50,14 @@ class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase
 
         jobTab?.cancel()
         _movieTabbed.value = Loading()
-        when (indexPage) {
-            0 -> {
-                jobTab = executeTask(request = { getPopular() }, onSuccess = _movieTabbed)
+
+        jobTab = executeTask(request = {
+            when (indexPage) {
+                0 -> getPopular()
+                1 -> getPlayingNow()
+                else -> comingSoonUseCase()
             }
-            1 -> {
-                jobTab= executeTask(request = { getPlayingNow() }, onSuccess = _movieTabbed)
-            }
-            2 -> {
-                jobTab = executeTask(request = { comingSoonUseCase() }, onSuccess = _movieTabbed)
-            }
-        }
+        }, onSuccess = _movieTabbed)
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {

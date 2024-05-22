@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MovieAppJC</string>
+    <bool name="isTablet">false</bool>
 </resources>
