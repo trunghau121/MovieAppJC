@@ -2,11 +2,11 @@ package com.movieappjc.app
 
 import com.core_app.base.app.NetworkConfig
 import com.movieappjc.BuildConfig
-import com.movieappjc.app.common.constants.Endpoints
+import com.movieappjc.app.common.utils.KeyUtils
 
 class MovieJCNetworkConfig : NetworkConfig() {
     override fun baseUrl(): String {
-        return Endpoints.apiUrl
+        return KeyUtils.baseUrl()
     }
     override fun isDev(): Boolean {
         return BuildConfig.DEBUG

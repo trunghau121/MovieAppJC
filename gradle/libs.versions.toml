@@ -16,6 +16,7 @@ dataStoreVersion = "1.1.1"
 navigationVersion = "2.8.0-beta01"
 readmoreVersion = "1.5.2"
 timberVersion = "5.0.1"
+tinkAndroidVersion = "1.9.0"
 youtubeplayerVersion = "12.1.0"
 roomVersion = "2.6.1"
 constraintlayoutComposeVersion = "1.1.0-alpha13"
@@ -23,6 +24,7 @@ kotlinxSerializationJson = "1.7.0-RC"
 kotlinVersion = "2.0.0-RC3"
 fragmentKtxVersion = "1.7.1"
 transformationsVersion = "2.0.3"
+securityCryptoKtxVersion = "1.1.0-alpha06"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
@@ -63,6 +65,7 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 
 readmore-material = { group = "com.webtoonscorp.android", name = "readmore-material", version.ref = "readmoreVersion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
+tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tinkAndroidVersion" }
 youtubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "youtubeplayerVersion" }
 
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
@@ -71,6 +74,9 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVers
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtxVersion" }
+
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "composeVersion" }
+androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtxVersion" }
 
 
 [plugins]

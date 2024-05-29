@@ -25,6 +25,7 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -32,6 +33,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
     buildFeatures {
         buildConfig = true
     }
@@ -48,7 +50,6 @@ dependencies {
     api(libs.activity.compose)
     api(libs.compose.ui)
     api(libs.compose.ui.graphics)
-    api(libs.compose.tooling.preview)
     api(libs.compose.material3)
     api(libs.lifecycle.compose)
     api(libs.constraintlayout.compose)
@@ -57,6 +58,10 @@ dependencies {
 
     api(libs.datastore)
     api(libs.datastore.preferences)
+    api(libs.androidx.security.crypto.ktx) {
+        exclude(group = "com.google.crypto.tink", module = "tink-android")
+    }
+    implementation(libs.tink.android)
 
     api(libs.coil.compose)
     api(libs.coil.transformations)

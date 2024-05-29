@@ -1,7 +1,7 @@
 package com.movieappjc.domain.entities
 
 import android.os.Parcelable
-import com.movieappjc.app.common.constants.Endpoints
+import com.movieappjc.app.common.utils.KeyUtils
 
 abstract class PersonEntity : Parcelable {
     abstract fun getId(): Int
@@ -12,5 +12,5 @@ abstract class PersonEntity : Parcelable {
     abstract fun getBiography(): String
     abstract fun getKnownForDepartment(): String
 
-    fun getProfileUrl(): String = "${Endpoints.urlOriginalImage}${getProfilePath()}"
+    fun getProfileUrl(): String = "${KeyUtils.urlOriginalImage()}${getProfilePath()}"
 }

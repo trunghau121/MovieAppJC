@@ -13,8 +13,8 @@ import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.core_app.extension.value
-import com.movieappjc.app.common.constants.Endpoints
 import com.movieappjc.app.common.screenutil.ScreenUtil
+import com.movieappjc.app.common.utils.KeyUtils
 
 @Composable
 fun BackdropMovieDetail(
@@ -37,7 +37,7 @@ fun BackdropMovieDetail(
             )
             .background(color = Color.LightGray),
         model = ImageRequest.Builder(LocalContext.current)
-            .data("${Endpoints.urlOriginalImage}${backdropPath.value()}")
+            .data("${KeyUtils.urlOriginalImage()}${backdropPath.value()}")
             .crossfade(true)
             .build(),
         contentScale = ContentScale.Crop,

@@ -20,18 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep class * extends com.bumptech.glide.module.AppGlideModule {
- <init>(...);
-}
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}
--keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
-  *** rewind();
-}
-
 
 -verbose
 # Use ProGuard only to get rid of unused classes
@@ -122,3 +110,8 @@
 -keep class com.movieappjc.data.models.** { *; }
 -keepclassmembers class com.movieappjc.data.models.** { *; }
 # End OkHttp, Retrofit and Moshi
+
+# Start EncryptedSharedPreferences
+-dontwarn com.google.api.client.http.**
+-dontwarn org.joda.time.**
+# End EncryptedSharedPreferences

@@ -37,13 +37,19 @@ android {
         }
     }
 
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
 
     signingConfigs {
         create("product") {
-            keyAlias = "test"
-            keyPassword = "test@#123"
-            storeFile = project.rootProject.file("keystore/test_keys.jks")
-            storePassword = "test@#123"
+            keyAlias = properties.getProperty("keyAlias")
+            keyPassword = properties.getProperty("keyPassword")
+            storeFile = project.rootProject.file(properties.getProperty("storeFile"))
+            storePassword = properties.getProperty("storePassword")
         }
     }
 
@@ -101,4 +107,8 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.tooling.preview)
+    debugImplementation (libs.compose.ui.tooling)
 }

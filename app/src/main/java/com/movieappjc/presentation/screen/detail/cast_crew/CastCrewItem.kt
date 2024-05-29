@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +35,7 @@ import coil.request.ImageRequest
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.kColorViolet
 import com.movieappjc.domain.entities.CastEntity
+import com.movieappjc.domain.entities.CastExample
 
 @Composable
 fun CastCrewItem(
@@ -105,4 +108,22 @@ fun CastCrewItem(
             contentDescription = castEntity.name
         )
     }
+}
+
+@Preview(showBackground = true, device = Devices.NEXUS_5)
+@Composable
+fun SquareComposablePreview() {
+    Text(
+        text = "AAAA",
+        color = Color.LightGray,
+        style = MaterialTheme.typography.fontCustomMedium.copy(
+            platformStyle = PlatformTextStyle(
+                includeFontPadding = false
+            )
+        ),
+        fontSize = 12.sp,
+        textAlign = TextAlign.Start,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
 }

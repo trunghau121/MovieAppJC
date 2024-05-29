@@ -2,7 +2,7 @@ package com.movieappjc.domain.entities
 
 import android.os.Parcelable
 import androidx.compose.runtime.Stable
-import com.movieappjc.app.common.constants.Endpoints
+import com.movieappjc.app.common.utils.KeyUtils
 
 @Stable
 interface MovieDetailEntity : Parcelable {
@@ -16,6 +16,6 @@ interface MovieDetailEntity : Parcelable {
     val posterPath: String
     val genres: List<GenreEntity>
 
-    fun getPosterUrl():String = "${Endpoints.baseUrlImage}${posterPath}"
+    fun getPosterUrl():String = "${KeyUtils.baseUrlImage()}${posterPath}"
     fun toMovie(): MovieEntity
 }
