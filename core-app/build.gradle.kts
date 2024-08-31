@@ -87,4 +87,6 @@ dependencies {
     api(libs.room.ktx)
     api(libs.androidx.fragment.ktx)
 
+    api(libs.kotlinx.serialization.json)
+
 }

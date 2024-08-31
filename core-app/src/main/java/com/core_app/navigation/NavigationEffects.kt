@@ -24,7 +24,7 @@ fun NavigationEffects(
                     if (intent.route != null) {
                         navHostController.popBackStack(intent.route, intent.inclusive)
                     } else {
-                        navHostController.popBackStack()
+                        navHostController.navigateUp()
                     }
                 }
                 is NavigationIntent.NavigateTo -> {
