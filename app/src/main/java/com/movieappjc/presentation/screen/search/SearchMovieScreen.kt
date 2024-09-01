@@ -11,17 +11,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.core_app.network.DataState
 import com.movieappjc.app.common.constants.noMoviesSearchedText
 import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.app.components.AppEmptyText
 import com.movieappjc.app.components.CircularProgressBar
-import com.movieappjc.app.components.ErrorApp
+import com.movieappjc.app.components.ToUI
 import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 
 @Composable
 fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
     val textSearch by viewModel.textSearch.collectAsStateWithLifecycle()
+    val state by viewModel.movies.collectAsStateWithLifecycle()
     val sizeItem = 100.dp
     Column {
         SearchAppBar(
@@ -29,9 +29,9 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
             onChangeText = viewModel::onChangText,
             onBack = viewModel::onBack
         )
-        when (val state = viewModel.movies.collectAsStateWithLifecycle().value) {
-            is DataState.Success -> {
-                val data = state.data.data
+        state.ToUI(
+            content = { state ->
+                val data = state.data
                 if (data.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.imePadding()) {
                         items(data.size, key = { data[it].id }) {
@@ -46,19 +46,14 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
                 } else {
                     AppEmptyText(LocalLanguages.current.noMoviesSearchedText())
                 }
-            }
-
-            is DataState.Error -> {
-                ErrorApp(error = state.error, onRetry = viewModel::reloadSearchMovie)
-            }
-
-            is DataState.Loading -> {
+            },
+            onRetry = viewModel::reloadSearchMovie,
+            loading = {
                 Box(modifier = Modifier.height(200.dp)) {
                     CircularProgressBar()
                 }
             }
 
-            else -> {}
-        }
+        )
     }
 }

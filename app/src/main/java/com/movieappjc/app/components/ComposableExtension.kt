@@ -14,19 +14,25 @@ fun <T> State<DataState<T>>.ToUI(
 @Composable
 fun <T> DataState<T>.ToUI(
     content: @Composable @UiComposable (T) -> Unit,
-    onRetry: () -> Unit = {}
-){
+    onRetry: () -> Unit = {},
+    loading: @Composable @UiComposable () -> Unit = {
+        CircularProgressBar()
+    },
+    error: @Composable @UiComposable (DataState.Error<T>) -> Unit = {
+        ErrorApp(error = it.error, onRetry = onRetry)
+    },
+) {
     when (val state = this) {
         is DataState.Success -> {
             content(state.data)
         }
 
         is DataState.Error -> {
-            ErrorApp(error = state.error, onRetry = onRetry)
+            error(state.error)
         }
 
         is DataState.Loading -> {
-            CircularProgressBar()
+            loading()
         }
 
         else -> {}
