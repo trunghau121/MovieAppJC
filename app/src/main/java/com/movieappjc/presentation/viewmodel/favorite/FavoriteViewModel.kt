@@ -22,9 +22,7 @@ class FavoriteViewModel @Inject constructor(
     val movies = _movies.asStateFlow()
 
     fun getFavoriteMovies() {
-        safeLaunch {
-            executeTask(favoriteMovie::getFavoriteMovies, _movies)
-        }
+        favoriteMovie.getFavoriteMovies().executeTask(_movies)
     }
 
     fun deleteFavoriteMovie(movieId: Int){

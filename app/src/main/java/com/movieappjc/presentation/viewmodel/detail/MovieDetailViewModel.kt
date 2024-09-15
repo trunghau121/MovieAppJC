@@ -47,15 +47,12 @@ class MovieDetailViewModel @Inject constructor(
         safeLaunch {
             _movieDetail.emit(DataState.Loading())
         }
-        executeTask(request = { detailMovieUseCase(movieId) },
-            success = {
-                _movieDetail.value = it
-                executeTask(request = { getCastCrew(movieId) }, _castMovie)
-            },
-            error = {
-                _movieDetail.value = DataState.Error(HandelError.getError(it))
-            }
-        )
+        detailMovieUseCase(movieId).executeTask(success = {
+            _movieDetail.value = it
+            getCastCrew(movieId).executeTask(_castMovie)
+        }, error = {
+            _movieDetail.value = DataState.Error(HandelError.getError(it))
+        })
     }
 
     fun saveFavoriteMovie() {

@@ -48,10 +48,7 @@ class SearchMovieViewModel @Inject constructor(
     private fun searchMovie(keySearch: String) {
         job?.cancel()
         if (keySearch.isNotEmpty()) {
-            safeLaunch {
-                _movies.emit(DataState.Loading())
-                job = executeTask({ getSearchMovie(keySearch) }, _movies)
-            }
+            job = getSearchMovie(keySearch).executeTask(_movies)
         } else {
             safeLaunch {
                 _movies.emit(DataState.InitState())

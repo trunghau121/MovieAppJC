@@ -38,26 +38,21 @@ class HomeViewModel @Inject constructor(private val getTrending: TrendingUseCase
         getMovies()
     }
     fun getMovies() {
-        safeLaunch {
-            _movies.emit(Loading())
-        }
-        job = executeTask({ getTrending() }, _movies)
+        job = getTrending().executeTask(_movies)
     }
 
     fun loadMovieTabbed(indexPage: Int){
         if (this.indexPage == indexPage) return
         this.indexPage = indexPage
-
         jobTab?.cancel()
-        _movieTabbed.value = Loading()
 
-        jobTab = executeTask(request = {
-            when (indexPage) {
-                0 -> getPopular()
-                1 -> getPlayingNow()
-                else -> comingSoonUseCase()
-            }
-        }, onSuccess = _movieTabbed)
+        val request = when (indexPage) {
+            0 -> getPopular()
+            1 -> getPlayingNow()
+            else -> comingSoonUseCase()
+        }
+
+        jobTab = request.executeTask(_movieTabbed)
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {

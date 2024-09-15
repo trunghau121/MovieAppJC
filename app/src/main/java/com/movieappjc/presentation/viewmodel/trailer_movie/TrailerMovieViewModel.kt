@@ -30,9 +30,6 @@ class TrailerMovieViewModel @Inject constructor(
     }
 
     fun getTrailer(){
-        safeLaunch {
-            _videos.emit(DataState.Loading())
-        }
-        executeTask({ getVideoTrailer(movieId) }, _videos)
+        getVideoTrailer(movieId).executeTask(_videos)
     }
 }

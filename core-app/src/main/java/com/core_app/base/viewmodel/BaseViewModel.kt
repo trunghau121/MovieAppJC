@@ -38,13 +38,14 @@ abstract class BaseViewModel(val appNavigator: AppNavigator) : ViewModel() {
         }
     }
 
-    fun <T> executeTask(
-        request: () -> Flow<T>,
+    fun <T> Flow<T>.executeTask(
         success: (T) -> Unit,
-        error: (Throwable) -> Unit = {}
+        error: (Throwable) -> Unit = {},
+        loading: (suspend (Boolean) -> Unit) ?= null
     ): Job {
         return viewModelScope.launch {
-            request().catch { exception ->
+            loading?.invoke(true)
+            this@executeTask.catch { exception ->
                 error(exception)
             }.collect { response ->
                 success(response)
@@ -52,14 +53,18 @@ abstract class BaseViewModel(val appNavigator: AppNavigator) : ViewModel() {
         }
     }
 
-    fun <T> executeTask(
-        request: () -> Flow<DataState<T>>,
-        onSuccess: MutableStateFlow<DataState<T>>
+    fun <T> Flow<DataState<T>>.executeTask(
+        onSuccess: MutableStateFlow<DataState<T>>,
+        isShowLoading: Boolean = true
     ): Job {
-        return executeTask(request, success = { data ->
+        return executeTask(success = { data ->
             onSuccess.update { data }
         }, error = { exception ->
             onSuccess.update { DataState.Error(HandelError.getError(exception)) }
+        }, loading = {
+            if (isShowLoading) {
+                onSuccess.update { DataState.Loading() }
+            }
         })
     }
 

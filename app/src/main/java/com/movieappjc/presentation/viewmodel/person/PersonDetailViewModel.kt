@@ -30,7 +30,7 @@ class PersonDetailViewModel @Inject constructor(
     }
 
     fun getPersonDetail(){
-        executeTask({ personDetailUseCase(personId) }, _person)
+        personDetailUseCase(personId).executeTask(_person)
     }
 
     fun onNavigateToMovieDetail(movieId: Int) {
