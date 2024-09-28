@@ -35,7 +35,6 @@ import coil.request.ImageRequest
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.kColorViolet
 import com.movieappjc.domain.entities.CastEntity
-import com.movieappjc.domain.entities.CastExample
 
 @Composable
 fun CastCrewItem(

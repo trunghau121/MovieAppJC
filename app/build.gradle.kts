@@ -22,11 +22,12 @@ fun getVersionCode(): Int {
 
 android {
     namespace = "com.movieappjc"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.movieappjc"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = getVersionCode()
         versionName = appVersion
@@ -70,7 +71,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
         if (project.findProperty("enableComposeCompilerReports") == "true") {
-            val outputDir = project.buildDir.path + "/compose-reports"
+            val outputDir = project.layout.buildDirectory.set(File("/compose-reports"))
             freeCompilerArgs = freeCompilerArgs + listOf(
                 "-P",
                 "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$outputDir",

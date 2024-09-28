@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.core_app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 23

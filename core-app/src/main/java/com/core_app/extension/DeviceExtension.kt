@@ -35,7 +35,7 @@ fun Context.deviceId(): String {
 
 fun Context.appVersion(): String {
     return try {
-        packageManager.getPackageInfo(packageName, 0).versionName
+        packageManager.getPackageInfo(packageName, 0).versionName?: ""
     } catch (ex: PackageManager.NameNotFoundException) {
         ""
     }

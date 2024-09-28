@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import coil.compose.AsyncImage
@@ -34,6 +35,7 @@ import com.movieappjc.app.theme.fontCustomSemiBold
 import com.movieappjc.app.theme.kColorVulcan
 import com.movieappjc.domain.entities.PersonEntity
 
+@OptIn(ExperimentalMotionApi::class)
 @Composable
 fun ProfileHeader(
     personEntity: PersonEntity,
