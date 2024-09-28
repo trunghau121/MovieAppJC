@@ -58,9 +58,6 @@ dependencies {
 
     api(libs.datastore)
     api(libs.datastore.preferences)
-    api(libs.androidx.security.crypto.ktx) {
-        exclude(group = "com.google.crypto.tink", module = "tink-android")
-    }
     implementation(libs.tink.android)
 
     api(libs.coil.compose)
