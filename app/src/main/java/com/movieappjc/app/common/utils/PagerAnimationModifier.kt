@@ -1,7 +1,6 @@
 package com.movieappjc.app.common.utils
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
