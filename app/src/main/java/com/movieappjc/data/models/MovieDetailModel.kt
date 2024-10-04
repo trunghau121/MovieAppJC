@@ -2,16 +2,13 @@ package com.movieappjc.data.models
 
 import androidx.compose.runtime.Stable
 import com.core_app.extension.value
+import com.core_app.network.ResponseMapper
 import com.squareup.moshi.Json
-import com.movieappjc.data.local.MovieTable
 import com.movieappjc.domain.entities.GenreEntity
 import com.movieappjc.domain.entities.MovieDetailEntity
-import com.movieappjc.domain.entities.MovieEntity
 import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.Parcelize
 
 @JsonClass(generateAdapter = false)
-@Parcelize
 @Stable
 data class MovieDetailModel(
     @Json(name = "adult")
@@ -56,26 +53,25 @@ data class MovieDetailModel(
     val voteCount: Int?,
     @Json(name = "genres")
     private val _genres: List<GenreModel>?
-): MovieDetailEntity {
-    override val id: Int get() = _id.value()
-    override val title: String get() = _title.value()
-    override val overview: String get() = _overview.value()
-    override val releaseDate: String get() = _releaseDate.value()
-    override val duration: Int get() = _duration.value()
-    override val voteAverage: Double get() = _voteAverage.value()
-    override val backdropPath: String get() = _backdropPath.value()
-    override val posterPath: String get() = _posterPath.value()
-    override val genres: List<GenreEntity> get() = _genres.value()
+) : ResponseMapper<MovieDetailEntity> {
 
-    override fun toMovie(): MovieEntity {
-        return MovieTable(
-            id = id,
-            title = title,
-            posterPath = posterPath,
-            backdropPath = backdropPath,
-            releaseDate = releaseDate,
-            voteAverage = voteAverage,
-            overview = overview
+    private fun toGenres(): List<GenreEntity> {
+        return _genres.value().map {
+            it.mapTo()
+        }
+    }
+
+    override fun mapTo(): MovieDetailEntity {
+        return MovieDetailEntity(
+            id = _id.value(),
+            title = _title.value(),
+            overview = _overview.value(),
+            releaseDate = _releaseDate.value(),
+            duration = _duration.value(),
+            voteAverage = _voteAverage.value(),
+            backdropPath = _backdropPath.value(),
+            posterPath = _posterPath.value(),
+            genres = toGenres()
         )
     }
 }

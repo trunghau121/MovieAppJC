@@ -2,21 +2,34 @@ package com.movieappjc.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.core_app.extension.value
+import com.core_app.network.ResponseMapper
 import com.movieappjc.domain.entities.MovieEntity
-import kotlinx.parcelize.Parcelize
 
 @Entity
-@Parcelize
 data class MovieTable(
     @PrimaryKey
-    override val id: Int,
-    override val backdropPath: String,
-    override val overview: String,
-    override val posterPath: String,
-    override val releaseDate: String,
-    override val title: String,
-    override val voteAverage: Double
-) : MovieEntity
+    val id: Int? = null,
+    val backdropPath: String? = null,
+    val overview: String? = null,
+    val posterPath: String? = null,
+    val releaseDate: String? = null,
+    val title: String? = null,
+    val voteAverage: Double? = null
+) : ResponseMapper<MovieEntity> {
+    override fun mapTo(): MovieEntity {
+        return MovieEntity(
+            id = id.value(),
+            title = title.value(),
+            posterPath = posterPath.value(),
+            backdropPath = backdropPath.value(),
+            releaseDate = releaseDate.value(),
+            voteAverage = voteAverage.value(),
+            overview = overview.value()
+        )
+    }
+
+}
 
 fun MovieEntity.fromMovieEntity(): MovieTable {
     return MovieTable(

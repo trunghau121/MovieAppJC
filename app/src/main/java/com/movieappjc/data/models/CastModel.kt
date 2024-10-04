@@ -1,13 +1,12 @@
 package com.movieappjc.data.models
 
 import com.core_app.extension.value
+import com.core_app.network.ResponseMapper
 import com.movieappjc.domain.entities.CastEntity
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.Parcelize
 
 @JsonClass(generateAdapter = false)
-@Parcelize
 data class CastModel(
     @Json(name = "adult")
     val adult: Boolean?,
@@ -33,9 +32,13 @@ data class CastModel(
     val popularity: Double?,
     @Json(name = "profile_path")
     private val _profilePath: String?
-): CastEntity {
-    override val id: Int get() = _id.value()
-    override val name: String get() = _name.value()
-    override val character: String get() = _character.value()
-    override val profilePath: String get() = _profilePath.value()
+) : ResponseMapper<CastEntity> {
+    override fun mapTo(): CastEntity {
+        return CastEntity(
+            id = _id.value(),
+            name = _name.value(),
+            character = _character.value(),
+            profilePath = _profilePath.value()
+        )
+    }
 }

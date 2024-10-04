@@ -1,13 +1,12 @@
 package com.movieappjc.data.models
 
 import com.core_app.extension.value
+import com.core_app.network.ResponseMapper
 import com.squareup.moshi.Json
 import com.movieappjc.domain.entities.VideoEntity
 import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.Parcelize
 
 @JsonClass(generateAdapter = false)
-@Parcelize
 data class VideoModel(
     @Json(name = "id")
     val id: String?,
@@ -29,8 +28,12 @@ data class VideoModel(
     val size: Int?,
     @Json(name = "type")
     private val _type: String?
-) : VideoEntity {
-    override val key: String get() = _key.value()
-    override val name: String get() = _name.value()
-    override val type: String get() = _type.value()
+) : ResponseMapper<VideoEntity> {
+    override fun mapTo(): VideoEntity {
+        return VideoEntity(
+            key = _key.value(),
+            name = _name.value(),
+            type = _type.value()
+        )
+    }
 }

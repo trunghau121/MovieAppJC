@@ -1,7 +1,6 @@
 package com.movieappjc.data.repositories
 
 import com.core_app.network.DataState
-import com.core_app.network.mapState
 import com.movieappjc.data.data_sources.AppLocalDataSource
 import com.movieappjc.data.data_sources.MovieLocalDataSource
 import com.movieappjc.data.remote.MovieServices
@@ -23,55 +22,55 @@ class MovieRepositoryImpl(
     override fun getTrending(): Flow<DataState<MoviesResultEntity>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.getTrending(language = language)
+            movieRemote.getTrending(language = language).mapTo()
         }
     }
 
     override fun getPopular(): Flow<DataState<MoviesResultEntity>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.getPopular(language = language)
+            movieRemote.getPopular(language = language).mapTo()
         }
     }
 
     override fun getPlayingNow(): Flow<DataState<MoviesResultEntity>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.getPlayingNow(language = language)
+            movieRemote.getPlayingNow(language = language).mapTo()
         }
     }
 
     override fun getComingSoon(): Flow<DataState<MoviesResultEntity>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.getComingSoon(language = language)
+            movieRemote.getComingSoon(language = language).mapTo()
         }
     }
 
     override fun getDetailMovie(movieId: Int): Flow<DataState<MovieDetailEntity>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.getMovieDetail(language = language, movieId = movieId)
+            movieRemote.getMovieDetail(language = language, movieId = movieId).mapTo()
         }
     }
 
     override fun getCastCrew(movieId: Int): Flow<DataState<List<CastEntity>>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.getCastCrew(language = language, movieId = movieId)
-        }.mapState{ it.cast }
+            movieRemote.getCastCrew(language = language, movieId = movieId).mapTo()
+        }
     }
 
     override fun getVideos(movieId: Int): Flow<DataState<List<VideoEntity>>> {
         return getResult {
-            movieRemote.getTrailerVideos(movieId = movieId)
-        }.mapState { it.videos }
+            movieRemote.getTrailerVideos(movieId = movieId).mapTo()
+        }
     }
 
     override fun searchMovie(name: String): Flow<DataState<MoviesResultEntity>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.searchMovie(query = name, language = language)
+            movieRemote.searchMovie(query = name, language = language).mapTo()
         }
     }
 
@@ -84,8 +83,8 @@ class MovieRepositoryImpl(
     override fun getMovieCredits(personId: Int): Flow<DataState<List<MovieEntity>>> {
         return getResult {
             val language = appLocalDataSource.getPreferredLanguage().first().language
-            movieRemote.getMovieCredits(personId = personId, language = language)
-        }.mapState { it.cast }
+            movieRemote.getMovieCredits(personId = personId, language = language).mapTo()
+        }
     }
 
     override suspend fun saveMovie(movieEntity: MovieEntity) {
@@ -94,7 +93,7 @@ class MovieRepositoryImpl(
 
     override fun getFavoriteMovies(): Flow<DataState<List<MovieEntity>>> {
         return getResult {
-            movieLocalDataSource.getFavoriteMovies()
+            movieLocalDataSource.getFavoriteMovies().map { it.mapTo() }
         }
     }
 

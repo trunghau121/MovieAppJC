@@ -28,7 +28,7 @@ android {
         applicationId = "com.movieappjc"
         minSdk = 24
         //noinspection OldTargetApi
-        targetSdk = 34
+        targetSdk = 35
         versionCode = getVersionCode()
         versionName = appVersion
 

@@ -1,8 +1,7 @@
 package com.movieappjc.domain.entities
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-interface GenreEntity : Parcelable {
-    val id: Int
-    val name: String
-}
+@Parcelize
+data class GenreEntity(val id: Int, val name: String) : Parcelable
