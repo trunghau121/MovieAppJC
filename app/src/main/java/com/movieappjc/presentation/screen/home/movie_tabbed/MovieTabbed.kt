@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.core_app.extension.aDp
 import com.movieappjc.app.common.constants.nowText
 import com.movieappjc.app.common.constants.popularText
 import com.movieappjc.app.common.constants.soonText
@@ -27,7 +27,7 @@ fun MovieTabbed(loadMovieTabbed: (Int) -> Unit) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
         CustomTabBar(
-            modifier = Modifier.fillMaxWidth().height(50.dp),
+            modifier = Modifier.fillMaxWidth().height(50.aDp),
             selectedItemIndex = tabIndex,
             onSelectedTab = { tabIndex = it },
             items = { tabs }

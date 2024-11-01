@@ -17,11 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.core_app.extension.value
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
@@ -44,14 +45,14 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
                 if (videos.isNotEmpty()) {
                     ListTrailer(ImmutableHolder(videos))
                 } else {
-                    Spacer(modifier = Modifier.height(100.dp))
+                    Spacer(modifier = Modifier.height(100.aDp))
                     Text(
                         text = LocalLanguages.current.noTrailerVideoText(),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                         style = MaterialTheme.typography.fontCustomSemiBold,
                         color = Color.White,
-                        fontSize = 18.sp
+                        fontSize = 18.aSp
                     )
                 }
             },
@@ -65,7 +66,7 @@ fun TrailerMovieScreen(viewModel: TrailerMovieViewModel = hiltViewModel()) {
 private fun ListTrailer(
     videos: ImmutableHolder<List<VideoEntity>>
 ) {
-    val sizeItem = 80.dp
+    val sizeItem = 80.aDp
     var videoId by remember { mutableStateOf("") }
     if (videoId.isEmpty()) videoId = videos()[0].key
 
@@ -89,4 +90,14 @@ private fun ListTrailer(
             }
         }
     }
+}
+
+@Preview(
+    name = "CustomTabBar",
+    showBackground = true,
+    backgroundColor = 0xFF141221
+)
+@Composable
+fun PreviewTrailerMovieScreen() {
+    TrailerMovieScreen()
 }

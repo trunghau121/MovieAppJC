@@ -32,8 +32,9 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.common.constants.enterSearchText
 import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.app.theme.fontCustomMedium
@@ -50,19 +51,19 @@ fun SearchAppBar(
     Row(
         modifier = Modifier
             .statusBarsPadding()
-            .padding(end = 10.dp),
+            .padding(end = 10.aDp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(10.aDp),
             onClick = {
                 keyboardController?.hide()
                 onBack()
             }
         ) {
             Icon(
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(28.aDp),
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "",
                 tint = Color.White,
@@ -76,7 +77,7 @@ fun SearchAppBar(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions { keyboardController?.hide() },
             textStyle = MaterialTheme.typography.fontCustomMedium.copy(
-                fontSize = 16.sp,
+                fontSize = 16.aSp,
                 color = Color.White,
                 platformStyle = PlatformTextStyle(
                     includeFontPadding = false
@@ -86,30 +87,30 @@ fun SearchAppBar(
         ) { innerTextField ->
             Row(
                 modifier = Modifier
-                    .padding(end = 10.dp)
+                    .padding(end = 10.aDp)
                     .fillMaxWidth()
                     .background(
                         color = kColorViolet.copy(alpha = .2f),
-                        shape = RoundedCornerShape(size = 16.dp)
+                        shape = RoundedCornerShape(size = 16.aDp)
                     )
-                    .padding(horizontal = 10.dp, vertical = 12.dp),
+                    .padding(horizontal = 10.aDp, vertical = 12.aDp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.size(25.dp),
+                    modifier = Modifier.size(25.aDp),
                     imageVector = Icons.Filled.Search,
                     contentDescription = "",
                     tint = Color.Gray
                 )
 
-                Spacer(modifier = Modifier.width(width = 8.dp))
+                Spacer(modifier = Modifier.width(width = 8.aDp))
 
                 if (valueText.isEmpty()) {
                     Text(
                         text = LocalLanguages.current.enterSearchText(),
                         modifier = Modifier.fillMaxWidth(),
                         color = Color.Gray,
-                        fontSize = 16.sp,
+                        fontSize = 16.aSp,
                         style = MaterialTheme.typography.fontCustomNormal.copy(
                             platformStyle = PlatformTextStyle(
                                 includeFontPadding = false
@@ -123,12 +124,12 @@ fun SearchAppBar(
                 }
 
                 if (valueText.isNotEmpty()) {
-                    Spacer(modifier = Modifier.width(width = 5.dp))
+                    Spacer(modifier = Modifier.width(width = 5.aDp))
                     Icon(
                         modifier = Modifier
-                            .size(25.dp)
+                            .size(25.aDp)
                             .background(color = Color.Gray, shape = CircleShape)
-                            .padding(5.dp)
+                            .padding(5.aDp)
                             .clickable { onChangeText("") },
                         imageVector = Icons.Filled.Clear,
                         contentDescription = "",
@@ -138,4 +139,18 @@ fun SearchAppBar(
             }
         }
     }
+}
+
+@Preview(
+    name = "CustomTabBar",
+    showBackground = true,
+    backgroundColor = 0xFF141221
+)
+@Composable
+fun PreviewSearchAppBar() {
+    SearchAppBar(
+        valueText = "",
+        onChangeText = {},
+        onBack = {}
+    )
 }

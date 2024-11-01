@@ -20,13 +20,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.R
 import com.movieappjc.app.common.screenutil.ScreenUtil
 import com.movieappjc.app.common.utils.ComponentUtil
@@ -94,7 +94,7 @@ fun ProfileHeader(
 
         val modifier = remember {
             Modifier
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 10.aDp)
                 .layoutId("icon_back")
                 .clickable { onBack() }
         }
@@ -111,7 +111,7 @@ fun ProfileHeader(
             text = personEntity.getName(),
             color = Color.White,
             style = MaterialTheme.typography.fontCustomSemiBold,
-            fontSize = 20.sp,
+            fontSize = 20.aSp,
             textAlign = TextAlign.Start
         )
 
@@ -120,7 +120,7 @@ fun ProfileHeader(
             text = personEntity.getBirthday(),
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 16.sp,
+            fontSize = 16.aSp,
             textAlign = TextAlign.Start
         )
 
@@ -129,7 +129,7 @@ fun ProfileHeader(
             text = personEntity.getPlaceOfBirth(),
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 16.sp,
+            fontSize = 16.aSp,
             textAlign = TextAlign.Start
         )
     }

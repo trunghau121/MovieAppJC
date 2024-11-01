@@ -13,8 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.common.constants.castText
 import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.app.theme.fontCustomMedium
@@ -26,22 +26,22 @@ fun CastCrewList(
     cast: () -> List<CastEntity>,
     openPersonDetailScreen: (Int) -> Unit
 ) {
-    val sizeItem = 60.dp
+    val sizeItem = 60.aDp
     val casts = cast()
-    Column(modifier = modifier.height(210.dp)) {
+    Column(modifier = modifier.height(210.aDp)) {
         Text(
             text = LocalLanguages.current.castText(),
-            modifier = Modifier.padding(start = 15.dp, top = 15.dp),
+            modifier = Modifier.padding(start = 15.aDp, top = 15.aDp),
             color = Color.Gray,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 17.sp,
+            fontSize = 17.aSp,
             textAlign = TextAlign.Start
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.aDp))
         LazyHorizontalGrid(
-            modifier = Modifier.height(140.dp),
+            modifier = Modifier.height(140.aDp),
             rows = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.aDp)
         ) {
             items(casts.size, key = { casts[it].id }) {
                 val item = casts[it]

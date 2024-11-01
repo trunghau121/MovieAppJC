@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
 import com.core_app.extension.dpToPx
 import com.core_app.utils.ImmutableHolder
 import com.movieappjc.app.common.screenutil.ScreenUtil
@@ -58,7 +59,7 @@ private fun PosterCard(
         modifier = modifier
             .fillMaxWidth()
             .height(heightItem)
-            .clip(RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(15.aDp))
             .background(color = Color.LightGray)
             .clickable { onNavigateToMovieDetail(movie.id) },
         model = ImageRequest.Builder(LocalContext.current)

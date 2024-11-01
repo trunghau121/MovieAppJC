@@ -18,8 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.core_app.network.ErrorType
 import com.movieappjc.app.common.constants.feedbackText
 import com.movieappjc.app.common.constants.noNetworkText
@@ -45,17 +46,17 @@ fun ErrorApp(error: Pair<ErrorType, String>, onRetry: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 32.dp),
+            modifier = Modifier.padding(horizontal = 32.aDp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = convertText,
                 style = MaterialTheme.typography.fontCustomNormal,
                 color = Color.White,
-                fontSize = 17.sp,
+                fontSize = 17.aSp,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(15.aDp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -71,4 +72,14 @@ fun ErrorApp(error: Pair<ErrorType, String>, onRetry: () -> Unit) {
     if (feedbackDialog.value) {
         FeedbackDialog { feedbackDialog.value = false }
     }
+}
+
+@Preview(
+    name = "CustomTabBar",
+    showBackground = true,
+    backgroundColor = 0xFF141221
+)
+@Composable
+fun PreviewErrorApp() {
+    ErrorApp(error = Pair(ErrorType.INTERNET, "Error")){}
 }

@@ -11,7 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import com.core_app.extension.aDp
 
 @Composable
 fun ReviewButton(modifier: Modifier, voteAverage: Double) {
@@ -36,7 +36,7 @@ fun ReviewButton(modifier: Modifier, voteAverage: Double) {
                 contentDescription = null,
                 tint = Color.White
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(4.aDp))
         }
     }
 }

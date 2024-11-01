@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.core_app.extension.aDp
 import com.core_app.utils.ImmutableHolder
 import com.movieappjc.app.common.screenutil.ScreenUtil
 import com.movieappjc.domain.entities.MovieEntity
@@ -19,8 +19,8 @@ fun MovieList(
     val widthScreen = ScreenUtil.getScreenWidth()
     val withItem = widthScreen.div(
         when {
-            widthScreen > 700.dp -> 4.3f
-            widthScreen > 600.dp -> 3.3f
+            widthScreen > 700.aDp -> 4.3f
+            widthScreen > 600.aDp -> 3.3f
             else -> 2.3f
         }
     )

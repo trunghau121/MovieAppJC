@@ -21,4 +21,7 @@ sealed class Routes {
 
     @Serializable
     data class PersonDetailScreen(val personId: Int): Routes()
+
+    @Serializable
+    data object MenuScreen: Routes()
 }

@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.minutesText
 import com.movieappjc.app.common.localization.LocalLanguages
@@ -33,41 +33,41 @@ fun TimeMovieDetail(
     duration: Int
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 30.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 30.aDp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(
-            modifier = Modifier.size(18.dp),
+            modifier = Modifier.size(18.aDp),
             imageVector = ImageVector.vectorResource(R.drawable.icon_date),
             contentDescription = "",
             tint = Color.LightGray,
         )
         Text(
             text = releaseDate,
-            modifier = Modifier.padding(start = 4.dp, end = 10.dp),
+            modifier = Modifier.padding(start = 4.aDp, end = 10.aDp),
             color = Color.LightGray,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 14.sp,
+            fontSize = 14.aSp,
             textAlign = TextAlign.Start
         )
         VerticalDivider(
-            modifier = Modifier.width(1.dp).height(15.dp),
+            modifier = Modifier.width(1.aDp).height(15.aDp),
             color = Color.LightGray,
         )
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(10.aDp))
         Icon(
-            modifier = Modifier.size(18.dp),
+            modifier = Modifier.size(18.aDp),
             imageVector = ImageVector.vectorResource(R.drawable.icon_time),
             contentDescription = "",
             tint = Color.LightGray,
         )
         Text(
             text = "$duration ${LocalLanguages.current.minutesText()}",
-            modifier = Modifier.padding(start = 4.dp),
+            modifier = Modifier.padding(start = 4.aDp),
             color = Color.LightGray,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 14.sp,
+            fontSize = 14.aSp,
             textAlign = TextAlign.Start
         )
     }

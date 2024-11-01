@@ -8,7 +8,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aSp
 import com.movieappjc.app.common.constants.showLessText
 import com.movieappjc.app.common.constants.showMoreText
 import com.movieappjc.app.common.localization.LocalLanguages
@@ -25,12 +25,12 @@ fun DescriptionMovieDetail(modifier: Modifier = Modifier, overview: String) {
         modifier = modifier.fillMaxWidth(),
         onExpandedChange = onExpandedChange,
         color = Color.LightGray,
-        fontSize = 15.sp,
+        fontSize = 15.aSp,
         style = MaterialTheme.typography.fontCustomLight,/* read more */
         readMoreText = LocalLanguages.current.showMoreText(),
         readMoreMaxLines = 3,
         readMoreColor = Color.Gray,
-        readMoreFontSize = 15.sp,
+        readMoreFontSize = 15.aSp,
         readMoreFontWeight = FontWeight.SemiBold,/* read less */
         readLessText = LocalLanguages.current.showLessText(),
         toggleArea = ToggleArea.More

@@ -1,6 +1,5 @@
 package com.movieappjc.presentation.screen.home.movie_carousel
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,20 +15,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.core_app.utils.ImmutableHolder
-import com.movieappjc.domain.entities.MovieEntity
 import com.movieappjc.app.theme.fontCustomSemiBold
+import com.movieappjc.domain.entities.MovieEntity
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CarouselMovie(movies: ImmutableHolder<List<MovieEntity>>, onNavigateToMovieDetail: (Int) -> Unit) {
     val pagerState = rememberPagerState {
         movies().size
     }
     Box(
-        modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
+        modifier = Modifier.fillMaxSize().padding(bottom = 10.aDp)) {
         BackdropMovie(movies()[pagerState.currentPage])
         Column(modifier = Modifier.align(Alignment.BottomStart)) {
             CarouselMovieList(
@@ -38,11 +36,11 @@ fun CarouselMovie(movies: ImmutableHolder<List<MovieEntity>>, onNavigateToMovieD
                 onNavigateToMovieDetail = onNavigateToMovieDetail
             )
             Text(
-                modifier = Modifier.fillMaxWidth().padding(PaddingValues(10.dp)),
+                modifier = Modifier.fillMaxWidth().padding(PaddingValues(10.aDp)),
                 text = movies()[pagerState.currentPage].title,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,
-                fontSize = 18.sp,
+                fontSize = 18.aSp,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

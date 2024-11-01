@@ -12,9 +12,9 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.core_app.extension.aDp
 import com.core_app.extension.value
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
@@ -76,9 +76,9 @@ fun HomeContent(
         }
 
         Column(modifier = Modifier.weight(0.85f), verticalArrangement = Arrangement.SpaceBetween) {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.aDp))
             MovieTabbed(loadMovieTabbed = homeViewModel()::loadMovieTabbed)
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(5.aDp))
             val state by homeViewModel().movieTabbed.collectAsStateWithLifecycle()
             state.ToUI(
                 content = {

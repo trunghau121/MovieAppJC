@@ -26,10 +26,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.components.ToUI
 import com.movieappjc.app.theme.fontCustomNormal
 import com.movieappjc.presentation.viewmodel.person.PersonDetailViewModel
@@ -38,7 +38,7 @@ import com.movieappjc.presentation.viewmodel.person.PersonDetailViewModel
 @Composable
 fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
 
-    val draggedDownAnchorTop = with(LocalDensity.current) { 250.dp.toPx() }
+    val draggedDownAnchorTop = with(LocalDensity.current) { 250.aDp.toPx() }
     val anchors = DraggableAnchors {
         AnchoredDraggableCardState.DRAGGED_DOWN at draggedDownAnchorTop
         AnchoredDraggableCardState.DRAGGED_UP at 0f
@@ -50,7 +50,7 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
             initialValue = AnchoredDraggableCardState.DRAGGED_DOWN,
             anchors = anchors,
             positionalThreshold = { distance: Float -> distance * 0.5f },
-            velocityThreshold = { with(density) { 100.dp.toPx() } },
+            velocityThreshold = { with(density) { 100.aDp.toPx() } },
             snapAnimationSpec = tween(),
             decayAnimationSpec =  SplineBasedFloatDecayAnimationSpec(object: Density {
                 override val density: Float
@@ -90,17 +90,17 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
                     progress = { progress },
                     onBack = onBack
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.aDp))
                 Text(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 15.dp)
+                        .padding(horizontal = 15.aDp)
                         .anchoredDraggable(anchoredDraggableState, Orientation.Vertical)
                         .nestedScroll(connection),
                     text = it.getBiography(),
                     color = Color.LightGray,
                     style = MaterialTheme.typography.fontCustomNormal,
-                    fontSize = 16.sp,
+                    fontSize = 16.aSp,
                     textAlign = TextAlign.Start
                 )
             }
