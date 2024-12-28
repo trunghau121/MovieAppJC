@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -46,7 +48,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyApp(appRepository = appRepository) {
-                MainScreen(onClickLanguage = it)
+                Box(modifier = Modifier.navigationBarsPadding()) {
+                    MainScreen(onClickLanguage = it)
+                }
             }
         }
     }
@@ -65,9 +69,7 @@ fun MyApp(appRepository: AppRepository, content: @Composable ((Locale) -> Unit) 
         supportedLocalesNow
         LocalizationApp(locale = { locale }) {
             Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .navigationBarsPadding(),
+                modifier = Modifier.fillMaxSize().imePadding(),
                 color = kColorVulcan
             ) {
                 content {
