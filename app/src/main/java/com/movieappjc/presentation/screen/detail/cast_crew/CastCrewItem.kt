@@ -28,10 +28,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.kColorViolet
 import com.movieappjc.domain.entities.CastEntity
@@ -44,8 +44,8 @@ fun CastCrewItem(
 ) {
     Box(
         modifier = Modifier
-            .width(230.dp)
-            .padding(horizontal = 10.dp)
+            .width(230.aDp)
+            .padding(horizontal = 10.aDp)
             .clickable {
                 openPersonDetailScreen(castEntity.id)
             },
@@ -55,11 +55,11 @@ fun CastCrewItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
-                    width = 1.dp,
+                    width = 1.aDp,
                     brush = SolidColor(kColorViolet),
-                    shape = RoundedCornerShape(26.dp)
+                    shape = RoundedCornerShape(26.aDp)
                 )
-                .padding(start = 67.dp, top = 7.dp, end = 8.dp, bottom = 7.dp)
+                .padding(start = 67.aDp, top = 7.aDp, end = 8.aDp, bottom = 7.aDp)
                 .align(Alignment.Center)
         ) {
             Text(
@@ -70,7 +70,7 @@ fun CastCrewItem(
                         includeFontPadding = false
                     )
                 ),
-                fontSize = 15.sp,
+                fontSize = 15.aSp,
                 textAlign = TextAlign.Start,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -83,7 +83,7 @@ fun CastCrewItem(
                         includeFontPadding = false
                     )
                 ),
-                fontSize = 12.sp,
+                fontSize = 12.aSp,
                 textAlign = TextAlign.Start,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -93,7 +93,7 @@ fun CastCrewItem(
         AsyncImage(
             modifier = Modifier
                 .size(sizeItem)
-                .border(border = BorderStroke(2.dp, color = kColorViolet), shape = CircleShape)
+                .border(border = BorderStroke(2.aDp, color = kColorViolet), shape = CircleShape)
                 .graphicsLayer {
                     clip = true
                     shape = CircleShape
@@ -120,7 +120,7 @@ fun SquareComposablePreview() {
                 includeFontPadding = false
             )
         ),
-        fontSize = 12.sp,
+        fontSize = 12.aSp,
         textAlign = TextAlign.Start,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis

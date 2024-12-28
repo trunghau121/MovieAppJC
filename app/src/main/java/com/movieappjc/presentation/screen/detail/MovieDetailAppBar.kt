@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import com.core_app.extension.aDp
 
 @Composable
 fun MovieDetailAppBar(
@@ -33,11 +33,11 @@ fun MovieDetailAppBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(10.aDp),
             onClick = onBack
         ) {
             Icon(
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(28.aDp),
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "",
                 tint = Color.White,
@@ -45,11 +45,11 @@ fun MovieDetailAppBar(
         }
         Spacer(modifier = Modifier.weight(1f))
         IconButton(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(10.aDp),
             onClick = onSaveMovie
         ) {
             Icon(
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(28.aDp),
                 imageVector = Icons.Filled.Favorite,
                 contentDescription = "",
                 tint = tintColor

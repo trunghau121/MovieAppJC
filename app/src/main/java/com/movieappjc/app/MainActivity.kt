@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.core_app.extension.ADp
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.supportedLocalesNow
 import com.movieappjc.app.common.localization.LocalizationApp
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var appRepository: AppRepository
     override fun onCreate(savedInstanceState: Bundle?) {
+        ADp.initializeAdp(this.resources, 390)
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         requestedOrientation = if (resources.getBoolean(R.bool.isTablet)) {

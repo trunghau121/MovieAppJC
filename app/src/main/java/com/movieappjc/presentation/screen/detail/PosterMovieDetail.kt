@@ -12,9 +12,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
 import com.movieappjc.app.common.screenutil.ScreenUtil
 import com.movieappjc.app.theme.kColorViolet
 
@@ -31,10 +31,10 @@ fun PosterMovieDetail(
             .width((heightPoster.div(1.4f)))
             .height(heightPoster)
             .border(
-                border = BorderStroke(1.dp, color = kColorViolet),
-                shape = RoundedCornerShape(15.dp)
+                border = BorderStroke(1.aDp, color = kColorViolet),
+                shape = RoundedCornerShape(15.aDp)
             )
-            .clip(shape = RoundedCornerShape(15.dp))
+            .clip(shape = RoundedCornerShape(15.aDp))
             .background(color = Color.LightGray),
         model = ImageRequest.Builder(LocalContext.current)
             .data(posterUrl)

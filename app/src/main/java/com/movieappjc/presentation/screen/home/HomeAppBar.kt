@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aSp
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.movieText
 import com.movieappjc.app.theme.fontCustomSemiBold
@@ -37,7 +37,7 @@ fun HomeAppBar(drawerState: DrawerState, openSearchMovie: () -> Unit) {
                 text = movieText,
                 color = Color.White,
                 style = MaterialTheme.typography.fontCustomSemiBold,
-                fontSize = 30.sp,
+                fontSize = 30.aSp,
                 textAlign = TextAlign.Center,
             )
         },

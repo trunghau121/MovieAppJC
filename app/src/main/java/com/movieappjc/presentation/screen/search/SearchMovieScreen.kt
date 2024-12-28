@@ -8,9 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.core_app.extension.aDp
 import com.movieappjc.app.common.constants.noMoviesSearchedText
 import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.app.components.AppEmptyText
@@ -22,7 +22,7 @@ import com.movieappjc.presentation.viewmodel.search.SearchMovieViewModel
 fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
     val textSearch by viewModel.textSearch.collectAsStateWithLifecycle()
     val state by viewModel.movies.collectAsStateWithLifecycle()
-    val sizeItem = 100.dp
+    val sizeItem = 100.aDp
     Column {
         SearchAppBar(
             valueText = textSearch,
@@ -49,7 +49,7 @@ fun SearchMovieScreen(viewModel: SearchMovieViewModel = hiltViewModel()) {
             },
             onRetry = viewModel::reloadSearchMovie,
             loading = {
-                Box(modifier = Modifier.height(200.dp)) {
+                Box(modifier = Modifier.height(200.aDp)) {
                     CircularProgressBar()
                 }
             }

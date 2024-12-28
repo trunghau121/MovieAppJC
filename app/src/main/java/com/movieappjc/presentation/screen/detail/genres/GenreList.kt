@@ -17,8 +17,8 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.domain.entities.GenreEntity
 import com.movieappjc.app.theme.fontCustomMedium
 
@@ -31,22 +31,22 @@ fun GenreList(modifier: Modifier = Modifier, genres: () -> List<GenreEntity>) {
     ) {
         genres().forEach {
             key(it.id) {
-                Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(5.aDp))
                 Text(
                     modifier = Modifier
-                        .padding(vertical = 5.dp)
+                        .padding(vertical = 5.aDp)
                         .border(
-                            border = BorderStroke(1.dp, color = Color.LightGray),
-                            shape = RoundedCornerShape(16.dp)
+                            border = BorderStroke(1.aDp, color = Color.LightGray),
+                            shape = RoundedCornerShape(16.aDp)
                         )
-                        .padding(horizontal = 20.dp, vertical = 7.dp),
+                        .padding(horizontal = 20.aDp, vertical = 7.aDp),
                     text = it.name,
                     color = Color.LightGray,
                     style = MaterialTheme.typography.fontCustomMedium,
-                    fontSize = 14.sp,
+                    fontSize = 14.aSp,
                     textAlign = TextAlign.Start
                 )
-                Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(5.aDp))
             }
         }
     }

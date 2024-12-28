@@ -20,10 +20,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.domain.entities.VideoEntity
 
@@ -37,13 +37,13 @@ fun TrailerItem(
     Row(
         modifier = modifier
             .clickable { onClick(item.key) }
-            .padding(horizontal = 15.dp, vertical = 10.dp),
+            .padding(horizontal = 15.aDp, vertical = 10.aDp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
             modifier = Modifier
                 .size(sizeItem)
-                .clip(shape = RoundedCornerShape(16.dp))
+                .clip(shape = RoundedCornerShape(16.aDp))
                 .background(color = Color.LightGray),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(item.getThumbnail())
@@ -52,13 +52,13 @@ fun TrailerItem(
             contentScale = ContentScale.Crop,
             contentDescription = item.name
         )
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(10.aDp))
         Text(
             text = item.name,
             modifier = Modifier.fillMaxWidth(),
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 18.sp,
+            fontSize = 18.aSp,
             textAlign = TextAlign.Start
         )
     }

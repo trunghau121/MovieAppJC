@@ -17,9 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
 import com.movieappjc.app.theme.kColorViolet
 import com.movieappjc.domain.entities.MovieEntity
 
@@ -31,9 +31,9 @@ fun FavoriteMovieItem(
     onDelete: (Int) -> Unit
 ) {
     Card(
-        modifier = modifier.padding(5.dp).clickable { onNavigateToMovieDetail(movieEntity.id) },
-        shape = RoundedCornerShape(15.dp),
-        border = BorderStroke(2.dp, color = kColorViolet)
+        modifier = modifier.padding(5.aDp).clickable { onNavigateToMovieDetail(movieEntity.id) },
+        shape = RoundedCornerShape(15.aDp),
+        border = BorderStroke(2.aDp, color = kColorViolet)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -47,9 +47,9 @@ fun FavoriteMovieItem(
             )
             Icon(
                 modifier = Modifier
-                    .size(45.dp)
+                    .size(45.aDp)
                     .align(Alignment.TopEnd)
-                    .padding(10.dp)
+                    .padding(10.aDp)
                     .clickable { onDelete(movieEntity.id) },
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "",

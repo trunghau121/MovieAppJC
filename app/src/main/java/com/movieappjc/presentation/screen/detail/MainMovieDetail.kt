@@ -12,9 +12,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.core_app.extension.aDp
 import com.core_app.network.DataState
 import com.movieappjc.R
 import com.movieappjc.domain.entities.CastEntity
@@ -36,8 +36,8 @@ fun MainMovieDetail(
     }
     ConstraintLayout(modifier = modifier) {
         val (backdrop, trailer, poster, title, review, time, overview, genres, cast) = createRefs()
-        val startGuideline = createGuidelineFromStart(16.dp)
-        val endGuideline = createGuidelineFromEnd(16.dp)
+        val startGuideline = createGuidelineFromStart(16.aDp)
+        val endGuideline = createGuidelineFromEnd(16.aDp)
         val castBarrier = createBottomBarrier(overview, genres, time)
         BackdropMovieDetail(
             modifier = Modifier.constrainAs(backdrop) {
@@ -50,7 +50,7 @@ fun MainMovieDetail(
         )
 
         Image(modifier = Modifier
-            .size(50.dp)
+            .size(50.aDp)
             .clickable { openTrailerMovie() }
             .constrainAs(trailer) { centerTo(backdrop) },
             imageVector = ImageVector.vectorResource(id = R.drawable.icon_play),
@@ -59,7 +59,7 @@ fun MainMovieDetail(
 
         PosterMovieDetail(
             modifier = Modifier.constrainAs(poster) {
-                start.linkTo(backdrop.start, margin = 20.dp)
+                start.linkTo(backdrop.start, margin = 20.aDp)
                 centerAround(backdrop.bottom)
             }, posterUrl = data.getPosterUrl(), contentDescription = data.title
         )
@@ -76,16 +76,16 @@ fun MainMovieDetail(
         ReviewButton(
             modifier = Modifier
                 .constrainAs(review) {
-                    top.linkTo(poster.bottom, margin = 30.dp)
+                    top.linkTo(poster.bottom, margin = 30.aDp)
                     linkTo(startGuideline, endGuideline)
                 }
-                .height(20.dp),
+                .height(20.aDp),
             voteAverage = data.voteAverage,
         )
 
         TimeMovieDetail(
             modifier = Modifier.constrainAs(time) {
-                top.linkTo(review.bottom, margin = 10.dp)
+                top.linkTo(review.bottom, margin = 10.aDp)
                 linkTo(startGuideline, endGuideline)
             },
             releaseDate = data.releaseDate,
@@ -93,15 +93,15 @@ fun MainMovieDetail(
         )
 
         GenreList(modifier = Modifier.constrainAs(genres) {
-            top.linkTo(time.bottom, margin = 5.dp)
+            top.linkTo(time.bottom, margin = 5.aDp)
         }, genres = { data.genres })
 
         if (data.overview.isNotEmpty()) {
             DescriptionMovieDetail(
                 modifier = Modifier.constrainAs(overview) {
-                    top.linkTo(genres.bottom, margin = 15.dp)
-                    start.linkTo(parent.start, margin = 15.dp)
-                    end.linkTo(parent.end, margin = 15.dp)
+                    top.linkTo(genres.bottom, margin = 15.aDp)
+                    start.linkTo(parent.start, margin = 15.aDp)
+                    end.linkTo(parent.end, margin = 15.aDp)
                     width = Dimension.fillToConstraints
                 }, overview = data.overview
             )
@@ -113,7 +113,7 @@ fun MainMovieDetail(
             CastCrewList(
                 modifier = Modifier.constrainAs(cast) {
                     if (data.overview.isNotEmpty()) {
-                        top.linkTo(overview.bottom, margin = 5.dp)
+                        top.linkTo(overview.bottom, margin = 5.aDp)
                     } else {
                         top.linkTo(castBarrier)
                     }

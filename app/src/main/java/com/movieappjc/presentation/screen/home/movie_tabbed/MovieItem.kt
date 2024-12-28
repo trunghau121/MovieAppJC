@@ -18,10 +18,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.theme.fontCustomSemiBold
 import com.movieappjc.domain.entities.MovieEntity
 
@@ -32,14 +32,14 @@ fun MovieItem(
     onNavigateToMovieDetail: (Int) -> Unit
 ) {
     Column(
-        modifier = modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp),
+        modifier = modifier.padding(start = 10.aDp, top = 10.aDp, end = 10.aDp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
             modifier = Modifier
                 .weight(1f)
-                .clip(shape = RoundedCornerShape(15.dp))
+                .clip(shape = RoundedCornerShape(15.aDp))
                 .background(color = Color.LightGray)
                 .clickable { onNavigateToMovieDetail(movieEntity.id) },
             model = ImageRequest.Builder(LocalContext.current)
@@ -50,11 +50,11 @@ fun MovieItem(
             contentDescription = movieEntity.title
         )
         Text(
-            modifier = Modifier.fillMaxWidth().padding(6.dp),
+            modifier = Modifier.fillMaxWidth().padding(6.aDp),
             text = movieEntity.title,
             color = Color.White,
             style = MaterialTheme.typography.fontCustomSemiBold,
-            fontSize = 15.sp,
+            fontSize = 15.aSp,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

@@ -21,9 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.common.constants.cancelText
 import com.movieappjc.app.common.constants.descriptionFeedbackText
 import com.movieappjc.app.common.constants.sendText
@@ -46,19 +47,19 @@ fun FeedbackDialog(
                 modifier = Modifier
                     .background(
                         color = kColorVulcan,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(16.aDp)
                     )
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(16.aDp)) {
                     Text(
                         text = LocalLanguages.current.titleFeedbackText(),
                         modifier = Modifier.fillMaxWidth(),
                         style = MaterialTheme.typography.fontCustomSemiBold,
                         color = Color.White,
-                        fontSize = 20.sp,
+                        fontSize = 20.aSp,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.aDp))
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = textFeedBack.value,
@@ -68,7 +69,7 @@ fun FeedbackDialog(
                                 color = Color.Gray
                             )
                         },
-                        textStyle = MaterialTheme.typography.fontCustomNormal.copy(fontSize = 16.sp),
+                        textStyle = MaterialTheme.typography.fontCustomNormal.copy(fontSize = 16.aSp),
                         colors = TextFieldDefaults.colors(
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White,
@@ -83,11 +84,11 @@ fun FeedbackDialog(
                         onValueChange = {
                             textFeedBack.value = it
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(8.aDp),
                         minLines = 8,
                         maxLines = 8,
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.aDp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -96,9 +97,19 @@ fun FeedbackDialog(
                         Spacer(modifier = Modifier.weight(1f))
                         AppButton(text = LocalLanguages.current.sendText()) { onDismiss() }
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(8.aDp))
                 }
             }
         }
     }
+}
+
+@Preview(
+    name = "CustomTabBar",
+    showBackground = true,
+    backgroundColor = 0xFF141221
+)
+@Composable
+fun PreviewFeedbackDialog() {
+    FeedbackDialog{}
 }

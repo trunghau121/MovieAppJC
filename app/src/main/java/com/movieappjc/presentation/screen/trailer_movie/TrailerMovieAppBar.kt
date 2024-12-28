@@ -16,8 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.common.constants.watchTrailersText
 import com.movieappjc.app.common.localization.LocalLanguages
 import com.movieappjc.app.theme.fontCustomMedium
@@ -30,11 +31,11 @@ fun TrailerMovieAppBar(onBack: () -> Unit){
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(10.aDp),
             onClick = onBack
         ) {
             Icon(
-                modifier = Modifier.size(28.dp),
+                modifier = Modifier.size(28.aDp),
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "",
                 tint = Color.White,
@@ -44,8 +45,18 @@ fun TrailerMovieAppBar(onBack: () -> Unit){
             text = LocalLanguages.current.watchTrailersText(),
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 20.sp,
+            fontSize = 20.aSp,
             textAlign = TextAlign.Start
         )
     }
+}
+
+@Preview(
+    name = "CustomTabBar",
+    showBackground = true,
+    backgroundColor = 0xFF141221
+)
+@Composable
+fun PreviewTrailerMovieAppBar() {
+    TrailerMovieAppBar{}
 }

@@ -10,8 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.kColorViolet
 
@@ -19,8 +20,8 @@ import com.movieappjc.app.theme.kColorViolet
 fun AppButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = Modifier.padding(horizontal = 20.dp),
-        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.padding(horizontal = 20.aDp),
+        shape = RoundedCornerShape(20.aDp),
         colors = ButtonDefaults.buttonColors(
             containerColor = kColorViolet,
             contentColor = Color.White
@@ -29,8 +30,18 @@ fun AppButton(text: String, onClick: () -> Unit) {
         Text(
             text = text,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 14.sp,
+            fontSize = 14.aSp,
             textAlign = TextAlign.Center
         )
     }
+}
+
+@Preview(
+    name = "CustomTabBar",
+    showBackground = true,
+    backgroundColor = 0xFF141221
+)
+@Composable
+fun PreviewAppButton() {
+    AppButton("Button"){}
 }

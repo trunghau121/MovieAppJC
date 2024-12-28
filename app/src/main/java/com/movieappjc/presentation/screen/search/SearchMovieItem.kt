@@ -24,10 +24,10 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.fontCustomNormal
 import com.movieappjc.domain.entities.MovieEntity
@@ -42,7 +42,7 @@ fun SearchMovieItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp, vertical = 8.dp)
+            .padding(horizontal = 15.aDp, vertical = 8.aDp)
             .clickable {
                 keyboardController?.hide()
                 onNavigateToMovieDetail(movieEntity.id)
@@ -52,7 +52,7 @@ fun SearchMovieItem(
         AsyncImage(
             modifier = Modifier
                 .size(sizeItem)
-                .clip(shape = RoundedCornerShape(16.dp))
+                .clip(shape = RoundedCornerShape(16.aDp))
                 .background(color = Color.LightGray),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(movieEntity.getPosterUrl())
@@ -61,7 +61,7 @@ fun SearchMovieItem(
             contentScale = ContentScale.Crop,
             contentDescription = movieEntity.title
         )
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(10.aDp))
         Column {
             Text(
                 text = movieEntity.title,
@@ -72,7 +72,7 @@ fun SearchMovieItem(
                         includeFontPadding = false
                     )
                 ),
-                fontSize = 17.sp,
+                fontSize = 17.aSp,
                 textAlign = TextAlign.Start,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -82,7 +82,7 @@ fun SearchMovieItem(
                 modifier = Modifier.fillMaxWidth(),
                 color = Color.Gray,
                 style = MaterialTheme.typography.fontCustomNormal,
-                fontSize = 15.sp,
+                fontSize = 15.aSp,
                 textAlign = TextAlign.Start,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis

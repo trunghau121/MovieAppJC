@@ -25,8 +25,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.core_app.extension.aDp
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.aboutDescriptionText
 import com.movieappjc.app.common.constants.aboutText
@@ -62,20 +62,20 @@ fun NavigationDrawerApp(
         drawerContent = {
             Box(
                 modifier = Modifier
-                    .width(300.dp)
+                    .width(300.aDp)
                     .fillMaxHeight()
                     .background(color = kColorVulcan.copy(alpha = 0.8f))
                     .statusBarsPadding()
             ) {
                 Column {
-                    Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(40.aDp))
                     AsyncImage(
-                        modifier = Modifier.fillMaxWidth().height(23.dp),
+                        modifier = Modifier.fillMaxWidth().height(23.aDp),
                         model = R.drawable.ic_horizontal_logo,
                         contentDescription = "",
                         contentScale = ContentScale.FillHeight
                     )
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(30.aDp))
                     DrawerItemView(
                         NavigationDrawerData(
                             label = localization.favoriteMoviesText(),

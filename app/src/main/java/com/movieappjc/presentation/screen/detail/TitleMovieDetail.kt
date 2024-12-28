@@ -7,18 +7,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.theme.fontCustomSemiBold
 
 @Composable
 fun TitleMovieDetail(modifier: Modifier = Modifier, title: String) {
     Text(
-        modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+        modifier = modifier.padding(horizontal = 10.aDp, vertical = 5.aDp),
         text = title,
         color = Color.White,
         style = MaterialTheme.typography.fontCustomSemiBold,
-        fontSize = 18.sp,
+        fontSize = 18.aSp,
         textAlign = TextAlign.Start
     )
 }

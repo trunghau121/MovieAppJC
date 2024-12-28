@@ -13,8 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.theme.fontCustomMedium
 
 @Composable
@@ -26,7 +26,7 @@ fun DrawerItemView(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(start = 10.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
+            .padding(start = 10.aDp, top = 20.aDp, end = 10.aDp, bottom = 20.aDp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -34,12 +34,12 @@ fun DrawerItemView(
             contentDescription = null,
             tint = Color.White
         )
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(12.aDp))
         Text(
             text = item.label,
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 17.sp
+            fontSize = 17.aSp
         )
     }
 }

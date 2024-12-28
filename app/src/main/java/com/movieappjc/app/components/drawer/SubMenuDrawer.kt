@@ -12,8 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.core_app.extension.aDp
+import com.core_app.extension.aSp
 import com.movieappjc.app.common.constants.VIETNAMESE
 import com.movieappjc.app.theme.fontCustomMedium
 import com.movieappjc.app.theme.kColorPrimarySecond
@@ -29,7 +30,7 @@ fun SubMenuDrawer(onClickLanguage: (Locale) -> Unit){
                 .clickable {
                     onClickLanguage(VIETNAMESE)
                 }
-                .padding(start = 40.dp, top = 15.dp, end = 10.dp, bottom = 15.dp),
+                .padding(start = 40.aDp, top = 15.aDp, end = 10.aDp, bottom = 15.aDp),
             text = "Vietnamese",
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
@@ -38,15 +39,15 @@ fun SubMenuDrawer(onClickLanguage: (Locale) -> Unit){
         HorizontalDivider(color = kColorPrimarySecond)
         Text(
             modifier = Modifier
-                .padding(start = 40.dp, top = 10.dp, end = 10.dp, bottom = 10.dp)
+                .padding(start = 40.aDp, top = 10.aDp, end = 10.aDp, bottom = 10.aDp)
                 .clickable {
                     onClickLanguage(Locale.ENGLISH)
                 },
             text = "English",
             color = Color.White,
             style = MaterialTheme.typography.fontCustomMedium,
-            fontSize = 16.sp
+            fontSize = 16.aSp
         )
-        Spacer(Modifier.width(25.dp))
+        Spacer(Modifier.width(25.aDp))
     }
 }
