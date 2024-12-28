@@ -4,6 +4,7 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Surface
@@ -18,10 +19,10 @@ import androidx.compose.ui.Modifier
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.supportedLocalesNow
 import com.movieappjc.app.common.localization.LocalizationApp
-import com.movieappjc.domain.repositories.AppRepository
-import com.movieappjc.presentation.screen.main.MainScreen
 import com.movieappjc.app.theme.MovieAppJCTheme
 import com.movieappjc.app.theme.kColorVulcan
+import com.movieappjc.domain.repositories.AppRepository
+import com.movieappjc.presentation.screen.main.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var appRepository: AppRepository
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         requestedOrientation = if (resources.getBoolean(R.bool.isTablet)) {
             ActivityInfo.SCREEN_ORIENTATION_SENSOR

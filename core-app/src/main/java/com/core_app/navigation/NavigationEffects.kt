@@ -4,7 +4,11 @@ import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.navOptions
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
@@ -21,6 +25,7 @@ fun NavigationEffects(
             }
             when (intent) {
                 is NavigationIntent.NavigateBack -> {
+                    if (!navHostController.canProcess) return@collect
                     if (intent.route != null) {
                         navHostController.popBackStack(intent.route, intent.inclusive)
                     } else {
@@ -28,7 +33,7 @@ fun NavigationEffects(
                     }
                 }
                 is NavigationIntent.NavigateTo -> {
-                    navHostController.navigate(intent.route) {
+                    navHostController.navigateSafely(intent.route) {
                         launchSingleTop = intent.isSingleTop
                         intent.popUpToRoute?.let { popUpToRoute ->
                             popUpTo(popUpToRoute) { inclusive = intent.inclusive }
@@ -37,5 +42,14 @@ fun NavigationEffects(
                 }
             }
         }
+    }
+}
+
+val NavController.canProcess: Boolean
+    get() = this.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
+
+fun NavController.navigateSafely(route: Any, builder: NavOptionsBuilder.() -> Unit) {
+    if (canProcess) {
+        this.navigate(route, navOptions(builder))
     }
 }
