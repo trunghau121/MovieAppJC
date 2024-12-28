@@ -15,6 +15,8 @@ fun MainScreen(
     onClickLanguage: (Locale) -> Unit = {}
 ) {
     val navController = rememberNavController()
+    mainViewModel.appNavigator.navHostController = navController
+
     NavigationEffects(
         navigationChannel = mainViewModel.navigationChannel,
         navHostController = navController

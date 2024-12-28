@@ -9,7 +9,7 @@ import javax.inject.Inject
 @Stable
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    appNavigator: AppNavigator
+    val appNavigator: AppNavigator
 ) : ViewModel() {
     val navigationChannel = appNavigator.navigationChannel
 

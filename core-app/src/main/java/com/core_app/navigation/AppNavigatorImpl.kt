@@ -3,7 +3,7 @@ package com.core_app.navigation
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 
-class AppNavigatorImpl : AppNavigator {
+class AppNavigatorImpl : AppNavigator() {
     override val navigationChannel = Channel<NavigationIntent>(
         capacity = Int.MAX_VALUE,
         onBufferOverflow = BufferOverflow.DROP_LATEST,

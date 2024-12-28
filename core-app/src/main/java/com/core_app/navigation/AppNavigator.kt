@@ -1,33 +1,39 @@
 package com.core_app.navigation
 
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.channels.Channel
 
-interface AppNavigator {
-    val navigationChannel: Channel<NavigationIntent>
+abstract class AppNavigator {
+    abstract val navigationChannel: Channel<NavigationIntent>
+    var navHostController: NavHostController?= null
 
-    suspend fun navigateBack(
+    abstract suspend fun navigateBack(
         route: Any? = null,
         inclusive: Boolean = false,
     )
 
-    fun tryNavigateBack(
+    abstract fun tryNavigateBack(
         route: Any? = null,
         inclusive: Boolean = false,
     )
 
-    suspend fun navigateTo(
+    abstract suspend fun navigateTo(
         route: Any,
         popUpToRoute: Any? = null,
         inclusive: Boolean = false,
         isSingleTop: Boolean = false,
     )
 
-    fun tryNavigateTo(
+    abstract fun tryNavigateTo(
         route: Any,
         popUpToRoute: Any? = null,
         inclusive: Boolean = false,
         isSingleTop: Boolean = false,
     )
+
+    fun getCurrentRoute(): String {
+        return navHostController?.currentDestination?.route ?: ""
+    }
 }
 
 sealed class NavigationIntent {
