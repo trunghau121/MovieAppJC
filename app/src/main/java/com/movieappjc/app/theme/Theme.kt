@@ -20,7 +20,7 @@ fun MovieAppJCTheme(
             val window = (view.context as Activity).window
             WindowCompat.setDecorFitsSystemWindows(window, false)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                window.setNavigationBarContrastEnforced(true)
+                window.setNavigationBarContrastEnforced(false)
             } else {
                 @Suppress("DEPRECATION")
                 window.statusBarColor = Color.Transparent.toArgb()
