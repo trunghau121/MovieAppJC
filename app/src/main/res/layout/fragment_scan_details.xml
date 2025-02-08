@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragmets.ScanDetailsFragment"
+    android:background="@color/background">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_error"
+        android:minHeight="@dimen/_180sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="@dimen/_10sdp"
+        android:scaleType="fitCenter"
+        android:background="@drawable/rounded_background"
+        android:padding="@dimen/_10sdp"/>
+
+    <FrameLayout
+        android:id="@+id/flStroke"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/_10sdp"
+        android:background="@drawable/rounded_background"
+        android:padding="@dimen/_10sdp"/>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:indeterminate="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image"
+        android:layout_marginTop="@dimen/_120sdp"
+        android:elevation="@dimen/_10sdp"/>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dataLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_10sdp"
+        android:background="@drawable/rounded_background"
+        app:layout_constraintTop_toBottomOf="@id/flStroke"
+        android:padding="@dimen/_5sdp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/amountTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/amount"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/text_color"
+            android:textStyle="bold"
+            android:textSize="@dimen/_13sdp"
+            android:paddingHorizontal="@dimen/_3sdp"
+            android:layout_marginTop="@dimen/_5sdp"/>
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_background"
+            tools:text="₹42000"
+            android:imeOptions="actionNext"
+            android:paddingVertical="@dimen/_3sdp"
+            android:paddingHorizontal="@dimen/_8sdp"
+            app:layout_constraintTop_toBottomOf="@id/amountTxt"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:maxLines="1"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

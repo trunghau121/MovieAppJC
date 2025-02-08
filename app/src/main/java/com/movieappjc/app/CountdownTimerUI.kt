@@ -19,12 +19,14 @@ fun CountdownTimerUI() {
         SessionTimeoutDialog(onExtendSession = {
             Log.d("CountdownTimer", "onExtendSession")
             CountdownTimer.oShowDialog.value = false
+            CountdownTimer.onTimerFinish.value = false
             CountdownTimer.cancel()
             CountdownTimer.start()
         }, onLogout = {
             Log.d("CountdownTimer", "onLogout")
             CountdownTimer.cancel()
             CountdownTimer.oShowDialog.value = false
+            CountdownTimer.onTimerFinish.value = true
         })
     }
 

@@ -12,7 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 object CountdownTimer {
-    private const val totalTimeMillis: Long = 360000L
+    private const val totalTimeMillis: Long = 600000L
     private const val intervalMillis: Long = 1000L
     private var timerJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Default)

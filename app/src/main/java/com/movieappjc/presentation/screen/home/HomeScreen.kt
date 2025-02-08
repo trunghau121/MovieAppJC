@@ -18,6 +18,7 @@ import com.core_app.extension.aDp
 import com.core_app.extension.value
 import com.core_app.utils.ImmutableHolder
 import com.core_app.utils.StableHolder
+import com.movieappjc.app.CountdownTimerUI
 import com.movieappjc.app.components.ToUI
 import com.movieappjc.app.components.drawer.NavigationDrawerApp
 import com.movieappjc.domain.entities.MovieEntity
@@ -46,6 +47,8 @@ fun HomeScreen(
                     drawerState,
                     ImmutableHolder(data.data)
                 )
+
+                CountdownTimerUI()
             }
         },
         onRetry = {

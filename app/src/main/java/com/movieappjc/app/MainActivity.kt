@@ -2,6 +2,7 @@ package com.movieappjc.app
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -50,7 +51,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApp(appRepository = appRepository) {
                 Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
-                    MainScreen(onClickLanguage = it)
+                    MainScreen(onClickLanguage = {
+                        CountdownTimer.start()
+                    })
                 }
             }
         }

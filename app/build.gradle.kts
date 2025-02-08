@@ -112,4 +112,30 @@ dependencies {
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.tooling.preview)
     debugImplementation (libs.compose.ui.tooling)
+
+    //photo picker
+    implementation(libs.dhaval2404.imagepicker)
+
+    //sdp
+    implementation(libs.intuit.sdp.android)
+    implementation(libs.legacy.support.v4)
+
+    //camera x
+    implementation("androidx.camera:camera-camera2:1.4.1")
+    implementation("androidx.camera:camera-lifecycle:1.4.1")
+    implementation("androidx.camera:camera-view:1.4.1")
+    implementation("androidx.camera:camera-extensions:1.4.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+
+    // glide
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
+    implementation("com.google.mlkit:digital-ink-recognition:18.1.0")
+    implementation("cz.adaptech.tesseract4android:tesseract4android:4.8.0")
 }
