@@ -20,11 +20,25 @@
         android:background="@drawable/rounded_background"
         android:padding="@dimen/_10sdp"/>
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/image2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_error"
+        android:minHeight="@dimen/_180sdp"
+        app:layout_constraintTop_toBottomOf="@id/image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/_10sdp"
+        android:scaleType="fitCenter"
+        android:background="@drawable/rounded_background"
+        android:padding="@dimen/_10sdp"/>
+
     <FrameLayout
         android:id="@+id/flStroke"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/image"
+        app:layout_constraintTop_toBottomOf="@id/image2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="@dimen/_10sdp"

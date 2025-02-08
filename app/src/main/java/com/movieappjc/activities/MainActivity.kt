@@ -20,13 +20,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
-import com.google.mlkit.vision.digitalink.DigitalInkRecognition
 import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModel
 import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModelIdentifier
-import com.google.mlkit.vision.digitalink.DigitalInkRecognizerOptions
 import com.movieappjc.R
 import com.movieappjc.fragmets.ScanDetailsFragment
 import com.movieappjc.fragmets.ScanFragment
+import org.opencv.android.OpenCVLoader
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +40,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (!OpenCVLoader.initDebug())
+            Timber.tag("OpenCV").e("Unable to load OpenCV!")
+        else
+            Timber.tag("OpenCV").d("OpenCV loaded Successfully!")
         setup()
     }
 

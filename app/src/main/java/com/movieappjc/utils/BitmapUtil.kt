@@ -6,8 +6,55 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.net.Uri
 import com.google.mlkit.vision.digitalink.Ink
+import org.opencv.android.Utils
+import org.opencv.core.Mat
+import org.opencv.core.Size
+import org.opencv.imgproc.Imgproc
+import kotlin.math.max
 
 object BitmapUtil {
+
+    private const val MAX_IMAGE_DIMENSION = 1280
+    private const val SCALE_FACTOR = 0.5
+
+    fun optimizeImageForOCR(source: Bitmap): Bitmap {
+        var width = source.width
+        var height = source.height
+
+        if (max(width.toDouble(), height.toDouble()) > MAX_IMAGE_DIMENSION) {
+            val ratio = (MAX_IMAGE_DIMENSION.toFloat() / max(
+                width.toDouble(),
+                height.toDouble()
+            )).toFloat()
+            width = Math.round(width * ratio)
+            height = Math.round(height * ratio)
+        }
+
+        val sourceMat = Mat()
+        Utils.bitmapToMat(source, sourceMat)
+        val resized = Mat()
+        Imgproc.resize(sourceMat, resized, Size(width * SCALE_FACTOR, height * SCALE_FACTOR))
+
+        val processed = Mat()
+        Imgproc.GaussianBlur(resized, processed, Size(3.0, 3.0), 0.0)
+        Imgproc.threshold(
+            processed,
+            processed,
+            0.0,
+            255.0,
+            Imgproc.THRESH_BINARY or Imgproc.THRESH_OTSU
+        )
+
+        val result =
+            Bitmap.createBitmap(processed.cols(), processed.rows(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(processed, result)
+
+        sourceMat.release()
+        resized.release()
+        processed.release()
+
+        return result
+    }
 
     fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
         return try {

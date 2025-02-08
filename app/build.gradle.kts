@@ -138,4 +138,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
     implementation("com.google.mlkit:digital-ink-recognition:18.1.0")
     implementation("cz.adaptech.tesseract4android:tesseract4android:4.8.0")
+    implementation("com.quickbirdstudios:opencv:4.5.3.0")
 }

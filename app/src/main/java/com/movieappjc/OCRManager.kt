@@ -48,12 +48,15 @@ class OCRManager(private val context: Context) {
             tessBaseAPI!!.recycle()
             throw RuntimeException("Failed to initialize Tesseract")
         }
+        tessBaseAPI?.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO)
     }
 
     // 3️⃣ Nhận diện chữ từ ảnh
     fun extractTextFromImage(bitmap: Bitmap): String {
         tessBaseAPI?.setImage(bitmap)
-        return tessBaseAPI?.utF8Text.orEmpty()
+        val result = tessBaseAPI?.utF8Text.orEmpty()
+        tessBaseAPI?.clear()
+        return result
     }
 
     // 4️⃣ Giải phóng tài nguyên

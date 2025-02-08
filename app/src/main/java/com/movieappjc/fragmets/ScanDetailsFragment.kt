@@ -38,6 +38,7 @@ class ScanDetailsFragment : Fragment() {
     private lateinit var flStroke: FrameLayout
     private lateinit var amount: AppCompatEditText
     private lateinit var image: AppCompatImageView
+    private lateinit var image2: AppCompatImageView
     private lateinit var dataLayout: ConstraintLayout
     private lateinit var progressBar: ProgressBar
     private lateinit var sharedPreferences: SharedPreferences
@@ -75,7 +76,7 @@ class ScanDetailsFragment : Fragment() {
                     .into(image)
             }
             progressBar.visibility = View.VISIBLE
-            analyseImageText(BitmapUtil.uriToBitmap(requireContext(), Uri.parse(imageUri)))
+            analyseImageText(BitmapUtil.uriToBitmap(requireContext(), Uri.parse(imageUri))!!)
         } else {
             Toast.makeText(requireContext(), "Sorry Some Error Occurred in image processing", Toast.LENGTH_LONG).show()
             (context as FragmentActivity).supportFragmentManager.beginTransaction()
@@ -86,6 +87,7 @@ class ScanDetailsFragment : Fragment() {
 
     private fun initUI(view: View) {
         image = view.findViewById(R.id.image)
+        image2 = view.findViewById(R.id.image2)
         flStroke = view.findViewById(R.id.flStroke)
         amount = view.findViewById(R.id.amount)
         dataLayout = view.findViewById(R.id.dataLayout)
@@ -96,10 +98,16 @@ class ScanDetailsFragment : Fragment() {
 
     private fun listener() {}
 
-    private fun analyseImageText(bitmap: Bitmap?, isEEE: Boolean = true) {
+    private fun analyseImageText(bitmap: Bitmap, isEEE: Boolean = true) {
         CoroutineScope(Dispatchers.Main).launch {
+            val bitmap2 = BitmapUtil.optimizeImageForOCR(bitmap)
+            Glide.with(requireContext())
+                .load(bitmap2)
+                .error(R.drawable.ic_error)
+                .into(image2)
+            val oCRManager = OCRManager(requireContext())
             val result = withContext(Dispatchers.IO) {
-                OCRManager(requireContext()).extractTextFromImage(bitmap!!)
+                oCRManager.extractTextFromImage(bitmap2)
             }
 
             Timber.tag("TextRecognition").d(result)
@@ -107,6 +115,7 @@ class ScanDetailsFragment : Fragment() {
             amount.setText(extractAmount(result) ?: "No Amount")
             dataLayout.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
+            oCRManager.release()
         }
 //        var inputImage: InputImage? = null
 //        try {
