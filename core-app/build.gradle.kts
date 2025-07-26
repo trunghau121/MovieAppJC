@@ -47,6 +47,7 @@ dependencies {
     api(libs.androidx.ktx)
     api(libs.kotlinx.serialization.json)
 
+    api(platform(libs.compose.bom))
     api(libs.activity.compose)
     api(libs.compose.ui)
     api(libs.compose.ui.graphics)

@@ -3,7 +3,6 @@ package com.movieappjc.presentation.screen.person
 import androidx.compose.animation.SplineBasedFloatDecayAnimationSpec
 import androidx.compose.animation.core.generateDecayAnimationSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -34,7 +33,6 @@ import com.movieappjc.app.components.ToUI
 import com.movieappjc.app.theme.fontCustomNormal
 import com.movieappjc.presentation.viewmodel.person.PersonDetailViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
 

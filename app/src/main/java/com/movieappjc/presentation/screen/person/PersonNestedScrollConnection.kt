@@ -1,6 +1,6 @@
 package com.movieappjc.presentation.screen.person
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -9,7 +9,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun getPersonNestedScrollConnection(
     anchoredDraggableState: AnchoredDraggableState<AnchoredDraggableCardState>
@@ -42,7 +41,7 @@ fun getPersonNestedScrollConnection(
                 consumed: Velocity,
                 available: Velocity
             ): Velocity {
-                anchoredDraggableState.settle(velocity = available.y)
+                anchoredDraggableState.settle(animationSpec = spring())
                 return super.onPostFling(consumed, available)
             }
 
