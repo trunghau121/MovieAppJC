@@ -39,10 +39,6 @@ android {
     }
 }
 
-composeCompiler {
-    enableStrongSkippingMode = true
-}
-
 dependencies {
     api(libs.androidx.ktx)
     api(libs.kotlinx.serialization.json)

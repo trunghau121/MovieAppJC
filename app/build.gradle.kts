@@ -92,10 +92,6 @@ android {
     }
 }
 
-composeCompiler {
-    enableStrongSkippingMode = true
-}
-
 dependencies {
     implementation(project(":core-app"))
     implementation(libs.readmore.material)
@@ -107,7 +103,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.tooling.preview)

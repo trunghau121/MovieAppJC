@@ -1,7 +1,7 @@
 package com.movieappjc.presentation.screen.main
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.core_app.navigation.NavigationEffects
 import com.core_app.utils.StableHolder
