@@ -5,7 +5,7 @@ import com.movieappjc.app.common.localization.translatable
 import com.movieappjc.app.common.localization.registerSupportedLocales
 import java.util.Locale
 
-val VIETNAMESE = Locale("vi", "VN")
+val VIETNAMESE: Locale = Locale.forLanguageTag("vi-VN")
 
 val supportedLocalesNow = registerSupportedLocales(VIETNAMESE)
 
