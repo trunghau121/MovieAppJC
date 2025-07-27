@@ -83,7 +83,7 @@ jobs:
           name: android-release
 
       - name: Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1.9.0
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
         with:
           appId: ${{secrets.FIREBASE_ANDROID_APPID}}
           serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}

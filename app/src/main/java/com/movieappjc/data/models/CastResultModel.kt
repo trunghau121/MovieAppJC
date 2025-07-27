@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 @Stable
 data class CastResultModel(
-    @field:Json(name = "cast")
+    @param:Json(name = "cast")
     val cast: List<CastModel>
 ): ResponseMapper<List<CastEntity>>{
     override fun mapTo(): List<CastEntity> {

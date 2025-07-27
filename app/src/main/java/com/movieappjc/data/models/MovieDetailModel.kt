@@ -11,47 +11,47 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 @Stable
 data class MovieDetailModel(
-    @field:Json(name = "adult")
+    @param:Json(name = "adult")
     val adult: Boolean?,
-    @field:Json(name = "backdrop_path")
+    @param:Json(name = "backdrop_path")
     private val _backdropPath: String?,
-    @field:Json(name = "budget")
+    @param:Json(name = "budget")
     val budget: Int?,
-    @field:Json(name = "homepage")
+    @param:Json(name = "homepage")
     val homepage: String?,
-    @field:Json(name = "id")
+    @param:Json(name = "id")
     private val _id: Int?,
-    @field:Json(name = "imdb_id")
+    @param:Json(name = "imdb_id")
     val imdbId: String?,
-    @field:Json(name = "original_language")
+    @param:Json(name = "original_language")
     val originalLanguage: String?,
-    @field:Json(name = "original_title")
+    @param:Json(name = "original_title")
     val originalTitle: String?,
-    @field:Json(name = "overview")
+    @param:Json(name = "overview")
     private val _overview: String?,
-    @field:Json(name = "popularity")
+    @param:Json(name = "popularity")
     val popularity: Double?,
-    @field:Json(name = "poster_path")
+    @param:Json(name = "poster_path")
     private val _posterPath: String?,
-    @field:Json(name = "release_date")
+    @param:Json(name = "release_date")
     private val _releaseDate: String?,
-    @field:Json(name = "revenue")
+    @param:Json(name = "revenue")
     val revenue: Int?,
-    @field:Json(name = "runtime")
+    @param:Json(name = "runtime")
     private val _duration: Int?,
-    @field:Json(name = "status")
+    @param:Json(name = "status")
     val status: String?,
-    @field:Json(name = "tagline")
+    @param:Json(name = "tagline")
     val tagline: String?,
-    @field:Json(name = "title")
+    @param:Json(name = "title")
     private val _title: String?,
-    @field:Json(name = "video")
+    @param:Json(name = "video")
     val video: Boolean?,
-    @field:Json(name = "vote_average")
+    @param:Json(name = "vote_average")
     private val _voteAverage: Double?,
-    @field:Json(name = "vote_count")
+    @param:Json(name = "vote_count")
     val voteCount: Int?,
-    @field:Json(name = "genres")
+    @param:Json(name = "genres")
     private val _genres: List<GenreModel>?
 ) : ResponseMapper<MovieDetailEntity> {
 

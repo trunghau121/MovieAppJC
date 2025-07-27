@@ -10,9 +10,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 @Stable
 data class GenreModel(
-    @field:Json(name = "id")
+    @param:Json(name = "id")
     val id: Int? = null,
-    @field:Json(name = "name")
+    @param:Json(name = "name")
     val name: String? = null
 ) : ResponseMapper<GenreEntity> {
     override fun mapTo(): GenreEntity {

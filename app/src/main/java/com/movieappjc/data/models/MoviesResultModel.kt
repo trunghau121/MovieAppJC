@@ -10,18 +10,18 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 @Stable
 class MoviesResultModel(
-    @field:Json(name = "page")
-    private val _currentPage: Int?,
-    @field:Json(name = "results")
-    private val _data: List<MovieModel>?,
-    @field:Json(name = "total_pages")
-    private val _totalCountPages: Int?,
+    @param:Json(name = "page")
+    private val currentPage: Int?,
+    @param:Json(name = "results")
+    private val data: List<MovieModel>?,
+    @param:Json(name = "total_pages")
+    private val totalCountPages: Int?,
 ) : ResponseMapper<MoviesResultEntity> {
     override fun mapTo(): MoviesResultEntity {
         return MoviesResultEntity(
-            currentPage = _currentPage.value(),
-            data = _data.value().map { it.mapTo() },
-            totalCountPages = _totalCountPages.value()
+            currentPage = currentPage.value(),
+            data = data.value().map { it.mapTo() },
+            totalCountPages = totalCountPages.value()
         )
     }
 }

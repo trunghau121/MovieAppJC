@@ -8,29 +8,29 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = false)
 data class CastModel(
-    @field:Json(name = "adult")
+    @param:Json(name = "adult")
     val adult: Boolean?,
-    @field:Json(name = "cast_id")
+    @param:Json(name = "cast_id")
     val castId: Int?,
-    @field:Json(name = "character")
+    @param:Json(name = "character")
     private val _character: String?,
-    @field:Json(name = "credit_id")
+    @param:Json(name = "credit_id")
     val creditId: String?,
-    @field:Json(name = "gender")
+    @param:Json(name = "gender")
     val gender: Int?,
-    @field:Json(name = "id")
+    @param:Json(name = "id")
     private val _id: Int?,
-    @field:Json(name = "known_for_department")
+    @param:Json(name = "known_for_department")
     val knownForDepartment: String?,
-    @field:Json(name = "name")
+    @param:Json(name = "name")
     private val _name: String?,
-    @field:Json(name = "order")
+    @param:Json(name = "order")
     val order: Int?,
-    @field:Json(name = "original_name")
+    @param:Json(name = "original_name")
     val originalName: String?,
-    @field:Json(name = "popularity")
+    @param:Json(name = "popularity")
     val popularity: Double?,
-    @field:Json(name = "profile_path")
+    @param:Json(name = "profile_path")
     private val _profilePath: String?
 ) : ResponseMapper<CastEntity> {
     override fun mapTo(): CastEntity {

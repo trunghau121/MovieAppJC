@@ -9,27 +9,27 @@ import kotlinx.parcelize.Parcelize
 @JsonClass(generateAdapter = false)
 @Parcelize
 data class PersonModel(
-    @field:Json(name = "adult")
+    @param:Json(name = "adult")
     val adult: Boolean?,
-    @field:Json(name = "biography")
+    @param:Json(name = "biography")
     private val biography: String?,
-    @field:Json(name = "birthday")
+    @param:Json(name = "birthday")
     private val birthday: String?,
-    @field:Json(name = "gender")
+    @param:Json(name = "gender")
     val gender: Int?,
-    @field:Json(name = "id")
+    @param:Json(name = "id")
     private val id: Int?,
-    @field:Json(name = "imdb_id")
+    @param:Json(name = "imdb_id")
     val imdbId: String?,
-    @field:Json(name = "known_for_department")
+    @param:Json(name = "known_for_department")
     private val knownForDepartment: String?,
-    @field:Json(name = "name")
+    @param:Json(name = "name")
     private val name: String?,
-    @field:Json(name = "place_of_birth")
+    @param:Json(name = "place_of_birth")
     private val placeOfBirth: String?,
-    @field:Json(name = "popularity")
+    @param:Json(name = "popularity")
     private val popularity: Double?,
-    @field:Json(name = "profile_path")
+    @param:Json(name = "profile_path")
     private val profilePath: String?
 ): PersonEntity(){
     override fun getId(): Int = id.value()
