@@ -10,35 +10,35 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 @Stable
 data class MovieModel(
-    @Json(name = "adult")
+    @field:Json(name = "adult")
     val adult: Boolean? = null,
-    @Json(name = "backdrop_path")
+    @field:Json(name = "backdrop_path")
     private val _backdropPath: String? = null,
-    @Json(name = "genre_ids")
+    @field:Json(name = "genre_ids")
     val genreIds: List<Int?>? = null,
-    @Json(name = "id")
+    @field:Json(name = "id")
     private val _id: Int? = null,
-    @Json(name = "media_type")
+    @field:Json(name = "media_type")
     val mediaType: String? = null,
-    @Json(name = "original_language")
+    @field:Json(name = "original_language")
     val originalLanguage: String? = null,
-    @Json(name = "original_title")
+    @field:Json(name = "original_title")
     val originalTitle: String? = null,
-    @Json(name = "overview")
+    @field:Json(name = "overview")
     private val _overview: String? = null,
-    @Json(name = "popularity")
+    @field:Json(name = "popularity")
     val popularity: Double? = null,
-    @Json(name = "poster_path")
+    @field:Json(name = "poster_path")
     private val _posterPath: String? = null,
-    @Json(name = "release_date")
+    @field:Json(name = "release_date")
     private val _releaseDate: String? = null,
-    @Json(name = "title")
+    @field:Json(name = "title")
     private val _title: String? = null,
-    @Json(name = "video")
+    @field:Json(name = "video")
     val video: Boolean? = null,
-    @Json(name = "vote_average")
+    @field:Json(name = "vote_average")
     private val _voteAverage: Double? = null,
-    @Json(name = "vote_count")
+    @field:Json(name = "vote_count")
     val voteCount: Int? = null
 ) : ResponseMapper<MovieEntity> {
     override fun mapTo(): MovieEntity {

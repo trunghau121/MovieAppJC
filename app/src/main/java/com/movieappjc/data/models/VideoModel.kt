@@ -8,25 +8,25 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = false)
 data class VideoModel(
-    @Json(name = "id")
+    @field:Json(name = "id")
     val id: String?,
-    @Json(name = "iso_3166_1")
+    @field:Json(name = "iso_3166_1")
     val iso31661: String?,
-    @Json(name = "iso_639_1")
+    @field:Json(name = "iso_639_1")
     val iso6391: String?,
-    @Json(name = "key")
+    @field:Json(name = "key")
     private val _key: String?,
-    @Json(name = "name")
+    @field:Json(name = "name")
     private val _name: String?,
-    @Json(name = "official")
+    @field:Json(name = "official")
     val official: Boolean?,
-    @Json(name = "published_at")
+    @field:Json(name = "published_at")
     val publishedAt: String?,
-    @Json(name = "site")
+    @field:Json(name = "site")
     val site: String?,
-    @Json(name = "size")
+    @field:Json(name = "size")
     val size: Int?,
-    @Json(name = "type")
+    @field:Json(name = "type")
     private val _type: String?
 ) : ResponseMapper<VideoEntity> {
     override fun mapTo(): VideoEntity {

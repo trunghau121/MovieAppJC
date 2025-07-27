@@ -10,7 +10,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 @Stable
 data class MovieCreditsResultModel(
-    @Json(name = "cast")
+    @field:Json(name = "cast")
     val cast: List<MovieModel>?= null
 ): ResponseMapper<List<MovieEntity>> {
     override fun mapTo(): List<MovieEntity> {
