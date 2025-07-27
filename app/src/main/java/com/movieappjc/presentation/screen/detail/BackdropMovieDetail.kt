@@ -10,8 +10,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.core_app.extension.value
 import com.movieappjc.app.common.screenutil.ScreenUtil
 import com.movieappjc.app.common.utils.KeyUtils

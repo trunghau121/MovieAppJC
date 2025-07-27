@@ -6,20 +6,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 
-private var _dpRatio = 1f
-private var _spRatio = 1f
+private var pdpRatio = 1f
+private var pspRatio = 1f
 val dpRatio
-    get() = _dpRatio
+    get() = pdpRatio
 val spRatio
-    get() = _spRatio
+    get() = pspRatio
 
 @JvmInline
-value class ADp constructor(val value: Int) {
+value class ADp(val value: Int) {
     companion object{
         fun initializeAdp(resources: Resources, designWidth: Int) {
             val sweetRatio = resources.displayMetrics.widthPixels.div(resources.displayMetrics.density)
-            _dpRatio = designWidth.toFloat().div(sweetRatio)
-            _spRatio = resources.configuration.fontScale.times(dpRatio)
+            pdpRatio = designWidth.toFloat().div(sweetRatio)
+            pspRatio = resources.configuration.fontScale.times(dpRatio)
         }
     }
 }

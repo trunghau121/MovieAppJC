@@ -1,8 +1,5 @@
 package com.movieappjc.presentation.screen.person
 
-import androidx.compose.animation.SplineBasedFloatDecayAnimationSpec
-import androidx.compose.animation.core.generateDecayAnimationSpec
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -24,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.core_app.extension.aDp
@@ -42,21 +38,10 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
         AnchoredDraggableCardState.DRAGGED_UP at 0f
     }
 
-    val density = LocalDensity.current
     val anchoredDraggableState = remember {
         AnchoredDraggableState(
             initialValue = AnchoredDraggableCardState.DRAGGED_DOWN,
-            anchors = anchors,
-            positionalThreshold = { distance: Float -> distance * 0.5f },
-            velocityThreshold = { with(density) { 100.aDp.toPx() } },
-            snapAnimationSpec = tween(),
-            decayAnimationSpec =  SplineBasedFloatDecayAnimationSpec(object: Density {
-                override val density: Float
-                    get() = 3f
-                override val fontScale: Float
-                    get() = 3f
-
-            }).generateDecayAnimationSpec(),
+            anchors = anchors
         )
     }
 

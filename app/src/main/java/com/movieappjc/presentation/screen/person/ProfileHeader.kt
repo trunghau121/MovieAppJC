@@ -23,8 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.core_app.extension.aDp
 import com.core_app.extension.aSp
 import com.movieappjc.R

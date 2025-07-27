@@ -10,11 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.commit451.coiltransformations.BlurTransformation
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.request.transformations
+import com.core_app.utils.BlurTransformation
 import com.movieappjc.domain.entities.MovieEntity
-
 
 @Composable
 fun BackdropMovie(movieEntity: MovieEntity) {
@@ -29,7 +30,13 @@ fun BackdropMovie(movieEntity: MovieEntity) {
                 .clip(shape = RoundedCornerShape(bottomStartPercent = 10, bottomEndPercent = 10)),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(data)
-                .transformations(BlurTransformation(LocalContext.current, 20f, 1f))
+                .transformations(
+                    BlurTransformation(
+                        LocalContext.current,
+                        20f,
+                        1f
+                    )
+                )
                 .crossfade(true)
                 .build(),
             contentScale = ContentScale.Crop,

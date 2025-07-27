@@ -22,7 +22,7 @@ fun getVersionCode(): Int {
 
 android {
     namespace = "com.movieappjc"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.movieappjc"
@@ -68,16 +68,21 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-        if (project.findProperty("enableComposeCompilerReports") == "true") {
-            val outputDir = project.layout.buildDirectory.set(File("/compose-reports"))
-            freeCompilerArgs = freeCompilerArgs + listOf(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$outputDir",
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$outputDir"
-            )
+    kotlin {
+        jvmToolchain(17)
+
+        compilerOptions {
+            if (project.findProperty("enableComposeCompilerReports") == "true") {
+                val outputDir = project.layout.buildDirectory.set(File("/compose-reports"))
+                freeCompilerArgs.addAll(
+                    listOf(
+                        "-P",
+                        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$outputDir",
+                        "-P",
+                        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$outputDir"
+                    )
+                )
+            }
         }
     }
 

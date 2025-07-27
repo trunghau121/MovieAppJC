@@ -10,7 +10,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 @Stable
 data class VideoResultModel(
-    @Json(name = "results")
+    @field:Json(name = "results")
     val videos: List<VideoModel>
 ): ResponseMapper<List<VideoEntity>> {
     override fun mapTo(): List<VideoEntity> {

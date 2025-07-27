@@ -22,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.core_app.extension.aDp
 import com.core_app.extension.aSp
 import com.movieappjc.R

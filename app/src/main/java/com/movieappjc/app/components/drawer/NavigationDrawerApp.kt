@@ -25,7 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.core_app.extension.aDp
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.aboutDescriptionText

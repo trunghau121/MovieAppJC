@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -10,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.core_app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 23
@@ -30,8 +29,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+
+    kotlin {
+        jvmToolchain(17)
     }
 
     buildFeatures {
@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.tink.android)
 
     api(libs.coil.compose)
-    api(libs.coil.transformations)
+    api(libs.coil.network)
 
     api(libs.okhttp3)
     api(libs.okhttp3.logging.interceptor)
