@@ -17,7 +17,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// === TỰ ĐỊNH NGHĨA INTERFACE CẦU NỐI ĐỂ THAY THẾ CHO CÁC CLASS ẨN CỦA GOOGLE ===
+// === INTERFACE CẦU NỐI ĐỂ SỬ DỤNG CHUNG CHO CẢ COLUMN VÀ GRID ===
 interface DragDropItemInfo {
     val index: Int
     val offset: IntOffset
@@ -32,7 +32,7 @@ interface DragDropLayoutInfo {
 
 class GenericDragDropState<T>(
     val listData: SnapshotStateList<T>,
-    private val getLayoutInfo: () -> DragDropLayoutInfo, // Dùng interface tự chế
+    private val getLayoutInfo: () -> DragDropLayoutInfo,
     private val scrollByLambda: suspend (Float) -> Float,
     private val canScrollBackwardLambda: () -> Boolean,
     private val canScrollForwardLambda: () -> Boolean,
@@ -41,7 +41,10 @@ class GenericDragDropState<T>(
     private val firstVisibleItemScrollOffsetLambda: () -> Int,
     private val scope: CoroutineScope,
     private val ignoreIndices: IntRange = IntRange.EMPTY,
-    private val onListChanged: (List<T>) -> Unit
+    private val onListChanged: (List<T>) -> Unit,
+    // TÁCH LÀM 2 ĐIỀU KIỆN RIÊNG BIỆT:
+    private val canDragItem: (item: T) -> Boolean = { true },          // Có cho nhấc lên không
+    private val canTargetAcceptSwap: (item: T) -> Boolean = { true }   // Có cho ô khác chiếm chỗ khi lướt qua không
 ) {
     var draggedIndex by mutableStateOf<Int?>(null)
         private set
@@ -49,47 +52,69 @@ class GenericDragDropState<T>(
     var fingerOffset by mutableStateOf(Offset.Zero)
         private set
 
+    var initialTouchOffset by mutableStateOf(Offset.Zero)
+        private set
+
+    var draggedItemSize by mutableStateOf(IntSize.Zero)
+        private set
+
     private var autoScrollJob: Job? = null
 
     fun onDragStart(offset: Offset) {
         val targetItem = findVisibleItemAtOffset(offset)
-        if (targetItem != null && targetItem.index !in ignoreIndices) {
+        if (targetItem != null) {
+            val itemData = listData.getOrNull(targetItem.index)
+
+            // KIỂM TRA ĐIỀU KIỆN NHẤC: Chỉ check xem ô này có được phép kéo đi không (canDragItem)
+            if (targetItem.index in ignoreIndices || (itemData != null && !canDragItem(itemData))) {
+                return
+            }
+
             draggedIndex = targetItem.index
             fingerOffset = offset
+            draggedItemSize = targetItem.size
+
+            initialTouchOffset = Offset(
+                x = offset.x - targetItem.offset.x,
+                y = offset.y - targetItem.offset.y
+            )
         }
     }
 
     fun onDrag(dragAmount: Offset) {
-        if (draggedIndex == null) return
+        val source = draggedIndex ?: return
         fingerOffset += dragAmount
+
+        val targetItem = findVisibleItemAtOffset(fingerOffset)
+        val target = targetItem?.index
+
+        if (target != null && target != source) {
+            val targetItemData = listData.getOrNull(target)
+
+            // KIỂM TRA ĐIỀU KIỆN HOÁN ĐỔI: Khi lướt qua ô đích, check xem ô đích có chấp nhận bị chiếm chỗ không
+            if (target !in ignoreIndices && targetItemData != null && canTargetAcceptSwap(targetItemData)) {
+                val currentIndex = firstVisibleItemIndexLambda()
+                val currentOffset = firstVisibleItemScrollOffsetLambda()
+
+                val temp = listData[source]
+                listData[source] = listData[target]
+                listData[target] = temp
+
+                draggedIndex = target
+
+                requestScrollToItemLambda(currentIndex, currentOffset)
+                onListChanged(listData.toList())
+            }
+        }
+
         checkForAutoScroll()
     }
 
     fun onDragEnd() {
-        val source = draggedIndex
-
-        if (source != null) {
-            val targetItem = findVisibleItemAtOffset(fingerOffset)
-            val target = targetItem?.index
-
-            if (target != null && target != source) {
-                if (target !in ignoreIndices && source !in ignoreIndices) {
-                    val currentIndex = firstVisibleItemIndexLambda()
-                    val currentOffset = firstVisibleItemScrollOffsetLambda()
-
-                    val temp = listData[source]
-                    listData[source] = listData[target]
-                    listData[target] = temp
-
-                    requestScrollToItemLambda(currentIndex, currentOffset)
-
-                    onListChanged(listData.toList())
-                }
-            }
-        }
-
         draggedIndex = null
         fingerOffset = Offset.Zero
+        initialTouchOffset = Offset.Zero
+        draggedItemSize = IntSize.Zero
         stopAutoScroll()
     }
 
@@ -99,7 +124,7 @@ class GenericDragDropState<T>(
 
         val activationZone = 120f
         val fingerY = fingerOffset.y
-        val baseMaxSpeed = 150f
+        val baseMaxSpeed = 110f
 
         val scrollAmount = when {
             fingerY < activationZone -> {
@@ -142,17 +167,13 @@ class GenericDragDropState<T>(
         return visibleItems.find { item ->
             val top = item.offset.y
             val bottom = top + item.size.height
-
-            // Kiểm tra trục Y trước (Cả Grid và Column đều cần)
             val isInsideY = screenOffset.y.toInt() in top..bottom
 
             if (item.size.width > 0) {
-                // Nếu là Grid (có width > 0), kiểm tra nghiêm ngặt cả trục X
                 val left = item.offset.x
                 val right = left + item.size.width
                 isInsideY && (screenOffset.x.toInt() in left..right)
             } else {
-                // Nếu là Column (width = 0), chỉ cần đúng trục Y là húp luôn
                 isInsideY
             }
         }
@@ -166,12 +187,13 @@ fun <T> rememberGridDragDropState(
     lazyGridState: LazyGridState,
     scope: CoroutineScope,
     ignoreIndices: IntRange = IntRange.EMPTY,
+    canDragItem: (T) -> Boolean = { true },
+    canTargetAcceptSwap: (T) -> Boolean = { true },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyGridState, scope, listData, ignoreIndices) {
         GenericDragDropState(
             listData = listData,
-            // Ánh xạ (Map) dữ liệu từ LazyGrid sang Interface dùng chung công khai
             getLayoutInfo = {
                 object : DragDropLayoutInfo {
                     override val viewportSize: IntSize = lazyGridState.layoutInfo.viewportSize
@@ -192,6 +214,8 @@ fun <T> rememberGridDragDropState(
             firstVisibleItemScrollOffsetLambda = { lazyGridState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
+            canDragItem = canDragItem,
+            canTargetAcceptSwap = canTargetAcceptSwap,
             onListChanged = onListChanged
         )
     }
@@ -204,21 +228,24 @@ fun <T> rememberListDragDropState(
     lazyListState: LazyListState,
     scope: CoroutineScope,
     ignoreIndices: IntRange = IntRange.EMPTY,
+    canDragItem: (T) -> Boolean = { true },
+    canTargetAcceptSwap: (T) -> Boolean = { true },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyListState, scope, listData, ignoreIndices) {
         GenericDragDropState(
             listData = listData,
-            // Ánh xạ (Map) dữ liệu từ LazyList sang Interface dùng chung công khai
             getLayoutInfo = {
                 object : DragDropLayoutInfo {
                     override val viewportSize: IntSize = lazyListState.layoutInfo.viewportSize
                     override val visibleItemsInfo: List<DragDropItemInfo> = lazyListState.layoutInfo.visibleItemsInfo.map { listItem ->
                         object : DragDropItemInfo {
                             override val index: Int = listItem.index
-                            // LazyColumn trả về y tương đối, x luôn = 0
                             override val offset: IntOffset = IntOffset(x = 0, y = listItem.offset)
-                            override val size: IntSize = IntSize(width = 0, height = listItem.size)
+                            override val size: IntSize = IntSize(
+                                width = lazyListState.layoutInfo.viewportSize.width,
+                                height = listItem.size
+                            )
                         }
                     }
                 }
@@ -231,6 +258,8 @@ fun <T> rememberListDragDropState(
             firstVisibleItemScrollOffsetLambda = { lazyListState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
+            canDragItem = canDragItem,
+            canTargetAcceptSwap = canTargetAcceptSwap,
             onListChanged = onListChanged
         )
     }

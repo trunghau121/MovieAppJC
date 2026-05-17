@@ -135,12 +135,10 @@ fun CleanGridScreen() {
         // 7. Gọi Composable Vẽ bóng ma dùng chung bám theo ngón tay
         // Chiều rộng và chiều cao truyền vào đây nên trùng với kích thước của ô GridItemCard bên dưới
         DragShadow(
-            dragDropState = dragDropState,
-            width = 110.dp,
-            height = 100.dp
+            dragDropState = dragDropState
         ) { shadowItem ->
             // Định nghĩa ruột bên trong của bóng ma (Vẽ y hệt giao diện ô gốc)
-            GridCardContent(item = shadowItem)
+            GridItemCard(item = shadowItem)
         }
     }
 }

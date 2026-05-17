@@ -48,7 +48,7 @@ import com.movieappjc.presentation.screen.drop_drag.pointer_input.rememberListDr
 import kotlinx.coroutines.delay
 
 // 1. Tạo Model dữ liệu mẫu mô phỏng dữ liệu từ API dạng dòng
-data class ColumnItemModel(val id: String, val name: String, val email: String)
+data class ColumnItemModel(val id: String, val name: String, val email: String, val isLocked: Boolean)
 
 @Composable
 fun CleanColumnScreen() {
@@ -66,7 +66,8 @@ fun CleanColumnScreen() {
             ColumnItemModel(
                 id = "user_id_$it",
                 name = "Nguyễn Văn Người Dùng $it",
-                email = "user$it@gmail.com"
+                email = "user$it@gmail.com",
+                isLocked = it < 5
             )
         }
         isLoading = false
@@ -92,6 +93,15 @@ fun CleanColumnScreen() {
             // Khi người dùng thả tay đổi chỗ thành công, đồng bộ ngay với biến API
             apiResponseItems = updatedList
             println("Đã lưu thứ tự Column mới cục bộ thành công!")
+        },
+        // 1. Cho phép TẤT CẢ mọi item đều có quyền tự long press để kéo đi bình thường
+        canDragItem = { true },
+
+        // 2. Chỉ định luật khi bị lướt qua:
+        canTargetAcceptSwap = { item ->
+            // Nếu item đang nằm dưới ngón tay là ô bị khóa (!item.isLocked == false)
+            // -> Từ chối hoán đổi, bắt ô đó phải đứng im cố định tại chỗ.
+            !item.isLocked
         }
     )
 
@@ -114,6 +124,7 @@ fun CleanColumnScreen() {
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier.fillMaxSize(),
+                userScrollEnabled = dragDropState.draggedIndex == null,
                 verticalArrangement = Arrangement.spacedBy(2.dp) // Khoảng cách giữa các dòng
             ) {
                 itemsIndexed(
@@ -141,13 +152,13 @@ fun CleanColumnScreen() {
 
         // 7. Gọi Composable Vẽ bóng ma dùng chung bám theo ngón tay
         // Đối với Row của Column, ta cho chiều rộng chiếm khoảng 92% màn hình để giống ô gốc
-        DragShadow(
-            dragDropState = dragDropState,
-            width = 360.dp,
-            height = 76.dp
-        ) { shadowItem ->
-            // Định nghĩa ruột bên trong của bóng ma (Vẽ y hệt giao diện ô gốc)
-            ColumnRowContent(item = shadowItem)
+        Box(
+            modifier = Modifier.fillMaxSize() // Box con thứ 2 chuyên chứa bóng ma (không chứa padding)
+        ) {
+            DragShadow(dragDropState = dragDropState) { shadowItem ->
+                // Ruột vẽ y hệt ô gốc
+                ColumnItemRow(item = shadowItem)
+            }
         }
     }
 }

@@ -17,20 +17,16 @@ fun <T> Modifier.dragDropSourceContainer(
     this.pointerInput(dragDropState) {
         detectDragGesturesAfterLongPress(
             onDragStart = { offset ->
-                // Tạo lực rung tinh tế khi nhấc thành công Card
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 dragDropState.onDragStart(offset)
             },
             onDrag = { change, dragAmount ->
+                // Nuốt cử chỉ di chuyển tại đây để chặn không cho các bộ phát hiện vuốt khác ăn mất tín hiệu
                 change.consume()
                 dragDropState.onDrag(dragAmount)
             },
-            onDragEnd = {
-                dragDropState.onDragEnd()
-            },
-            onDragCancel = {
-                dragDropState.onDragEnd()
-            }
+            onDragEnd = { dragDropState.onDragEnd() },
+            onDragCancel = { dragDropState.onDragEnd() }
         )
     }
 }
