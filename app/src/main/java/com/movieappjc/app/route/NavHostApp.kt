@@ -5,11 +5,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.core_app.navigation.NavHost
 import com.core_app.utils.StableHolder
+import com.movieappjc.presentation.screen.account_setting.AccountSettingScreen
 import com.movieappjc.presentation.screen.detail.MovieDetailScreen
 import com.movieappjc.presentation.screen.favorite.FavoriteMovieScreen
-import com.movieappjc.presentation.screen.home.HomeScreen
+import com.movieappjc.presentation.screen.menu.MyMenuScreen
 import com.movieappjc.presentation.screen.person.PersonDetailScreen
 import com.movieappjc.presentation.screen.search.SearchMovieScreen
+import com.movieappjc.presentation.screen.test.AbsoluteCoordinatesDragAndDropGridScreen
+import com.movieappjc.presentation.screen.aa.CleanGridScreen
+import com.movieappjc.presentation.screen.aa.CleanColumnScreen
 import com.movieappjc.presentation.screen.trailer_movie.TrailerMovieScreen
 import java.util.Locale
 
@@ -23,7 +27,7 @@ fun NavHostApp(
         startDestination = Routes.HomeScreen
     ) {
         composable<Routes.HomeScreen> {
-            HomeScreen(onClickLanguage = onClickLanguage)
+            CleanColumnScreen()
         }
 
         composable<Routes.MovieDetail> {
