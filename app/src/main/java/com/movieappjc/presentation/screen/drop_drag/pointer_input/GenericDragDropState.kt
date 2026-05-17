@@ -42,7 +42,8 @@ class GenericDragDropState<T>(
     private val scope: CoroutineScope,
     private val ignoreIndices: IntRange = IntRange.EMPTY,
     private val onListChanged: (List<T>) -> Unit,
-    private val isItemLocked: (item: T) -> Boolean = { false }
+    private val isItemLocked: (item: T) -> Boolean = { false },
+    private val isItemFixed: (item: T) -> Boolean = { false }
 ) {
     var draggedIndex by mutableStateOf<Int?>(null)
         private set
@@ -58,9 +59,16 @@ class GenericDragDropState<T>(
 
     private var autoScrollJob: Job? = null
 
+    // 1. LOGIC KHI GIỮ: Ô Fixed không thể bị nhấc đi
     fun onDragStart(offset: Offset) {
         val targetItem = findVisibleItemAtOffset(offset)
         if (targetItem != null && targetItem.index !in ignoreIndices) {
+
+            val itemData = listData.getOrNull(targetItem.index)
+            if (itemData != null && isItemFixed(itemData)) {
+                return // Từ chối không cho phép drag item này
+            }
+
             draggedIndex = targetItem.index
             fingerOffset = offset
             draggedItemSize = targetItem.size
@@ -72,7 +80,7 @@ class GenericDragDropState<T>(
         }
     }
 
-    // LOGIC KHI KÉO: TUYỆT ĐỐI KHÔNG CHO HOÁN ĐỔI TỰ ĐỘNG NẾU Ô ĐÍCH BỊ KHÓA (LOCKED)
+    // 2. LOGIC LÚC KÉO (DRAG): Chặn hoán đổi tự động khi lướt qua ô Locked hoặc ô Fixed
     fun onDrag(dragAmount: Offset) {
         val source = draggedIndex ?: return
         fingerOffset += dragAmount
@@ -87,16 +95,16 @@ class GenericDragDropState<T>(
 
                 if (targetItemData != null) {
                     val isTargetLocked = isItemLocked(targetItemData)
+                    val isTargetFixed = isItemFixed(targetItemData)
 
-                    // LUẬT TỐI CAO LÚC KÉO: Nếu ô đích bên dưới là ô Locked -> canSwap = false
-                    // Bất kể ô bạn đang cầm trên tay là ô thường hay ô Locked đi chăng nữa!
-                    val canSwapDuringDrag = !isTargetLocked
+                    // BẮT BUỘC ĐỨNG IM: Nếu ô đích lướt qua dưới ngón tay là ô Locked HOẶC ô Fixed
+                    // -> canSwapDuringDrag = false (Chặn đứng, không tự hoán đổi vị trí)
+                    val canSwapDuringDrag = !isTargetLocked && !isTargetFixed
 
                     if (canSwapDuringDrag) {
                         val currentIndex = firstVisibleItemIndexLambda()
                         val currentOffset = firstVisibleItemScrollOffsetLambda()
 
-                        // Chỉ tự động hoán đổi liên tục giữa các ô tự do với nhau
                         val temp = listData[source]
                         listData[source] = listData[target]
                         listData[target] = temp
@@ -112,7 +120,7 @@ class GenericDragDropState<T>(
         checkForAutoScroll()
     }
 
-    // LOGIC KHI DROP (BUÔNG TAY): Thời điểm duy nhất cho phép ép hoán đổi với ô Locked
+    // 3. LOGIC KHI THẢ (DROP): Phân biệt đối xử giữa Locked (cho hoán đổi) và Fixed (cấm tuyệt đối)
     fun onDragEnd() {
         val source = draggedIndex
         if (source != null) {
@@ -125,9 +133,12 @@ class GenericDragDropState<T>(
                     val targetItemData = listData.getOrNull(target)
 
                     if (targetItemData != null) {
-                        // Khi lướt qua thì bị chặn hoàn toàn, nhưng khi THẢ TAY NGAY TRÊN ĐẦU ô khóa:
-                        // Cho phép thực hiện hoán đổi đúng 1 lần duy nhất tại đây.
-                        if (isItemLocked(targetItemData)) {
+                        val isTargetLocked = isItemLocked(targetItemData)
+                        val isTargetFixed = isItemFixed(targetItemData)
+
+                        // CHỈ cho phép hoán đổi khi thả tay nếu ô đích là ô LOCKED
+                        // Nếu ô đích là ô FIXED -> Điều kiện này sai -> Bỏ qua, KHÔNG hoán đổi dữ liệu!
+                        if (isTargetLocked && !isTargetFixed) {
 
                             val currentIndex = firstVisibleItemIndexLambda()
                             val currentOffset = firstVisibleItemScrollOffsetLambda()
@@ -221,6 +232,7 @@ fun <T> rememberGridDragDropState(
     scope: CoroutineScope,
     ignoreIndices: IntRange = IntRange.EMPTY,
     isItemLocked: (T) -> Boolean = { false },
+    isItemFixed: (T) -> Boolean = { false },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyGridState, scope, listData, ignoreIndices) {
@@ -247,6 +259,7 @@ fun <T> rememberGridDragDropState(
             scope = scope,
             ignoreIndices = ignoreIndices,
             isItemLocked = isItemLocked,
+            isItemFixed = isItemFixed,
             onListChanged = onListChanged
         )
     }
@@ -260,6 +273,7 @@ fun <T> rememberListDragDropState(
     scope: CoroutineScope,
     ignoreIndices: IntRange = IntRange.EMPTY,
     isItemLocked: (T) -> Boolean = { false },
+    isItemFixed: (T) -> Boolean = { false },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyListState, scope, listData, ignoreIndices) {
@@ -289,6 +303,7 @@ fun <T> rememberListDragDropState(
             scope = scope,
             ignoreIndices = ignoreIndices,
             isItemLocked = isItemLocked,
+            isItemFixed = isItemFixed,
             onListChanged = onListChanged
         )
     }

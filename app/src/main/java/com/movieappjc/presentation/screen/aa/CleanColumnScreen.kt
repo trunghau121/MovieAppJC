@@ -48,7 +48,7 @@ import com.movieappjc.presentation.screen.drop_drag.pointer_input.rememberListDr
 import kotlinx.coroutines.delay
 
 // 1. Tạo Model dữ liệu mẫu mô phỏng dữ liệu từ API dạng dòng
-data class ColumnItemModel(val id: String, val name: String, val email: String, val isLocked: Boolean)
+data class ColumnItemModel(val id: String, val name: String, val email: String, val isLocked: Boolean, val isFixed: Boolean)
 
 @Composable
 fun CleanColumnScreen() {
@@ -67,7 +67,8 @@ fun CleanColumnScreen() {
                 id = "user_id_$it",
                 name = "Nguyễn Văn Người Dùng $it",
                 email = "user$it@gmail.com",
-                isLocked = it < 5
+                isLocked = it < 5,
+                isFixed = it < 3,
             )
         }
         isLoading = false
@@ -94,7 +95,8 @@ fun CleanColumnScreen() {
 //            apiResponseItems = updatedList
             println("Đã lưu thứ tự Column mới cục bộ thành công!")
         },
-        isItemLocked = { item -> item.isLocked }
+        isItemLocked = { item -> item.isLocked },
+        isItemFixed = { item -> item.isFixed },
     )
 
     Box(
