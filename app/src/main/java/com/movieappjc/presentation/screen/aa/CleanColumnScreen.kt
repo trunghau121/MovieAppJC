@@ -91,18 +91,10 @@ fun CleanColumnScreen() {
         scope = scope,
         onListChanged = { updatedList ->
             // Khi người dùng thả tay đổi chỗ thành công, đồng bộ ngay với biến API
-            apiResponseItems = updatedList
+//            apiResponseItems = updatedList
             println("Đã lưu thứ tự Column mới cục bộ thành công!")
         },
-        // 1. Cho phép TẤT CẢ mọi item đều có quyền tự long press để kéo đi bình thường
-        canDragItem = { true },
-
-        // 2. Chỉ định luật khi bị lướt qua:
-        canTargetAcceptSwap = { item ->
-            // Nếu item đang nằm dưới ngón tay là ô bị khóa (!item.isLocked == false)
-            // -> Từ chối hoán đổi, bắt ô đó phải đứng im cố định tại chỗ.
-            !item.isLocked
-        }
+        isItemLocked = { item -> item.isLocked }
     )
 
     Box(

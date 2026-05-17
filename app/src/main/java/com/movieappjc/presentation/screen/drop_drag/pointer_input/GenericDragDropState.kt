@@ -17,7 +17,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// === INTERFACE CẦU NỐI ĐỂ SỬ DỤNG CHUNG CHO CẢ COLUMN VÀ GRID ===
+// === INTERFACE CẦU NỐI CHUNG ===
 interface DragDropItemInfo {
     val index: Int
     val offset: IntOffset
@@ -42,9 +42,7 @@ class GenericDragDropState<T>(
     private val scope: CoroutineScope,
     private val ignoreIndices: IntRange = IntRange.EMPTY,
     private val onListChanged: (List<T>) -> Unit,
-    // TÁCH LÀM 2 ĐIỀU KIỆN RIÊNG BIỆT:
-    private val canDragItem: (item: T) -> Boolean = { true },          // Có cho nhấc lên không
-    private val canTargetAcceptSwap: (item: T) -> Boolean = { true }   // Có cho ô khác chiếm chỗ khi lướt qua không
+    private val isItemLocked: (item: T) -> Boolean = { false }
 ) {
     var draggedIndex by mutableStateOf<Int?>(null)
         private set
@@ -62,14 +60,7 @@ class GenericDragDropState<T>(
 
     fun onDragStart(offset: Offset) {
         val targetItem = findVisibleItemAtOffset(offset)
-        if (targetItem != null) {
-            val itemData = listData.getOrNull(targetItem.index)
-
-            // KIỂM TRA ĐIỀU KIỆN NHẤC: Chỉ check xem ô này có được phép kéo đi không (canDragItem)
-            if (targetItem.index in ignoreIndices || (itemData != null && !canDragItem(itemData))) {
-                return
-            }
-
+        if (targetItem != null && targetItem.index !in ignoreIndices) {
             draggedIndex = targetItem.index
             fingerOffset = offset
             draggedItemSize = targetItem.size
@@ -81,6 +72,7 @@ class GenericDragDropState<T>(
         }
     }
 
+    // LOGIC KHI KÉO: TUYỆT ĐỐI KHÔNG CHO HOÁN ĐỔI TỰ ĐỘNG NẾU Ô ĐÍCH BỊ KHÓA (LOCKED)
     fun onDrag(dragAmount: Offset) {
         val source = draggedIndex ?: return
         fingerOffset += dragAmount
@@ -89,28 +81,70 @@ class GenericDragDropState<T>(
         val target = targetItem?.index
 
         if (target != null && target != source) {
-            val targetItemData = listData.getOrNull(target)
+            if (target !in ignoreIndices && source !in ignoreIndices) {
 
-            // KIỂM TRA ĐIỀU KIỆN HOÁN ĐỔI: Khi lướt qua ô đích, check xem ô đích có chấp nhận bị chiếm chỗ không
-            if (target !in ignoreIndices && targetItemData != null && canTargetAcceptSwap(targetItemData)) {
-                val currentIndex = firstVisibleItemIndexLambda()
-                val currentOffset = firstVisibleItemScrollOffsetLambda()
+                val targetItemData = listData.getOrNull(target)
 
-                val temp = listData[source]
-                listData[source] = listData[target]
-                listData[target] = temp
+                if (targetItemData != null) {
+                    val isTargetLocked = isItemLocked(targetItemData)
 
-                draggedIndex = target
+                    // LUẬT TỐI CAO LÚC KÉO: Nếu ô đích bên dưới là ô Locked -> canSwap = false
+                    // Bất kể ô bạn đang cầm trên tay là ô thường hay ô Locked đi chăng nữa!
+                    val canSwapDuringDrag = !isTargetLocked
 
-                requestScrollToItemLambda(currentIndex, currentOffset)
-                onListChanged(listData.toList())
+                    if (canSwapDuringDrag) {
+                        val currentIndex = firstVisibleItemIndexLambda()
+                        val currentOffset = firstVisibleItemScrollOffsetLambda()
+
+                        // Chỉ tự động hoán đổi liên tục giữa các ô tự do với nhau
+                        val temp = listData[source]
+                        listData[source] = listData[target]
+                        listData[target] = temp
+
+                        draggedIndex = target
+
+                        requestScrollToItemLambda(currentIndex, currentOffset)
+                        onListChanged(listData.toList())
+                    }
+                }
             }
         }
-
         checkForAutoScroll()
     }
 
+    // LOGIC KHI DROP (BUÔNG TAY): Thời điểm duy nhất cho phép ép hoán đổi với ô Locked
     fun onDragEnd() {
+        val source = draggedIndex
+        if (source != null) {
+            val targetItem = findVisibleItemAtOffset(fingerOffset)
+            val target = targetItem?.index
+
+            if (target != null && target != source) {
+                if (target !in ignoreIndices && source !in ignoreIndices) {
+
+                    val targetItemData = listData.getOrNull(target)
+
+                    if (targetItemData != null) {
+                        // Khi lướt qua thì bị chặn hoàn toàn, nhưng khi THẢ TAY NGAY TRÊN ĐẦU ô khóa:
+                        // Cho phép thực hiện hoán đổi đúng 1 lần duy nhất tại đây.
+                        if (isItemLocked(targetItemData)) {
+
+                            val currentIndex = firstVisibleItemIndexLambda()
+                            val currentOffset = firstVisibleItemScrollOffsetLambda()
+
+                            val temp = listData[source]
+                            listData[source] = listData[target]
+                            listData[target] = temp
+
+                            requestScrollToItemLambda(currentIndex, currentOffset)
+                            onListChanged(listData.toList())
+                        }
+                    }
+                }
+            }
+        }
+
+        // Reset trạng thái
         draggedIndex = null
         fingerOffset = Offset.Zero
         initialTouchOffset = Offset.Zero
@@ -121,21 +155,20 @@ class GenericDragDropState<T>(
     private fun checkForAutoScroll() {
         val layoutInfo = getLayoutInfo()
         val containerHeight = layoutInfo.viewportSize.height.toFloat()
-
         val activationZone = 120f
         val fingerY = fingerOffset.y
-        val baseMaxSpeed = 110f
+        val baseMaxSpeed = 150f
 
         val scrollAmount = when {
             fingerY < activationZone -> {
                 val depth = activationZone - fingerY
                 val speedFactor = (depth / activationZone) * 1.5f
-                -(baseMaxSpeed * speedFactor).coerceAtMost(130f)
+                -(baseMaxSpeed * speedFactor).coerceAtMost(150f)
             }
             fingerY > (containerHeight - activationZone) -> {
                 val depth = fingerY - (containerHeight - activationZone)
                 val speedFactor = (depth / activationZone) * 1.5f
-                (baseMaxSpeed * speedFactor).coerceAtMost(130f)
+                (baseMaxSpeed * speedFactor).coerceAtMost(150f)
             }
             else -> 0f
         }
@@ -187,8 +220,7 @@ fun <T> rememberGridDragDropState(
     lazyGridState: LazyGridState,
     scope: CoroutineScope,
     ignoreIndices: IntRange = IntRange.EMPTY,
-    canDragItem: (T) -> Boolean = { true },
-    canTargetAcceptSwap: (T) -> Boolean = { true },
+    isItemLocked: (T) -> Boolean = { false },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyGridState, scope, listData, ignoreIndices) {
@@ -214,8 +246,7 @@ fun <T> rememberGridDragDropState(
             firstVisibleItemScrollOffsetLambda = { lazyGridState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
-            canDragItem = canDragItem,
-            canTargetAcceptSwap = canTargetAcceptSwap,
+            isItemLocked = isItemLocked,
             onListChanged = onListChanged
         )
     }
@@ -228,8 +259,7 @@ fun <T> rememberListDragDropState(
     lazyListState: LazyListState,
     scope: CoroutineScope,
     ignoreIndices: IntRange = IntRange.EMPTY,
-    canDragItem: (T) -> Boolean = { true },
-    canTargetAcceptSwap: (T) -> Boolean = { true },
+    isItemLocked: (T) -> Boolean = { false },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyListState, scope, listData, ignoreIndices) {
@@ -258,8 +288,7 @@ fun <T> rememberListDragDropState(
             firstVisibleItemScrollOffsetLambda = { lazyListState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
-            canDragItem = canDragItem,
-            canTargetAcceptSwap = canTargetAcceptSwap,
+            isItemLocked = isItemLocked,
             onListChanged = onListChanged
         )
     }
