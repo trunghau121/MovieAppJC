@@ -21,7 +21,6 @@ fun <T> Modifier.dragDropSourceContainer(
                 dragDropState.onDragStart(offset)
             },
             onDrag = { change, dragAmount ->
-                // Nuốt cử chỉ di chuyển tại đây để chặn không cho các bộ phát hiện vuốt khác ăn mất tín hiệu
                 change.consume()
                 dragDropState.onDrag(dragAmount)
             },

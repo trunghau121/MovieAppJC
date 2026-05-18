@@ -33,9 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropContext
+import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropPolicy
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragShadow
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.dragDropSourceContainer
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.rememberGridDragDropState
+import com.movieappjc.presentation.screen.drop_drag.pointer_input.rememberListDragDropState
 import kotlinx.coroutines.delay
 
 // 1. Tạo Model dữ liệu mẫu mô phỏng dữ liệu từ API
@@ -70,18 +73,33 @@ fun CleanGridScreen() {
         }
     }
 
-    // 6. Khởi tạo State kéo thả Grid dùng chung
+    val dragDroPolicy = remember {
+        object : DragDropPolicy<GridItemModel> {
+            override fun isItemFixed(
+                item: GridItemModel,
+                context: DragDropContext
+            ): Boolean {
+                return false
+            }
+
+            override fun shouldRestrictSwapUntilDrop(
+                item: GridItemModel,
+                context: DragDropContext
+            ): Boolean {
+                return false
+            }
+        }
+    }
+
+    // 6. Khởi tạo State kéo thả List (Column) dùng chung
     val dragDropState = rememberGridDragDropState(
         listData = listData,
         lazyGridState = lazyGridState,
         scope = scope,
+        dragDropPolicy = dragDroPolicy,
+        getDragDropContext = { DragDropContext(isEditMode = true) },
         onListChanged = { updatedList ->
-            // Khi người dùng thả tay ra đổi chỗ thành công:
-            // Cập nhật ngược lại biến API để đồng bộ dữ liệu tại chỗ mà không cần ViewModel
-            apiResponseItems = updatedList
-
-            // TODO: Bạn có thể viết thêm lệnh gọi API cập nhật lên Server ở đây
-            println("Thứ tự mới đã được lưu cục bộ: ${updatedList.map { it.title }}")
+            println("Đã lưu thứ tự Column mới thành công!")
         }
     )
 
@@ -135,7 +153,8 @@ fun CleanGridScreen() {
         // 7. Gọi Composable Vẽ bóng ma dùng chung bám theo ngón tay
         // Chiều rộng và chiều cao truyền vào đây nên trùng với kích thước của ô GridItemCard bên dưới
         DragShadow(
-            dragDropState = dragDropState
+            dragDropState = dragDropState,
+            listData = listData
         ) { shadowItem ->
             // Định nghĩa ruột bên trong của bóng ma (Vẽ y hệt giao diện ô gốc)
             GridItemCard(item = shadowItem)

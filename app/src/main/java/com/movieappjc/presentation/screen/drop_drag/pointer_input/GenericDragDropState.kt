@@ -17,22 +17,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// === INTERFACE CẦU NỐI CHUNG ===
-interface DragDropItemInfo {
-    val index: Int
-    val offset: IntOffset
-    val size: IntSize
-}
-
-interface DragDropLayoutInfo {
-    val viewportSize: IntSize
-    val visibleItemsInfo: List<DragDropItemInfo>
-}
-// =========================================================================
-
 class GenericDragDropState<T>(
     val listData: SnapshotStateList<T>,
-    private val getLayoutInfo: () -> DragDropLayoutInfo,
+    val getLayoutInfo: () -> DragDropLayoutInfo,
     private val scrollByLambda: suspend (Float) -> Float,
     private val canScrollBackwardLambda: () -> Boolean,
     private val canScrollForwardLambda: () -> Boolean,
@@ -42,8 +29,8 @@ class GenericDragDropState<T>(
     private val scope: CoroutineScope,
     private val ignoreIndices: IntRange = IntRange.EMPTY,
     private val onListChanged: (List<T>) -> Unit,
-    private val isItemLocked: (item: T) -> Boolean = { false },
-    private val isItemFixed: (item: T) -> Boolean = { false }
+    private val dragDropPolicy: DragDropPolicy<T>,
+    private val getDragDropContext: () -> DragDropContext = { DragDropContext() }
 ) {
     var draggedIndex by mutableStateOf<Int?>(null)
         private set
@@ -57,49 +44,59 @@ class GenericDragDropState<T>(
     var draggedItemSize by mutableStateOf(IntSize.Zero)
         private set
 
-    private var autoScrollJob: Job? = null
+    // Biến Flag chặn hiển thị ô gốc khi đang bay về vị trí cũ
+    var isReturningAnimation by mutableStateOf(false)
+        private set
 
-    // 1. LOGIC KHI GIỮ: Ô Fixed không thể bị nhấc đi
+    private var autoScrollJob: Job? = null
+    var dragStartAbsoluteOffset by mutableStateOf(Offset.Zero)
+        private set
+
     fun onDragStart(offset: Offset) {
+        if (isReturningAnimation) return // Nếu đang bay về thì chặn bấm giữ tiếp
+
         val targetItem = findVisibleItemAtOffset(offset)
         if (targetItem != null && targetItem.index !in ignoreIndices) {
-
             val itemData = listData.getOrNull(targetItem.index)
-            if (itemData != null && isItemFixed(itemData)) {
-                return // Từ chối không cho phép drag item này
+
+            if (itemData != null && dragDropPolicy.isItemFixed(itemData, getDragDropContext())) {
+                return
             }
 
             draggedIndex = targetItem.index
             fingerOffset = offset
             draggedItemSize = targetItem.size
-
             initialTouchOffset = Offset(
                 x = offset.x - targetItem.offset.x,
                 y = offset.y - targetItem.offset.y
             )
+
+            dragStartAbsoluteOffset = Offset(targetItem.offset.x.toFloat(), targetItem.offset.y.toFloat())
         }
     }
 
-    // 2. LOGIC LÚC KÉO (DRAG): Chặn hoán đổi tự động khi lướt qua ô Locked hoặc ô Fixed
     fun onDrag(dragAmount: Offset) {
+        if (isReturningAnimation) return
         val source = draggedIndex ?: return
         fingerOffset += dragAmount
+        checkAndPerformSwap(source)
+        checkForAutoScroll()
+    }
 
+    private fun checkAndPerformSwap(source: Int) {
         val targetItem = findVisibleItemAtOffset(fingerOffset)
         val target = targetItem?.index
 
         if (target != null && target != source) {
             if (target !in ignoreIndices && source !in ignoreIndices) {
-
                 val targetItemData = listData.getOrNull(target)
 
                 if (targetItemData != null) {
-                    val isTargetLocked = isItemLocked(targetItemData)
-                    val isTargetFixed = isItemFixed(targetItemData)
+                    val context = getDragDropContext()
+                    val isTargetRestricted = dragDropPolicy.shouldRestrictSwapUntilDrop(targetItemData, context)
+                    val isTargetFixed = dragDropPolicy.isItemFixed(targetItemData, context)
 
-                    // BẮT BUỘC ĐỨNG IM: Nếu ô đích lướt qua dưới ngón tay là ô Locked HOẶC ô Fixed
-                    // -> canSwapDuringDrag = false (Chặn đứng, không tự hoán đổi vị trí)
-                    val canSwapDuringDrag = !isTargetLocked && !isTargetFixed
+                    val canSwapDuringDrag = !isTargetRestricted && !isTargetFixed
 
                     if (canSwapDuringDrag) {
                         val currentIndex = firstVisibleItemIndexLambda()
@@ -117,10 +114,51 @@ class GenericDragDropState<T>(
                 }
             }
         }
-        checkForAutoScroll()
     }
 
-    // 3. LOGIC KHI THẢ (DROP): Phân biệt đối xử giữa Locked (cho hoán đổi) và Fixed (cấm tuyệt đối)
+    private fun checkForAutoScroll() {
+        val layoutInfo = getLayoutInfo()
+        val containerHeight = layoutInfo.viewportSize.height.toFloat()
+        val activationZone = 120f
+        val fingerY = fingerOffset.y
+        val baseMaxSpeed = 200f
+
+        val scrollAmount = when {
+            fingerY < activationZone -> {
+                val depth = activationZone - fingerY
+                val speedFactor = (depth / activationZone) * 1.5f
+                -(baseMaxSpeed * speedFactor).coerceAtMost(200f)
+            }
+            fingerY > (containerHeight - activationZone) -> {
+                val depth = fingerY - (containerHeight - activationZone)
+                val speedFactor = (depth / activationZone) * 1.5f
+                (baseMaxSpeed * speedFactor).coerceAtMost(200f)
+            }
+            else -> 0f
+        }
+
+        if (scrollAmount != 0f) {
+            if (autoScrollJob == null || autoScrollJob?.isActive == false) {
+                autoScrollJob = scope.launch {
+                    while (true) {
+                        if (scrollAmount < 0f && !canScrollBackwardLambda()) break
+                        if (scrollAmount > 0f && !canScrollForwardLambda()) break
+
+                        scrollByLambda(scrollAmount)
+
+                        draggedIndex?.let { currentSource ->
+                            checkAndPerformSwap(currentSource)
+                        }
+
+                        delay(8)
+                    }
+                }
+            }
+        } else {
+            stopAutoScroll()
+        }
+    }
+
     fun onDragEnd() {
         val source = draggedIndex
         if (source != null) {
@@ -129,17 +167,13 @@ class GenericDragDropState<T>(
 
             if (target != null && target != source) {
                 if (target !in ignoreIndices && source !in ignoreIndices) {
-
                     val targetItemData = listData.getOrNull(target)
-
                     if (targetItemData != null) {
-                        val isTargetLocked = isItemLocked(targetItemData)
-                        val isTargetFixed = isItemFixed(targetItemData)
+                        val context = getDragDropContext()
+                        val isTargetRestricted = dragDropPolicy.shouldRestrictSwapUntilDrop(targetItemData, context)
+                        val isTargetFixed = dragDropPolicy.isItemFixed(targetItemData, context)
 
-                        // CHỈ cho phép hoán đổi khi thả tay nếu ô đích là ô LOCKED
-                        // Nếu ô đích là ô FIXED -> Điều kiện này sai -> Bỏ qua, KHÔNG hoán đổi dữ liệu!
-                        if (isTargetLocked && !isTargetFixed) {
-
+                        if (isTargetRestricted && !isTargetFixed) {
                             val currentIndex = firstVisibleItemIndexLambda()
                             val currentOffset = firstVisibleItemScrollOffsetLambda()
 
@@ -153,52 +187,21 @@ class GenericDragDropState<T>(
                     }
                 }
             }
+            // Không xóa index ngay lập tức nữa, chuyển giao trạng thái cho Animation vẽ
+            isReturningAnimation = true
+        } else {
+            clearDragStateAfterAnimation()
         }
+        stopAutoScroll()
+    }
 
-        // Reset trạng thái
+    // Hàm dọn dẹp chính thức: Sẽ được gọi duy nhất bởi DragShadow khi hiệu ứng bay kết thúc
+    fun clearDragStateAfterAnimation() {
         draggedIndex = null
         fingerOffset = Offset.Zero
         initialTouchOffset = Offset.Zero
         draggedItemSize = IntSize.Zero
-        stopAutoScroll()
-    }
-
-    private fun checkForAutoScroll() {
-        val layoutInfo = getLayoutInfo()
-        val containerHeight = layoutInfo.viewportSize.height.toFloat()
-        val activationZone = 120f
-        val fingerY = fingerOffset.y
-        val baseMaxSpeed = 150f
-
-        val scrollAmount = when {
-            fingerY < activationZone -> {
-                val depth = activationZone - fingerY
-                val speedFactor = (depth / activationZone) * 1.5f
-                -(baseMaxSpeed * speedFactor).coerceAtMost(150f)
-            }
-            fingerY > (containerHeight - activationZone) -> {
-                val depth = fingerY - (containerHeight - activationZone)
-                val speedFactor = (depth / activationZone) * 1.5f
-                (baseMaxSpeed * speedFactor).coerceAtMost(150f)
-            }
-            else -> 0f
-        }
-
-        if (scrollAmount != 0f) {
-            if (autoScrollJob == null || autoScrollJob?.isActive == false) {
-                autoScrollJob = scope.launch {
-                    while (true) {
-                        if (scrollAmount < 0f && !canScrollBackwardLambda()) break
-                        if (scrollAmount > 0f && !canScrollForwardLambda()) break
-
-                        scrollByLambda(scrollAmount)
-                        delay(8)
-                    }
-                }
-            }
-        } else {
-            stopAutoScroll()
-        }
+        isReturningAnimation = false
     }
 
     private fun stopAutoScroll() {
@@ -224,18 +227,18 @@ class GenericDragDropState<T>(
     }
 }
 
-// ================= HÀM KHỞI TẠO DÀNH CHO LAZYVERTICALGRID =================
+// === CÁC HÀM REMEMBER GIỮ NGUYÊN ===
 @Composable
 fun <T> rememberGridDragDropState(
     listData: SnapshotStateList<T>,
     lazyGridState: LazyGridState,
     scope: CoroutineScope,
+    dragDropPolicy: DragDropPolicy<T>,
+    getDragDropContext: () -> DragDropContext = { DragDropContext() },
     ignoreIndices: IntRange = IntRange.EMPTY,
-    isItemLocked: (T) -> Boolean = { false },
-    isItemFixed: (T) -> Boolean = { false },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
-    return remember(lazyGridState, scope, listData, ignoreIndices) {
+    return remember(lazyGridState, scope, listData, ignoreIndices, dragDropPolicy) {
         GenericDragDropState(
             listData = listData,
             getLayoutInfo = {
@@ -258,25 +261,24 @@ fun <T> rememberGridDragDropState(
             firstVisibleItemScrollOffsetLambda = { lazyGridState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
-            isItemLocked = isItemLocked,
-            isItemFixed = isItemFixed,
+            dragDropPolicy = dragDropPolicy,
+            getDragDropContext = getDragDropContext,
             onListChanged = onListChanged
         )
     }
 }
 
-// ================= HÀM KHỞI TẠO DÀNH CHO LAZYCOLUMN =================
 @Composable
 fun <T> rememberListDragDropState(
     listData: SnapshotStateList<T>,
     lazyListState: LazyListState,
     scope: CoroutineScope,
+    dragDropPolicy: DragDropPolicy<T>,
+    getDragDropContext: () -> DragDropContext = { DragDropContext() },
     ignoreIndices: IntRange = IntRange.EMPTY,
-    isItemLocked: (T) -> Boolean = { false },
-    isItemFixed: (T) -> Boolean = { false },
     onListChanged: (List<T>) -> Unit
 ): GenericDragDropState<T> {
-    return remember(lazyListState, scope, listData, ignoreIndices) {
+    return remember(lazyListState, scope, listData, ignoreIndices, dragDropPolicy) {
         GenericDragDropState(
             listData = listData,
             getLayoutInfo = {
@@ -302,8 +304,8 @@ fun <T> rememberListDragDropState(
             firstVisibleItemScrollOffsetLambda = { lazyListState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
-            isItemLocked = isItemLocked,
-            isItemFixed = isItemFixed,
+            dragDropPolicy = dragDropPolicy,
+            getDragDropContext = getDragDropContext,
             onListChanged = onListChanged
         )
     }

@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropContext
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragShadow
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.dragDropSourceContainer
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.rememberListDragDropState
@@ -67,7 +68,7 @@ fun CleanColumnScreen() {
                 id = "user_id_$it",
                 name = "Nguyễn Văn Người Dùng $it",
                 email = "user$it@gmail.com",
-                isLocked = it < 5,
+                isLocked = it < 9,
                 isFixed = it < 3,
             )
         }
@@ -85,18 +86,18 @@ fun CleanColumnScreen() {
         }
     }
 
+    val dragDroPolicy = remember { ColumnDragDropPolicy() }
+
     // 6. Khởi tạo State kéo thả List (Column) dùng chung
     val dragDropState = rememberListDragDropState(
         listData = listData,
         lazyListState = lazyListState,
         scope = scope,
+        dragDropPolicy = dragDroPolicy,
+        getDragDropContext = { DragDropContext(isEditMode = true) },
         onListChanged = { updatedList ->
-            // Khi người dùng thả tay đổi chỗ thành công, đồng bộ ngay với biến API
-//            apiResponseItems = updatedList
-            println("Đã lưu thứ tự Column mới cục bộ thành công!")
-        },
-        isItemLocked = { item -> item.isLocked },
-        isItemFixed = { item -> item.isFixed },
+            println("Đã lưu thứ tự Column mới thành công!")
+        }
     )
 
     Box(
@@ -125,7 +126,7 @@ fun CleanColumnScreen() {
                     items = listData,
                     key = { _, item -> item.id } // Bắt buộc phải gắn ID độc nhất để hiệu ứng trượt hoạt động chính xác
                 ) { index, item ->
-                    val isDraggingThisItem = index == dragDropState.draggedIndex
+                    val shouldHideOriginalItem = dragDropState.draggedIndex == index
 
                     ColumnItemRow(
                         item = item,
@@ -138,7 +139,7 @@ fun CleanColumnScreen() {
                                 )
                             )
                             // Ẩn dòng gốc đi (để lại khoảng trống) nếu dòng này đang được nhấc đi
-                            .alpha(if (isDraggingThisItem) 0f else 1f)
+                            .alpha(if (shouldHideOriginalItem) 0f else 1f)
                     )
                 }
             }
@@ -149,9 +150,12 @@ fun CleanColumnScreen() {
         Box(
             modifier = Modifier.fillMaxSize() // Box con thứ 2 chuyên chứa bóng ma (không chứa padding)
         ) {
-            DragShadow(dragDropState = dragDropState) { shadowItem ->
+            DragShadow(
+                dragDropState = dragDropState,
+                listData = listData
+            ) { item ->
                 // Ruột vẽ y hệt ô gốc
-                ColumnItemRow(item = shadowItem)
+                ColumnItemRow(item = item)
             }
         }
     }
