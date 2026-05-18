@@ -126,7 +126,8 @@ fun CleanColumnScreen() {
                     items = listData,
                     key = { _, item -> item.id } // Bắt buộc phải gắn ID độc nhất để hiệu ứng trượt hoạt động chính xác
                 ) { index, item ->
-                    val shouldHideOriginalItem = dragDropState.draggedIndex == index
+                    val shouldHideOriginalItem = (dragDropState.draggedIndex == index) ||
+                            (dragDropState.isReturningAnimation && dragDropState.draggedIndex == index)
 
                     ColumnItemRow(
                         item = item,

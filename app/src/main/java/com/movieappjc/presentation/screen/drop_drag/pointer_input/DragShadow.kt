@@ -1,6 +1,7 @@
 package com.movieappjc.presentation.screen.drop_drag.pointer_input
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
+import kotlin.math.sqrt
 
 @Composable
 fun <T> DragShadow(
@@ -26,12 +28,10 @@ fun <T> DragShadow(
     val shadowOffset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
     val currentFingerOffset = dragDropState.fingerOffset - dragDropState.initialTouchOffset
 
-    // LẮNG NGHE CHU KỲ SỰ KIỆN ĐỂ ĐIỀU KHIỂN HOẠT ẢNH TRƯỢT VỀ CHUẨN XÁC
     LaunchedEffect(dragDropState.draggedIndex, dragDropState.isReturningAnimation) {
         val globalIndex = dragDropState.draggedIndex
 
         if (globalIndex != null && !dragDropState.isReturningAnimation) {
-            // == 1. TRẠNG THÁI ĐANG KÉO DI CHUYỂN ==
             activeDraggedIndex = globalIndex
             activeItem = listData.getOrNull(globalIndex)
             activeItemSize = dragDropState.draggedItemSize
@@ -40,10 +40,12 @@ fun <T> DragShadow(
             val initialOffset = dragDropState.fingerOffset - dragDropState.initialTouchOffset
             shadowOffset.snapTo(initialOffset)
         } else if (dragDropState.isReturningAnimation) {
-            // == 2. TRẠNG THÁI NGƯỜI DÙNG THẢ TAY (DROP) ==
             if (activeDraggedIndex != null && activeItem != null) {
                 val layoutInfo = dragDropState.getLayoutInfo()
-                val targetLayoutItem = layoutInfo.visibleItemsInfo.find { it.index == activeDraggedIndex }
+
+                // Xác định vị trí đích bay: Nếu có ô hoán đổi thì bay về vị trí mới của ô đó, nếu không quay về chỗ cũ
+                val targetIndexToFly = dragDropState.animationTargetIndex ?: activeDraggedIndex
+                val targetLayoutItem = layoutInfo.visibleItemsInfo.find { it.index == targetIndexToFly }
 
                 val targetOffset = if (targetLayoutItem != null) {
                     Offset(targetLayoutItem.offset.x.toFloat(), targetLayoutItem.offset.y.toFloat())
@@ -51,13 +53,24 @@ fun <T> DragShadow(
                     lastValidStartOffset
                 }
 
-                // Thực hiện hiệu ứng tịnh tiến trượt mượt mà về đích
+                // Tính toán khoảng cách thực tế để tạo duration chạy động mượt mà
+                val currentSnapshotOffset = shadowOffset.value
+                val deltaX = targetOffset.x - currentSnapshotOffset.x
+                val deltaY = targetOffset.y - currentSnapshotOffset.y
+                val distance = sqrt((deltaX * deltaX + deltaY * deltaY).toDouble()).toFloat()
+
+                // Gần bay nhanh (60ms), xa bay đầm mắt (tối đa 350ms)
+                val calculatedDuration = (distance * 0.5f).toInt().coerceIn(10, 350)
+
                 shadowOffset.animateTo(
                     targetValue = targetOffset,
-                    animationSpec = tween(durationMillis = 2000)
+                    animationSpec = tween(
+                        durationMillis = calculatedDuration,
+                        easing = FastOutSlowInEasing
+                    )
                 )
 
-                // CHẠY XONG XUÔI ANIMATION -> Mới dọn dẹp state tổng để ô gốc hiển thị trở lại
+                // Hoàn thành hiệu ứng tịnh tiến, giải phóng toàn bộ flag kéo thả ngay
                 dragDropState.clearDragStateAfterAnimation()
                 activeDraggedIndex = null
                 activeItem = null
@@ -66,14 +79,12 @@ fun <T> DragShadow(
         }
     }
 
-    // LIÊN TỤC SNAP THEO NGÓN TAY KHI ĐANG DI CHUYỂN (CHỈ KHI CHƯA RE-TURNING)
     if (!dragDropState.isReturningAnimation && dragDropState.draggedIndex != null) {
         LaunchedEffect(currentFingerOffset) {
             shadowOffset.snapTo(currentFingerOffset)
         }
     }
 
-    // VẼ KHUNG HÌNH BÓNG MA (HIỂN THỊ TRONG SUỐT QUÁ TRÌNH KÉO CHO ĐẾN KHI TRƯỢT XONG)
     val itemToRender = activeItem
     if (itemToRender != null && activeItemSize != IntSize.Zero) {
         Box(
@@ -85,6 +96,10 @@ fun <T> DragShadow(
                 .graphicsLayer {
                     translationX = shadowOffset.value.x
                     translationY = shadowOffset.value.y
+                    scaleX = 1.0f
+                    scaleY = 1.0f
+                    alpha = 1.0f
+                    shadowElevation = 0f
                 }
         ) {
             itemContent(itemToRender)
