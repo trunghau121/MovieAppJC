@@ -126,8 +126,11 @@ fun CleanColumnScreen() {
                     items = listData,
                     key = { _, item -> item.id } // Bắt buộc phải gắn ID độc nhất để hiệu ứng trượt hoạt động chính xác
                 ) { index, item ->
-                    val shouldHideOriginalItem = (dragDropState.draggedIndex == index) ||
-                            (dragDropState.isReturningAnimation && dragDropState.draggedIndex == index)
+                    val isCurrentlyDraggingThis = dragDropState.draggedIndex == index
+                    val isReturningThis = dragDropState.isReturningAnimation && dragDropState.draggedIndex == index
+                    val isWaitingForListAnimationThis = dragDropState.lastDraggedId == item.id
+
+                    val shouldHideOriginalItem = isCurrentlyDraggingThis || isReturningThis || isWaitingForListAnimationThis
 
                     ColumnItemRow(
                         item = item,
@@ -135,7 +138,7 @@ fun CleanColumnScreen() {
                             // Hoạt họa hoán đổi vị trí mượt mà
                             .animateItem(
                                 placementSpec = tween(
-                                    durationMillis = 400,
+                                    durationMillis = 150,
                                     easing = FastOutSlowInEasing
                                 )
                             )

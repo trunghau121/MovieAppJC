@@ -43,8 +43,7 @@ fun <T> DragShadow(
             if (activeDraggedIndex != null && activeItem != null) {
                 val layoutInfo = dragDropState.getLayoutInfo()
 
-                // Xác định vị trí đích bay: Nếu có ô hoán đổi thì bay về vị trí mới của ô đó, nếu không quay về chỗ cũ
-                val targetIndexToFly = dragDropState.animationTargetIndex ?: activeDraggedIndex
+                val targetIndexToFly = dragDropState.pendingSwapTargetIndex ?: activeDraggedIndex
                 val targetLayoutItem = layoutInfo.visibleItemsInfo.find { it.index == targetIndexToFly }
 
                 val targetOffset = if (targetLayoutItem != null) {
@@ -53,14 +52,14 @@ fun <T> DragShadow(
                     lastValidStartOffset
                 }
 
-                // Tính toán khoảng cách thực tế để tạo duration chạy động mượt mà
+                // TÍNH TOÁN KHOẢNG CÁCH THỰC TẾ ĐỂ ĐƯA RA DURATION ĐỘNG PHÙ HỢP
                 val currentSnapshotOffset = shadowOffset.value
                 val deltaX = targetOffset.x - currentSnapshotOffset.x
                 val deltaY = targetOffset.y - currentSnapshotOffset.y
                 val distance = sqrt((deltaX * deltaX + deltaY * deltaY).toDouble()).toFloat()
 
-                // Gần bay nhanh (60ms), xa bay đầm mắt (tối đa 350ms)
-                val calculatedDuration = (distance * 0.5f).toInt().coerceIn(10, 350)
+                // Quy đổi tỷ lệ: bay 2px mất 1ms. Giới hạn sàn 60ms, trần 350ms
+                val calculatedDuration = (distance * 0.5f).toInt().coerceIn(60, 400)
 
                 shadowOffset.animateTo(
                     targetValue = targetOffset,
@@ -70,8 +69,10 @@ fun <T> DragShadow(
                     )
                 )
 
-                // Hoàn thành hiệu ứng tịnh tiến, giải phóng toàn bộ flag kéo thả ngay
-                dragDropState.clearDragStateAfterAnimation()
+                // Ép kiểu lấy ID của đối tượng truyền sang hàm giải phóng để khóa alpha UI nền
+                val currentItem = activeItem as? com.movieappjc.presentation.screen.aa.ColumnItemModel
+                dragDropState.clearDragStateAfterAnimation(currentItem?.id)
+
                 activeDraggedIndex = null
                 activeItem = null
                 activeItemSize = IntSize.Zero

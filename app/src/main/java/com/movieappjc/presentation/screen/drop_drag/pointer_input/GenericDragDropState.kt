@@ -47,8 +47,11 @@ class GenericDragDropState<T>(
     var isReturningAnimation by mutableStateOf(false)
         private set
 
-    // Ghi nhớ index đích đến để bóng ma định vị hướng bay sau khi mảng đã tráo đổi dữ liệu
-    var animationTargetIndex by mutableStateOf<Int?>(null)
+    var pendingSwapTargetIndex by mutableStateOf<Int?>(null)
+        private set
+
+    // Ghi nhớ ID của phần tử vừa thả tay để tiếp tục khóa ẩn UI dưới nền
+    var lastDraggedId by mutableStateOf<String?>(null)
         private set
 
     private var autoScrollJob: Job? = null
@@ -56,7 +59,7 @@ class GenericDragDropState<T>(
         private set
 
     fun onDragStart(offset: Offset) {
-        if (isReturningAnimation) return
+        if (isReturningAnimation || lastDraggedId != null) return
 
         val targetItem = findVisibleItemAtOffset(offset)
         if (targetItem != null && targetItem.index !in ignoreIndices) {
@@ -75,7 +78,8 @@ class GenericDragDropState<T>(
             )
 
             dragStartAbsoluteOffset = Offset(targetItem.offset.x.toFloat(), targetItem.offset.y.toFloat())
-            animationTargetIndex = null
+            pendingSwapTargetIndex = null
+            lastDraggedId = null
         }
     }
 
@@ -125,18 +129,18 @@ class GenericDragDropState<T>(
         val containerHeight = layoutInfo.viewportSize.height.toFloat()
         val activationZone = 120f
         val fingerY = fingerOffset.y
-        val baseMaxSpeed = 180f
+        val baseMaxSpeed = 200f
 
         val scrollAmount = when {
             fingerY < activationZone -> {
                 val depth = activationZone - fingerY
                 val speedFactor = (depth / activationZone) * 1.5f
-                -(baseMaxSpeed * speedFactor).coerceAtMost(180f)
+                -(baseMaxSpeed * speedFactor).coerceAtMost(200f)
             }
             fingerY > (containerHeight - activationZone) -> {
                 val depth = fingerY - (containerHeight - activationZone)
                 val speedFactor = (depth / activationZone) * 1.5f
-                (baseMaxSpeed * speedFactor).coerceAtMost(180f)
+                (baseMaxSpeed * speedFactor).coerceAtMost(200f)
             }
             else -> 0f
         }
@@ -178,34 +182,46 @@ class GenericDragDropState<T>(
                         val isTargetFixed = dragDropPolicy.isItemFixed(targetItemData, context)
 
                         if (isTargetRestricted && !isTargetFixed) {
-                            val currentIndex = firstVisibleItemIndexLambda()
-                            val currentOffset = firstVisibleItemScrollOffsetLambda()
-
-                            // Thực hiện hoán đổi dữ liệu NGAY LẬP TỨC khi buông tay
-                            // Điều này kích hoạt .animateItem() cố định ở tầng UI vẽ hiệu ứng trượt
-                            val temp = listData[source]
-                            listData[source] = listData[target]
-                            listData[target] = temp
-
-                            // Lưu lại vị trí để DragShadow biết đường bay theo trúng vị trí mới
-                            animationTargetIndex = target
-
-                            requestScrollToItemLambda(currentIndex, currentOffset)
-                            onListChanged(listData.toList())
+                            pendingSwapTargetIndex = target
                         }
                     }
                 }
             }
             isReturningAnimation = true
         } else {
-            clearDragStateAfterAnimation()
+            clearDragStateAfterAnimation(null)
         }
         stopAutoScroll()
     }
 
-    fun clearDragStateAfterAnimation() {
+    // HÀM CHÍNH THỨC HOÁN ĐỔI DỮ LIỆU: Chờ bóng ma bay về chạm đích xong mới chạy
+    fun clearDragStateAfterAnimation(itemId: String?) {
+        val source = draggedIndex
+        val target = pendingSwapTargetIndex
+
+        if (source != null && target != null && source != target) {
+            val currentIndex = firstVisibleItemIndexLambda()
+            val currentOffset = firstVisibleItemScrollOffsetLambda()
+
+            // 1. Khóa ID lại trước khi thực hiện tráo đổi thực tế công công
+            lastDraggedId = itemId
+
+            val temp = listData[source]
+            listData[source] = listData[target]
+            listData[target] = temp
+
+            requestScrollToItemLambda(currentIndex, currentOffset)
+            onListChanged(listData.toList())
+
+            // 2. Chờ đúng 400ms bằng thời gian animateItem để item gốc di chuyển xong mới mở khóa hiển thị công khai
+            scope.launch {
+                delay(150)
+                lastDraggedId = null
+            }
+        }
+
         draggedIndex = null
-        animationTargetIndex = null
+        pendingSwapTargetIndex = null
         fingerOffset = Offset.Zero
         initialTouchOffset = Offset.Zero
         draggedItemSize = IntSize.Zero
@@ -235,7 +251,6 @@ class GenericDragDropState<T>(
     }
 }
 
-// === CÁC HÀM REMEMBER GIỮ NGUYÊN ===
 @Composable
 fun <T> rememberGridDragDropState(
     listData: SnapshotStateList<T>,
@@ -292,29 +307,22 @@ fun <T> rememberListDragDropState(
             getLayoutInfo = {
                 object : DragDropLayoutInfo {
                     override val viewportSize: IntSize = lazyListState.layoutInfo.viewportSize
-                    override val visibleItemsInfo: List<DragDropItemInfo> =
-                        lazyListState.layoutInfo.visibleItemsInfo.map { listItem ->
-                            object : DragDropItemInfo {
-                                override val index: Int = listItem.index
-                                override val offset: IntOffset =
-                                    IntOffset(x = 0, y = listItem.offset)
-                                override val size: IntSize = IntSize(
-                                    width = lazyListState.layoutInfo.viewportSize.width,
-                                    height = listItem.size
-                                )
-                            }
+                    override val visibleItemsInfo: List<DragDropItemInfo> = lazyListState.layoutInfo.visibleItemsInfo.map { listItem ->
+                        object : DragDropItemInfo {
+                            override val index: Int = listItem.index
+                            override val offset: IntOffset = IntOffset(x = 0, y = listItem.offset)
+                            override val size: IntSize = IntSize(
+                                width = lazyListState.layoutInfo.viewportSize.width,
+                                height = listItem.size
+                            )
                         }
+                    }
                 }
             },
             scrollByLambda = { delta -> lazyListState.scrollBy(delta) },
             canScrollBackwardLambda = { lazyListState.canScrollBackward },
             canScrollForwardLambda = { lazyListState.canScrollForward },
-            requestScrollToItemLambda = { index, offset ->
-                lazyListState.requestScrollToItem(
-                    index,
-                    offset
-                )
-            },
+            requestScrollToItemLambda = { index, offset -> lazyListState.requestScrollToItem(index, offset) },
             firstVisibleItemIndexLambda = { lazyListState.firstVisibleItemIndex },
             firstVisibleItemScrollOffsetLambda = { lazyListState.firstVisibleItemScrollOffset },
             scope = scope,
