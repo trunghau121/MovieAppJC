@@ -31,8 +31,8 @@ class DragDropState<T>(
     private val getDragDropContext: () -> DragDropContext = { DragDropContext() },
     private val getItemAt: (Int) -> T?,
     private val onDragStart: ((Int) -> Unit)? = null,
-    private val performSwap: (Int, Int) -> Unit,
-    private val onDropEnd: (Int, Int) -> Unit
+    private val performSwap: ((Int, Int) -> Unit)? = null,
+    private val onDropEnd: ((Int, Int) -> Unit)? = null
 ) {
     var draggedIndex by mutableStateOf<Int?>(null)
         private set
@@ -123,25 +123,27 @@ class DragDropState<T>(
 
         if (target != null && target != source) {
             if (target !in ignoreIndices && source !in ignoreIndices) {
-                // Lấy data thông qua hàm đọc gián tiếp
                 val targetItemData = getItemAt(target)
 
                 if (targetItemData != null) {
                     val context = getDragDropContext()
-
-                    // LUẬT 2: Kiểm tra xem ô đích có CHO PHÉP HOÁN ĐỔI khi có ô khác kéo lướt qua hay không
                     val canSwapDuringDrag = dragDropPolicy.canSwapOnHover(targetItemData, context)
 
                     if (canSwapDuringDrag) {
+                        // Lấy ra đối tượng thực tế đang bị kéo trước khi hoán đổi
+                        val currentlyDraggingItem = getItemAt(source)
+
                         val currentIndex = firstVisibleItemIndex()
                         val currentOffset = firstVisibleItemScrollOffset()
 
-                        // Ủy thác hành động hoán đổi phần tử ra bên ngoài giao diện xử lý dữ liệu
-                        performSwap(source, target)
+                        // 1. Yêu cầu phía Composable tiến hành hoán đổi data thật
+                        performSwap?.invoke(source, target)
 
-                        draggedIndex = target
-
-                        requestScrollToItem(currentIndex, currentOffset)
+                        // 2. KIỂM TRA BẢO VỆ: Chỉ cập nhật chỉ mục nếu Data thực sự đã đổi chỗ
+                        if (getItemAt(target) == currentlyDraggingItem) {
+                            draggedIndex = target
+                            requestScrollToItem(currentIndex, currentOffset)
+                        }
                     }
                 }
             }
@@ -260,7 +262,7 @@ class DragDropState<T>(
             // Lưu giữ trạng thái ẩn phần tử cũ để tránh nhấp nháy UI nền
             lastDraggedItem = item
 
-            onDropEnd(fromIndex, toIndex)
+            onDropEnd?.invoke(fromIndex, toIndex)
 
             requestScrollToItem(currentIndex, currentOffset)
 
@@ -302,6 +304,14 @@ class DragDropState<T>(
             }
         }
     }
+
+    fun resetAllDragStates() {
+        draggedIndex = null
+        fingerOffset = Offset.Zero
+        initialTouchOffset = Offset.Zero
+        isReturningAnimation = false
+        lastDraggedItem = null
+    }
 }
 
 @Composable
@@ -313,8 +323,8 @@ fun <T> rememberGridDragDropState(
     ignoreIndices: IntRange = IntRange.EMPTY,
     getItemAt: (Int) -> T?,
     onDragStart: ((Int) -> Unit)? = null,
-    performSwap: (Int, Int) -> Unit,
-    onDropEnd: (Int, Int) -> Unit
+    performSwap: ((Int, Int) -> Unit)? = null,
+    onDropEnd: ((Int, Int) -> Unit)? = null
 ): DragDropState<T> {
     return remember(lazyGridState, scope, ignoreIndices, dragDropPolicy) {
         DragDropState(
@@ -361,8 +371,8 @@ fun <T> rememberListDragDropState(
     ignoreIndices: IntRange = IntRange.EMPTY,
     getItemAt: (Int) -> T?,
     onDragStart: ((Int) -> Unit)? = null,
-    performSwap: (Int, Int) -> Unit,
-    onDropEnd: (Int, Int) -> Unit
+    performSwap: ((Int, Int) -> Unit)? = null,
+    onDropEnd: ((Int, Int) -> Unit)? = null
 ): DragDropState<T> {
     return remember(lazyListState, scope, ignoreIndices, dragDropPolicy) {
         DragDropState(

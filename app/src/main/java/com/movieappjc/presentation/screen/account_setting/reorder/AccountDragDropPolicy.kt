@@ -1,6 +1,7 @@
 package com.movieappjc.presentation.screen.account_setting.reorder
 
 import com.movieappjc.presentation.screen.account_setting.data.AccountItem
+import com.movieappjc.presentation.screen.account_setting.data.AccountItemBlank
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemEmpty
 import com.movieappjc.presentation.screen.account_setting.data.Header
 import com.movieappjc.presentation.screen.account_setting.data.PlaceHolder
@@ -13,22 +14,28 @@ class AccountDragDropPolicy: DragDropPolicy<AccountItem> {
         item: AccountItem,
         context: DragDropContext
     ): Boolean {
-        return item !is AccountItemEmpty &&
-                item !is Header && item !is Title && item !is PlaceHolder || item.isAccountDefault || item.isAccountHome
+        return item !is AccountItemEmpty
+                && item !is Header
+                && item !is Title
+                && item !is PlaceHolder
+                && item !is AccountItemBlank
     }
 
     override fun canAcceptDrop(
         item: AccountItem,
         context: DragDropContext
     ): Boolean {
-        return item is AccountItemEmpty || item.isAccountDefault || item.isAccountHome
+        return item is AccountItemEmpty
+                || item is AccountItemBlank
+                || item.isAccountDefault
+                || item.isAccountHome
+                || item.number.isNotEmpty()
     }
 
     override fun canSwapOnHover(
         item: AccountItem,
         context: DragDropContext
     ): Boolean {
-        return item !is AccountItemEmpty &&
-                item !is Header && item !is Title && item !is PlaceHolder && !item.isAccountDefault && !item.isAccountHome
+        return true
     }
 }

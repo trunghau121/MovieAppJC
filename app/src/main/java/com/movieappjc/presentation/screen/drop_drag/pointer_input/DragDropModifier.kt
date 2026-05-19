@@ -28,8 +28,13 @@ fun <T> Modifier.dragDropSourceContainer(
                 change.consume()
                 dragDropState.onDrag(dragAmount)
             },
-            onDragEnd = { dragDropState.onDragEnd() },
-            onDragCancel = { dragDropState.onDragEnd() }
+            onDragEnd = {
+                dragDropState.onDragEnd()
+            },
+            onDragCancel = {
+                dragDropState.onDragEnd()
+                dragDropState.resetAllDragStates()
+            }
         )
     }
 }
@@ -42,7 +47,8 @@ fun <T> Modifier.dragDropItemModifier(
     val shouldHideOriginalItem by remember(index, item, dragDropState) {
         derivedStateOf {
             val isCurrentlyDraggingThis = dragDropState.draggedIndex == index
-            val isReturningThis = dragDropState.isReturningAnimation && dragDropState.draggedIndex == index
+            val isReturningThis =
+                dragDropState.isReturningAnimation && dragDropState.draggedIndex == index
             val isWaitingForListAnimationThis = dragDropState.lastDraggedItem == item
 
             isCurrentlyDraggingThis || isReturningThis || isWaitingForListAnimationThis

@@ -1,5 +1,6 @@
 package com.movieappjc.presentation.screen.account_setting
 
+import android.util.Log
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import com.movieappjc.presentation.screen.account_setting.componemt.AccountRowCa
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountSectionHeader
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountSettingHeader
 import com.movieappjc.presentation.screen.account_setting.componemt.PlaceHolderRow
+import com.movieappjc.presentation.screen.account_setting.data.AccountItemBlank
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemEmpty
 import com.movieappjc.presentation.screen.account_setting.data.Header
 import com.movieappjc.presentation.screen.account_setting.data.PlaceHolder
@@ -75,26 +77,72 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
         dragDropPolicy = dragDroPolicy,
         getDragDropContext = { DragDropContext(isEditMode = true) },
         getItemAt = accounts::getOrNull,
-        onDragStart = { index ->
-            val item = accounts[index]
-            if (item.isAccountHome || item.isAccountDefault) {
-                accounts[index] = AccountItemEmpty(isAccountDefault = item.isAccountDefault && !item.isAccountHome)
-            }
-        },
         performSwap = { from, to ->
-            accounts.swap(from, to)
+            val fromItem = accounts.getOrNull(from)
+            val toItem = accounts.getOrNull(to)
+            val isFromAccountDefault = from == 2
+            val isFromAccountHome = from == 4 || from == 5
+
+            if (fromItem != null && toItem != null) {
+                if (toItem is Title && to == 7 && (isFromAccountDefault || isFromAccountHome)) {
+
+                    // Tìm xem trong list đã có ô Blank nào chưa để tránh add trùng lặp
+                    val hasBlank = accounts.any { it is AccountItemBlank }
+
+                    if (!hasBlank) {
+                        // Chèn ô trống vào ngay sau tiêu đề Accounts (to + 1)
+                        accounts.add(to + 1, AccountItemBlank())
+
+                        // Trả về luôn để kết thúc frame này, không thực hiện swap index thông thường
+                        return@rememberListDragDropState
+                    }
+                } else if (toItem !is AccountItemBlank) {
+                    accounts.removeIf { it is  AccountItemBlank}
+                }
+            }
         },
         onDropEnd = { from, to ->
             val itemTo = accounts[to]
-            val isAccountDefault = to == 2
-            val isAccountHome = to == 4 || to == 5
+            val itemFrom = accounts[from]
+            val isToAccountDefault = to == 2
+            val isToAccountHome = to == 4 || to == 5
 
-            if (itemTo is AccountItemEmpty) {
-                accounts.apply {
-                    set(to, removeAt(from).apply {
-                        this.isAccountDefault = isAccountDefault
-                        this.isAccountHome = isAccountHome
-                    })
+            val isFromAccountDefault = from == 2
+            val isFromAccountHome = from == 4 || from == 5
+
+            Log.d("Hau", "$itemTo")
+            when (itemTo) {
+                is AccountItemEmpty -> {
+                    accounts.apply {
+                        set(to, itemFrom.copy(
+                            isAccountDefault = isToAccountDefault,
+                            isAccountHome = isToAccountHome
+                        ))
+                        if (isFromAccountHome || isFromAccountDefault)
+                            set(from, AccountItemEmpty(isAccountDefault = isFromAccountDefault))
+                        else {
+                            accounts.removeAt(from)
+                        }
+                    }
+                }
+
+                is AccountItemBlank -> {
+                    accounts.apply {
+                        set(to, itemFrom.copy(
+                            isAccountDefault = isToAccountDefault,
+                            isAccountHome = isToAccountHome
+                        ))
+                        if (isFromAccountHome || isFromAccountDefault)
+                            set(from, AccountItemEmpty(isAccountDefault = isFromAccountDefault))
+                        else {
+                            accounts.removeIf { it is  AccountItemBlank}
+                        }
+                    }
+                }
+
+                else -> {
+
+                    accounts.swap(from, to)
                 }
             }
         }
@@ -185,6 +233,15 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
 
                         is Title -> {
                             AccountSectionHeader(item.text)
+                        }
+
+                        is AccountItemBlank -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(80.dp)
+                                    .background(Color.Transparent)
+                            )
                         }
 
                         is PlaceHolder -> {
