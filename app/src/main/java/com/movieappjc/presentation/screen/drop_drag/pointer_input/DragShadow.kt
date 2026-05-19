@@ -51,14 +51,13 @@ fun <T> DragShadow(
                     lastValidStartOffset
                 }
 
-                // TÍNH TOÁN KHOẢNG CÁCH THỰC TẾ ĐỂ ĐƯA RA DURATION ĐỘNG PHÙ HỢP
                 val currentSnapshotOffset = shadowOffset.value
                 val deltaX = targetOffset.x - currentSnapshotOffset.x
                 val deltaY = targetOffset.y - currentSnapshotOffset.y
                 val distance = sqrt((deltaX * deltaX + deltaY * deltaY).toDouble()).toFloat()
 
-                // Quy đổi tỷ lệ: bay 2px mất 1ms. Giới hạn sàn 60ms, trần 350ms
-                val calculatedDuration = (distance * 0.5f).toInt().coerceIn(60, 400)
+                // Quy đổi tỷ lệ thời gian động mượt mà
+                val calculatedDuration = (distance * 0.4f).toInt().coerceIn(40, 250)
 
                 shadowOffset.animateTo(
                     targetValue = targetOffset,
@@ -68,9 +67,8 @@ fun <T> DragShadow(
                     )
                 )
 
-                // Ép kiểu lấy ID của đối tượng truyền sang hàm giải phóng để khóa alpha UI nền
-                val currentItem = activeItem as? com.movieappjc.presentation.screen.aa.ColumnItemModel
-                dragDropState.clearDragStateAfterAnimation(currentItem?.id)
+                // GIẢI QUYẾT CRASH: Truyền trực tiếp activeItem không cần quan tâm nó là Model gì
+                dragDropState.clearDragStateAfterAnimation(activeItem)
 
                 activeDraggedIndex = null
                 activeItem = null
@@ -86,15 +84,12 @@ fun <T> DragShadow(
     }
 
     val itemToRender = activeItem
-    val shadowSizeDp = remember(dragDropState.draggedItemSize) {
-        dragDropState.draggedItemSize
-    }
+    val shadowSizeDp = remember(activeItemSize) { activeItemSize }
 
     if (itemToRender != null && activeItemSize != IntSize.Zero) {
         Box(
             modifier = Modifier
                 .layout { measurable, constraints ->
-                    // Ép kích thước pixel trực tiếp vào bước Measure của Layout, không qua trung gian toDp()
                     val placeable = measurable.measure(
                         constraints.copy(
                             minWidth = shadowSizeDp.width,

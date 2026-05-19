@@ -14,23 +14,25 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class GenericDragDropState<T>(
     val listData: SnapshotStateList<T>,
     val getLayoutInfo: () -> DragDropLayoutInfo,
-    private val scrollByLambda: suspend (Float) -> Float,
-    private val canScrollBackwardLambda: () -> Boolean,
-    private val canScrollForwardLambda: () -> Boolean,
-    private val requestScrollToItemLambda: (index: Int, offset: Int) -> Unit,
-    private val firstVisibleItemIndexLambda: () -> Int,
-    private val firstVisibleItemScrollOffsetLambda: () -> Int,
+    private val scrollBy: suspend (Float) -> Float,
+    private val canScrollBackward: () -> Boolean,
+    private val canScrollForward: () -> Boolean,
+    private val requestScrollToItem: (index: Int, offset: Int) -> Unit,
+    private val firstVisibleItemIndex: () -> Int,
+    private val firstVisibleItemScrollOffset: () -> Int,
     private val scope: CoroutineScope,
     private val ignoreIndices: IntRange = IntRange.EMPTY,
-    private val onListChanged: (List<T>) -> Unit,
     private val dragDropPolicy: DragDropPolicy<T>,
-    private val getDragDropContext: () -> DragDropContext = { DragDropContext() }
+    private val getDragDropContext: () -> DragDropContext = { DragDropContext() },
+    private val onListChanged: (List<T>) -> Unit,
+    private val onDropEnd: (Int, Int) -> Unit
 ) {
     var draggedIndex by mutableStateOf<Int?>(null)
         private set
@@ -50,16 +52,20 @@ class GenericDragDropState<T>(
     var pendingSwapTargetIndex by mutableStateOf<Int?>(null)
         private set
 
-    // Ghi nhớ ID của phần tử vừa thả tay để tiếp tục khóa ẩn UI dưới nền
-    var lastDraggedId by mutableStateOf<String?>(null)
+    // Ghi nhớ chính bản thể đối tượng vừa thả tay để giữ ẩn UI nền (Đã sửa lỗi Generic)
+    var lastDraggedItem by mutableStateOf<T?>(null)
         private set
 
     private var autoScrollJob: Job? = null
+    private var resetAnimationJob: Job? = null
+
     var dragStartAbsoluteOffset by mutableStateOf(Offset.Zero)
         private set
 
+    private var lastCheckedFingerOffset = Offset.Zero
+
     fun onDragStart(offset: Offset) {
-        if (isReturningAnimation || lastDraggedId != null) return
+        if (isReturningAnimation || lastDraggedItem != null) return
 
         val targetItem = findVisibleItemAtOffset(offset)
         if (targetItem != null && targetItem.index !in ignoreIndices) {
@@ -71,6 +77,7 @@ class GenericDragDropState<T>(
 
             draggedIndex = targetItem.index
             fingerOffset = offset
+            lastCheckedFingerOffset = offset // Reset bộ đo khoảng cách chống trôi lệch dữ liệu
             draggedItemSize = targetItem.size
             initialTouchOffset = Offset(
                 x = offset.x - targetItem.offset.x,
@@ -79,11 +86,9 @@ class GenericDragDropState<T>(
 
             dragStartAbsoluteOffset = Offset(targetItem.offset.x.toFloat(), targetItem.offset.y.toFloat())
             pendingSwapTargetIndex = null
-            lastDraggedId = null
+            lastDraggedItem = null
         }
     }
-
-    private var lastCheckedFingerOffset = Offset.Zero
 
     fun onDrag(dragAmount: Offset) {
         if (isReturningAnimation) return
@@ -91,7 +96,7 @@ class GenericDragDropState<T>(
 
         fingerOffset += dragAmount
 
-        // TỐI ƯU: Chỉ tính toán tìm ô hoán đổi nếu ngón tay di chuyển đủ xa (ví dụ > 8 pixel)
+        // TỐI ƯU: Chỉ tính toán quét Layout hình học nếu ngón tay dịch chuyển một khoảng đủ lớn
         val distanceMoved = (fingerOffset - lastCheckedFingerOffset).getDistance()
         if (distanceMoved > 8f) {
             checkAndPerformSwap(source)
@@ -117,8 +122,8 @@ class GenericDragDropState<T>(
                     val canSwapDuringDrag = !isTargetRestricted && !isTargetFixed
 
                     if (canSwapDuringDrag) {
-                        val currentIndex = firstVisibleItemIndexLambda()
-                        val currentOffset = firstVisibleItemScrollOffsetLambda()
+                        val currentIndex = firstVisibleItemIndex()
+                        val currentOffset = firstVisibleItemScrollOffset()
 
                         val temp = listData[source]
                         listData[source] = listData[target]
@@ -126,7 +131,7 @@ class GenericDragDropState<T>(
 
                         draggedIndex = target
 
-                        requestScrollToItemLambda(currentIndex, currentOffset)
+                        requestScrollToItem(currentIndex, currentOffset)
                         onListChanged(listData.toList())
                     }
                 }
@@ -134,41 +139,69 @@ class GenericDragDropState<T>(
         }
     }
 
+    private var currentScrollSpeed = 0f
+
     private fun checkForAutoScroll() {
         val layoutInfo = getLayoutInfo()
         val containerHeight = layoutInfo.viewportSize.height.toFloat()
         val activationZone = 120f
         val fingerY = fingerOffset.y
-        val baseMaxSpeed = 200f
 
-        val scrollAmount = when {
-            fingerY < activationZone -> {
-                val depth = activationZone - fingerY
-                val speedFactor = (depth / activationZone) * 1.5f
-                -(baseMaxSpeed * speedFactor).coerceAtMost(200f)
+        // Tốc độ cuộn tối đa (px/giây) - Bạn có thể tăng lên 1000f nếu thích cuộn cực nhanh
+        val maxSpeedPxPerSecond = 1000f
+
+        // Tính toán tỷ lệ tốc độ dựa theo độ sâu ngón tay đi vào vùng nhạy cảm
+        val targetSpeed = when {
+            fingerY in 0f..<activationZone -> {
+                -(1.0f - (fingerY / activationZone)) * maxSpeedPxPerSecond
             }
-            fingerY > (containerHeight - activationZone) -> {
-                val depth = fingerY - (containerHeight - activationZone)
-                val speedFactor = (depth / activationZone) * 1.5f
-                (baseMaxSpeed * speedFactor).coerceAtMost(200f)
+            fingerY > (containerHeight - activationZone) && fingerY <= containerHeight -> {
+                ((fingerY - (containerHeight - activationZone)) / activationZone) * maxSpeedPxPerSecond
             }
             else -> 0f
         }
 
-        if (scrollAmount != 0f) {
+        currentScrollSpeed = targetSpeed
+
+        if (currentScrollSpeed != 0f) {
+            // Nếu Job cuộn tự động chưa chạy, hãy kích hoạt nó
             if (autoScrollJob == null || autoScrollJob?.isActive == false) {
                 autoScrollJob = scope.launch {
-                    while (true) {
-                        if (scrollAmount < 0f && !canScrollBackwardLambda()) break
-                        if (scrollAmount > 0f && !canScrollForwardLambda()) break
+                    try {
+                        // SỬ DỤNG KHỐI SCROLL LIÊN TỤC: Đưa LazyList vào trạng thái cuộn mượt vô cấp công nghiệp
+                        // Giải phóng hoàn toàn chi phí block luồng của từng lệnh scrollBy lẻ tẻ
+                        var lastFrameTime = System.nanoTime()
 
-                        scrollByLambda(scrollAmount)
+                        // Thực hiện cơ chế cuộn cấp độ animation cao nhất của Compose
+                        scrollBy(0f) // Khởi tạo trạng thái scroll an toàn
 
-                        draggedIndex?.let { currentSource ->
-                            checkAndPerformSwap(currentSource)
+                        // Chúng ta mượn hàm cuộn liên tục thông qua việc lặp hiệu năng cao với awaitFrame
+                        while (true) {
+                            if (currentScrollSpeed < 0f && !canScrollBackward()) break
+                            if (currentScrollSpeed > 0f && !canScrollForward()) break
+
+                            // Đồng bộ nhịp V-Sync chuẩn 60Hz/120Hz của phần cứng màn hình
+                            awaitFrame()
+
+                            val currentFrameTime = System.nanoTime()
+                            val deltaTime = (currentFrameTime - lastFrameTime) / 1_000_000_000f
+                            lastFrameTime = currentFrameTime
+
+                            // Tính quãng đường di chuyển tuyến tính mượt mà dựa theo thời gian thực (Time-delta)
+                            val scrollAmount = currentScrollSpeed * deltaTime
+
+                            if (scrollAmount != 0f) {
+                                scrollBy(scrollAmount)
+
+                                // TỐI ƯU HOÁN ĐỔI: Sau khi cuộn, tự động kiểm tra xem có cần tráo đổi item dưới ngón tay không
+                                draggedIndex?.let { currentSource ->
+                                    checkAndPerformSwap(currentSource)
+                                }
+                            }
                         }
-
-                        delay(8)
+                    } finally {
+                        // Đảm bảo dọn dẹp sạch sẽ trạng thái khi coroutine bị hủy
+                        currentScrollSpeed = 0f
                     }
                 }
             }
@@ -204,29 +237,27 @@ class GenericDragDropState<T>(
         stopAutoScroll()
     }
 
-    // HÀM CHÍNH THỨC HOÁN ĐỔI DỮ LIỆU: Chờ bóng ma bay về chạm đích xong mới chạy
-    fun clearDragStateAfterAnimation(itemId: String?) {
-        val source = draggedIndex
-        val target = pendingSwapTargetIndex
+    fun clearDragStateAfterAnimation(item: T?) {
+        val fromIndex = draggedIndex
+        val toIndex = pendingSwapTargetIndex
 
-        if (source != null && target != null && source != target) {
-            val currentIndex = firstVisibleItemIndexLambda()
-            val currentOffset = firstVisibleItemScrollOffsetLambda()
+        if (fromIndex != null && toIndex != null && fromIndex != toIndex) {
+            val currentIndex = firstVisibleItemIndex()
+            val currentOffset = firstVisibleItemScrollOffset()
 
-            // 1. Khóa ID lại trước khi thực hiện tráo đổi thực tế công công
-            lastDraggedId = itemId
+            // Lưu giữ trạng thái ẩn phần tử cũ
+            lastDraggedItem = item
 
-            val temp = listData[source]
-            listData[source] = listData[target]
-            listData[target] = temp
+            onDropEnd(fromIndex, toIndex)
 
-            requestScrollToItemLambda(currentIndex, currentOffset)
+            requestScrollToItem(currentIndex, currentOffset)
             onListChanged(listData.toList())
 
-            // 2. Chờ đúng 400ms bằng thời gian animateItem để item gốc di chuyển xong mới mở khóa hiển thị công khai
-            scope.launch {
+            // Hủy tác vụ reset cũ (nếu có) trước khi tạo hàng đợi mới, chống leak luồng
+            resetAnimationJob?.cancel()
+            resetAnimationJob = scope.launch {
                 delay(150)
-                lastDraggedId = null
+                lastDraggedItem = null
             }
         }
 
@@ -261,6 +292,7 @@ class GenericDragDropState<T>(
     }
 }
 
+// === CÁC HÀM REMEMBER GIỮ NGUYÊN ===
 @Composable
 fun <T> rememberGridDragDropState(
     listData: SnapshotStateList<T>,
@@ -269,7 +301,8 @@ fun <T> rememberGridDragDropState(
     dragDropPolicy: DragDropPolicy<T>,
     getDragDropContext: () -> DragDropContext = { DragDropContext() },
     ignoreIndices: IntRange = IntRange.EMPTY,
-    onListChanged: (List<T>) -> Unit
+    onListChanged: (List<T>) -> Unit,
+    onDropEnd: (Int, Int) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyGridState, scope, listData, ignoreIndices, dragDropPolicy) {
         GenericDragDropState(
@@ -286,17 +319,18 @@ fun <T> rememberGridDragDropState(
                     }
                 }
             },
-            scrollByLambda = { delta -> lazyGridState.scrollBy(delta) },
-            canScrollBackwardLambda = { lazyGridState.canScrollBackward },
-            canScrollForwardLambda = { lazyGridState.canScrollForward },
-            requestScrollToItemLambda = { index, offset -> lazyGridState.requestScrollToItem(index, offset) },
-            firstVisibleItemIndexLambda = { lazyGridState.firstVisibleItemIndex },
-            firstVisibleItemScrollOffsetLambda = { lazyGridState.firstVisibleItemScrollOffset },
+            scrollBy = { delta -> lazyGridState.scrollBy(delta) },
+            canScrollBackward = { lazyGridState.canScrollBackward },
+            canScrollForward = { lazyGridState.canScrollForward },
+            requestScrollToItem = { index, offset -> lazyGridState.requestScrollToItem(index, offset) },
+            firstVisibleItemIndex = { lazyGridState.firstVisibleItemIndex },
+            firstVisibleItemScrollOffset = { lazyGridState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
             dragDropPolicy = dragDropPolicy,
             getDragDropContext = getDragDropContext,
-            onListChanged = onListChanged
+            onListChanged = onListChanged,
+            onDropEnd = onDropEnd
         )
     }
 }
@@ -309,7 +343,8 @@ fun <T> rememberListDragDropState(
     dragDropPolicy: DragDropPolicy<T>,
     getDragDropContext: () -> DragDropContext = { DragDropContext() },
     ignoreIndices: IntRange = IntRange.EMPTY,
-    onListChanged: (List<T>) -> Unit
+    onListChanged: (List<T>) -> Unit,
+    onDropEnd: (Int, Int) -> Unit
 ): GenericDragDropState<T> {
     return remember(lazyListState, scope, listData, ignoreIndices, dragDropPolicy) {
         GenericDragDropState(
@@ -317,29 +352,31 @@ fun <T> rememberListDragDropState(
             getLayoutInfo = {
                 object : DragDropLayoutInfo {
                     override val viewportSize: IntSize = lazyListState.layoutInfo.viewportSize
-                    override val visibleItemsInfo: List<DragDropItemInfo> = lazyListState.layoutInfo.visibleItemsInfo.map { listItem ->
-                        object : DragDropItemInfo {
-                            override val index: Int = listItem.index
-                            override val offset: IntOffset = IntOffset(x = 0, y = listItem.offset)
-                            override val size: IntSize = IntSize(
-                                width = lazyListState.layoutInfo.viewportSize.width,
-                                height = listItem.size
-                            )
+                    override val visibleItemsInfo: List<DragDropItemInfo> =
+                        lazyListState.layoutInfo.visibleItemsInfo.map { listItem ->
+                            object : DragDropItemInfo {
+                                override val index: Int = listItem.index
+                                override val offset: IntOffset = IntOffset(x = 0, y = listItem.offset)
+                                override val size: IntSize = IntSize(
+                                    width = lazyListState.layoutInfo.viewportSize.width,
+                                    height = listItem.size
+                                )
+                            }
                         }
-                    }
                 }
             },
-            scrollByLambda = { delta -> lazyListState.scrollBy(delta) },
-            canScrollBackwardLambda = { lazyListState.canScrollBackward },
-            canScrollForwardLambda = { lazyListState.canScrollForward },
-            requestScrollToItemLambda = { index, offset -> lazyListState.requestScrollToItem(index, offset) },
-            firstVisibleItemIndexLambda = { lazyListState.firstVisibleItemIndex },
-            firstVisibleItemScrollOffsetLambda = { lazyListState.firstVisibleItemScrollOffset },
+            scrollBy = { delta -> lazyListState.scrollBy(delta) },
+            canScrollBackward = { lazyListState.canScrollBackward },
+            canScrollForward = { lazyListState.canScrollForward },
+            requestScrollToItem = { index, offset -> lazyListState.requestScrollToItem(index, offset) },
+            firstVisibleItemIndex = { lazyListState.firstVisibleItemIndex },
+            firstVisibleItemScrollOffset = { lazyListState.firstVisibleItemScrollOffset },
             scope = scope,
             ignoreIndices = ignoreIndices,
             dragDropPolicy = dragDropPolicy,
             getDragDropContext = getDragDropContext,
-            onListChanged = onListChanged
+            onListChanged = onListChanged,
+            onDropEnd = onDropEnd
         )
     }
 }

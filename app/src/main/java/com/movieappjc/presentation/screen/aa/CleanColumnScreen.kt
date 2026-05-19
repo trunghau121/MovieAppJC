@@ -97,6 +97,11 @@ fun CleanColumnScreen() {
         getDragDropContext = { DragDropContext(isEditMode = true) },
         onListChanged = { _ ->
             println("Đã lưu thứ tự Column mới thành công!")
+        },
+        onDropEnd = { fromIndex, toIndex ->
+            val temp = listData[fromIndex]
+            listData[fromIndex] = listData[toIndex]
+            listData[toIndex] = temp
         }
     )
 
@@ -137,7 +142,7 @@ fun CleanColumnScreen() {
                                 )
                             )
                             // Ẩn dòng gốc đi (để lại khoảng trống) nếu dòng này đang được nhấc đi
-                            .dragDropItemModifier(index, item.id, dragDropState)
+                            .dragDropItemModifier(index, item, dragDropState)
                     )
                 }
             }

@@ -100,6 +100,9 @@ fun CleanGridScreen() {
         getDragDropContext = { DragDropContext(isEditMode = true) },
         onListChanged = { updatedList ->
             println("Đã lưu thứ tự Column mới thành công!")
+        },
+        onDropEnd = { _, _ ->
+
         }
     )
 
