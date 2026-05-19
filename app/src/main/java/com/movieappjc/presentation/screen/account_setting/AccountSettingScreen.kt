@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -43,7 +42,6 @@ import com.movieappjc.presentation.screen.account_setting.componemt.AccountRowCa
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountSectionHeader
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountSettingHeader
 import com.movieappjc.presentation.screen.account_setting.componemt.PlaceHolderRow
-import com.movieappjc.presentation.screen.account_setting.data.AccountItem
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemEmpty
 import com.movieappjc.presentation.screen.account_setting.data.Header
 import com.movieappjc.presentation.screen.account_setting.data.PlaceHolder
@@ -64,32 +62,10 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
     val scope = rememberCoroutineScope()
     val dragDroPolicy = remember { AccountDragDropPolicy() }
 
-    val accounts = remember { mutableStateListOf<AccountItem>() }
+    val accounts = viewModel.accounts
 
 
     LaunchedEffect(Unit) {
-        accounts.addAll(
-            listOf(
-                Header(),
-                Title("Default Account"),
-                AccountItemEmpty(isAccountDefault = true),
-                Title("Accounts on Home"),
-                AccountItemEmpty(),
-                AccountItemEmpty(),
-                PlaceHolder(),
-                Title("Accounts"),
-                AccountItem(name = "Account name 1", number = "700-001-11111"),
-                AccountItem(name = "Account name 2", number = "700-001-22222"),
-                AccountItem(name = "Account name 3", number = "700-001-33333"),
-                AccountItem(name = "Account name 4", number = "700-001-44444"),
-                AccountItem(name = "Account name 5", number = "700-001-55555"),
-                AccountItem(name = "Account name 6", number = "700-001-66666"),
-                AccountItem(name = "Account name 7", number = "700-001-77777"),
-                AccountItem(name = "Account name 8", number = "700-001-88888"),
-                AccountItem(name = "Account name 9", number = "700-001-99999"),
-                AccountItem(name = "Account name 10", number = "700-001-10101")
-            )
-        )
         viewModel.loadDataAccounts()
     }
 
@@ -99,11 +75,28 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
         dragDropPolicy = dragDroPolicy,
         getDragDropContext = { DragDropContext(isEditMode = true) },
         getItemAt = accounts::getOrNull,
-        performSwap = accounts::swap,
+        onDragStart = { index ->
+            val item = accounts[index]
+            if (item.isAccountHome || item.isAccountDefault) {
+                accounts[index] = AccountItemEmpty(isAccountDefault = item.isAccountDefault && !item.isAccountHome)
+            }
+        },
+        performSwap = { from, to ->
+            accounts.swap(from, to)
+        },
         onDropEnd = { from, to ->
-            val temp = accounts[from]
-            accounts[from] = accounts[to]
-            accounts[to] = temp
+            val itemTo = accounts[to]
+            val isAccountDefault = to == 2
+            val isAccountHome = to == 4 || to == 5
+
+            if (itemTo is AccountItemEmpty) {
+                accounts.apply {
+                    set(to, removeAt(from).apply {
+                        this.isAccountDefault = isAccountDefault
+                        this.isAccountHome = isAccountHome
+                    })
+                }
+            }
         }
     )
     Scaffold(
@@ -170,7 +163,6 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF8FAFC))
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
                 .dragDropSourceContainer(dragDropState)

@@ -14,14 +14,14 @@ class AccountDragDropPolicy: DragDropPolicy<AccountItem> {
         context: DragDropContext
     ): Boolean {
         return item !is AccountItemEmpty &&
-                item !is Header && item !is Title && item !is PlaceHolder
+                item !is Header && item !is Title && item !is PlaceHolder || item.isAccountDefault || item.isAccountHome
     }
 
     override fun canAcceptDrop(
         item: AccountItem,
         context: DragDropContext
     ): Boolean {
-        return item is AccountItemEmpty
+        return item is AccountItemEmpty || item.isAccountDefault || item.isAccountHome
     }
 
     override fun canSwapOnHover(
@@ -29,6 +29,6 @@ class AccountDragDropPolicy: DragDropPolicy<AccountItem> {
         context: DragDropContext
     ): Boolean {
         return item !is AccountItemEmpty &&
-                item !is Header && item !is Title && item !is PlaceHolder
+                item !is Header && item !is Title && item !is PlaceHolder && !item.isAccountDefault && !item.isAccountHome
     }
 }

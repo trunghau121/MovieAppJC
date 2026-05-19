@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,7 @@ class DragDropState<T>(
     private val dragDropPolicy: DragDropPolicy<T>,
     private val getDragDropContext: () -> DragDropContext = { DragDropContext() },
     private val getItemAt: (Int) -> T?,
+    private val onDragStart: ((Int) -> Unit)? = null,
     private val performSwap: (Int, Int) -> Unit,
     private val onDropEnd: (Int, Int) -> Unit
 ) {
@@ -65,6 +67,8 @@ class DragDropState<T>(
         private set
 
     private var lastCheckedFingerOffset = Offset.Zero
+    private var currentScrollSpeed = 0f
+    private var lastSwapTime = 0L // Dùng để giới hạn tần suất Swap khi đang cuộn tự động
 
     fun onDragStart(offset: Offset) {
         if (isReturningAnimation || lastDraggedItem != null) return
@@ -92,6 +96,8 @@ class DragDropState<T>(
             pendingSwapTargetIndex = null
             animationTargetIndex = null
             lastDraggedItem = null
+
+            onDragStart?.invoke(targetItem.index)
         }
     }
 
@@ -147,31 +153,58 @@ class DragDropState<T>(
         val containerHeight = layoutInfo.viewportSize.height.toFloat()
         val activationZone = 120f
         val fingerY = fingerOffset.y
-        val baseMaxSpeed = 150f
 
-        val scrollAmount = when {
-            fingerY < activationZone -> {
-                val depth = activationZone - fingerY
-                val speedFactor = (depth / activationZone) * 1.5f
-                -(baseMaxSpeed * speedFactor).coerceAtMost(150f)
+        // Tốc độ tối đa lý tưởng cho trải nghiệm người dùng
+        val maxSpeedPxPerSecond = 1000f
+
+        // Tính toán tốc độ mục tiêu dựa trên độ sâu ngón tay đi vào vùng nhạy cảm
+        val targetSpeed = when {
+            fingerY in 0f..<activationZone -> {
+                -(1.0f - (fingerY / activationZone)) * maxSpeedPxPerSecond
             }
-            fingerY > (containerHeight - activationZone) -> {
-                val depth = fingerY - (containerHeight - activationZone)
-                val speedFactor = (depth / activationZone) * 1.5f
-                (baseMaxSpeed * speedFactor).coerceAtMost(150f)
+            fingerY > (containerHeight - activationZone) && fingerY <= containerHeight -> {
+                ((fingerY - (containerHeight - activationZone)) / activationZone) * maxSpeedPxPerSecond
             }
             else -> 0f
         }
 
-        if (scrollAmount != 0f) {
+        currentScrollSpeed = targetSpeed
+
+        if (currentScrollSpeed != 0f) {
             if (autoScrollJob == null || autoScrollJob?.isActive == false) {
                 autoScrollJob = scope.launch {
-                    while (true) {
-                        if (scrollAmount < 0f && !canScrollBackward()) break
-                        if (scrollAmount > 0f && !canScrollForward()) break
+                    try {
+                        var lastFrameTime = System.nanoTime()
 
-                        scrollBy(scrollAmount)
-                        delay(8)
+                        while (true) {
+                            if (currentScrollSpeed < 0f && !canScrollBackward()) break
+                            if (currentScrollSpeed > 0f && !canScrollForward()) break
+
+                            // ĐỒNG BỘ V-SYNC PHẦN CỨNG: Chờ frame tiếp theo từ màn hình (60Hz / 120Hz)
+                            awaitFrame()
+
+                            val currentFrameTime = System.nanoTime()
+                            val deltaTime = (currentFrameTime - lastFrameTime) / 1_000_000_000f
+                            lastFrameTime = currentFrameTime
+
+                            val scrollAmount = currentScrollSpeed * deltaTime
+
+                            if (scrollAmount != 0f) {
+                                // Cuộn danh sách nền trước
+                                scrollBy(scrollAmount)
+
+                                // TỐI ƯU CỐT LÕI: Giới hạn tần suất hoán đổi động khi đang tự động cuộn
+                                val currentTime = System.currentTimeMillis()
+                                if (currentTime - lastSwapTime > 80L) {
+                                    draggedIndex?.let { currentSource ->
+                                        checkAndPerformSwap(currentSource)
+                                    }
+                                    lastSwapTime = currentTime
+                                }
+                            }
+                        }
+                    } finally {
+                        currentScrollSpeed = 0f
                     }
                 }
             }
@@ -279,6 +312,7 @@ fun <T> rememberGridDragDropState(
     getDragDropContext: () -> DragDropContext = { DragDropContext() },
     ignoreIndices: IntRange = IntRange.EMPTY,
     getItemAt: (Int) -> T?,
+    onDragStart: ((Int) -> Unit)? = null,
     performSwap: (Int, Int) -> Unit,
     onDropEnd: (Int, Int) -> Unit
 ): DragDropState<T> {
@@ -311,6 +345,7 @@ fun <T> rememberGridDragDropState(
             dragDropPolicy = dragDropPolicy,
             getDragDropContext = getDragDropContext,
             getItemAt = getItemAt,
+            onDragStart = onDragStart,
             performSwap = performSwap,
             onDropEnd = onDropEnd
         )
@@ -325,6 +360,7 @@ fun <T> rememberListDragDropState(
     getDragDropContext: () -> DragDropContext = { DragDropContext() },
     ignoreIndices: IntRange = IntRange.EMPTY,
     getItemAt: (Int) -> T?,
+    onDragStart: ((Int) -> Unit)? = null,
     performSwap: (Int, Int) -> Unit,
     onDropEnd: (Int, Int) -> Unit
 ): DragDropState<T> {
@@ -361,6 +397,7 @@ fun <T> rememberListDragDropState(
             dragDropPolicy = dragDropPolicy,
             getDragDropContext = getDragDropContext,
             getItemAt = getItemAt,
+            onDragStart = onDragStart,
             performSwap = performSwap,
             onDropEnd = onDropEnd
         )
