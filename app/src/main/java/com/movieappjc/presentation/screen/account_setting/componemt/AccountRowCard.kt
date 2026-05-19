@@ -1,4 +1,4 @@
-package com.movieappjc.presentation.screen.account_setting
+package com.movieappjc.presentation.screen.account_setting.componemt
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,28 +21,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.movieappjc.presentation.screen.menu.reorderable.ReorderableCollectionItemScope
+import com.movieappjc.presentation.screen.account_setting.data.AccountItem
 
 @Composable
-fun ReorderableCollectionItemScope.AccountRowCard(
-    index: Int,
-    account: AccountItem,
-    haptic: HapticFeedback,
-    list: List<AccountItem>,
-    updateList: (List<AccountItem>) -> Unit
-) {
+fun AccountRowCard(modifier: Modifier, item: AccountItem) {
     val interactionSource = remember { MutableInteractionSource() }
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         shape = RoundedCornerShape(16.dp),
@@ -59,14 +47,14 @@ fun ReorderableCollectionItemScope.AccountRowCard(
         ) {
             Column {
                 Text(
-                    text = account.name,
+                    text = item.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF111827)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = account.number,
+                    text = item.number,
                     fontSize = 14.sp,
                     color = Color(0xFF9CA3AF)
                 )

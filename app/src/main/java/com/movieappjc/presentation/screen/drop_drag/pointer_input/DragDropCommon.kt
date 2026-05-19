@@ -25,14 +25,17 @@ data class DragDropContext(
 // === CHIẾN LƯỢC QUẢN LÝ KHÓA/CỐ ĐỊNH ITEM ===
 interface DragDropPolicy<T> {
     /**
-     * Chặn hoàn toàn: Không cho phép nắm kéo, không cho phép di chuyển 
-     * và không cho bất kỳ phần tử nào khác hoán đổi vị trí với nó.
+     * Bản thân item này có thể bị nắm kéo đi hay không.
      */
-    fun isItemFixed(item: T, context: DragDropContext): Boolean
+    fun canDrag(item: T, context: DragDropContext): Boolean
 
     /**
-     * Chặn tạm thời khi Drag: Khi đang kéo các ô khác lướt qua thì không tự động hoán đổi.
-     * Chỉ thực hiện kiểm tra và hoán đổi duy nhất một lần khi người dùng buông tay (Drop).
+     * Các item khác có thể thả (Drop) đè lên vị trí của ô này khi kết thúc kéo hay không.
      */
-    fun shouldRestrictSwapUntilDrop(item: T, context: DragDropContext): Boolean
+    fun canAcceptDrop(item: T, context: DragDropContext): Boolean
+
+    /**
+     * Ô này có thể tự động hoán đổi/dạt vị trí ngay trong lúc một item khác đang kéo lướt qua hay không.
+     */
+    fun canSwapOnHover(item: T, context: DragDropContext): Boolean
 }

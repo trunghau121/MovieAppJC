@@ -14,7 +14,7 @@ import androidx.compose.ui.draw.alpha
 
 @SuppressLint("UnnecessaryComposedModifier")
 fun <T> Modifier.dragDropSourceContainer(
-    dragDropState: GenericDragDropState<T>
+    dragDropState: DragDropState<T>
 ): Modifier = composed {
     val haptic = LocalHapticFeedback.current
 
@@ -37,7 +37,7 @@ fun <T> Modifier.dragDropSourceContainer(
 fun <T> Modifier.dragDropItemModifier(
     index: Int,
     item: T,
-    dragDropState: GenericDragDropState<T>
+    dragDropState: DragDropState<T>
 ): Modifier = this.composed {
     val shouldHideOriginalItem by remember(index, item, dragDropState) {
         derivedStateOf {

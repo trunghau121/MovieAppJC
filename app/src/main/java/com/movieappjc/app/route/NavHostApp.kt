@@ -12,8 +12,6 @@ import com.movieappjc.presentation.screen.menu.MyMenuScreen
 import com.movieappjc.presentation.screen.person.PersonDetailScreen
 import com.movieappjc.presentation.screen.search.SearchMovieScreen
 import com.movieappjc.presentation.screen.test.AbsoluteCoordinatesDragAndDropGridScreen
-import com.movieappjc.presentation.screen.aa.CleanGridScreen
-import com.movieappjc.presentation.screen.aa.CleanColumnScreen
 import com.movieappjc.presentation.screen.trailer_movie.TrailerMovieScreen
 import java.util.Locale
 
@@ -27,7 +25,7 @@ fun NavHostApp(
         startDestination = Routes.HomeScreen
     ) {
         composable<Routes.HomeScreen> {
-            CleanColumnScreen()
+            AccountSettingScreen()
         }
 
         composable<Routes.MovieDetail> {

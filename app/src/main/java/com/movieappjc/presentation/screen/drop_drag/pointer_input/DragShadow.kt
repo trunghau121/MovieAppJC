@@ -15,8 +15,8 @@ import kotlin.math.sqrt
 
 @Composable
 fun <T> DragShadow(
-    dragDropState: GenericDragDropState<T>,
-    listData: List<T>,
+    dragDropState: DragDropState<T>,
+    getItemAt: (Int) -> T?,
     itemContent: @Composable (item: T) -> Unit
 ) {
     var activeDraggedIndex by remember { mutableStateOf<Int?>(null) }
@@ -32,7 +32,7 @@ fun <T> DragShadow(
 
         if (globalIndex != null && !dragDropState.isReturningAnimation) {
             activeDraggedIndex = globalIndex
-            activeItem = listData.getOrNull(globalIndex)
+            activeItem = getItemAt(globalIndex)
             activeItemSize = dragDropState.draggedItemSize
             lastValidStartOffset = dragDropState.dragStartAbsoluteOffset
 
@@ -42,7 +42,7 @@ fun <T> DragShadow(
             if (activeDraggedIndex != null && activeItem != null) {
                 val layoutInfo = dragDropState.getLayoutInfo()
 
-                val targetIndexToFly = dragDropState.pendingSwapTargetIndex ?: activeDraggedIndex
+                val targetIndexToFly = dragDropState.animationTargetIndex ?: activeDraggedIndex
                 val targetLayoutItem = layoutInfo.visibleItemsInfo.find { it.index == targetIndexToFly }
 
                 val targetOffset = if (targetLayoutItem != null) {
@@ -56,8 +56,8 @@ fun <T> DragShadow(
                 val deltaY = targetOffset.y - currentSnapshotOffset.y
                 val distance = sqrt((deltaX * deltaX + deltaY * deltaY).toDouble()).toFloat()
 
-                // Quy đổi tỷ lệ thời gian động mượt mà
-                val calculatedDuration = (distance * 0.4f).toInt().coerceIn(40, 250)
+                // Quy đổi tỷ lệ thời gian động mượt mà khi bóng ma bay về vị trí cũ/mới
+                val calculatedDuration = (distance * 0.4f).toInt().coerceIn(40, 400)
 
                 shadowOffset.animateTo(
                     targetValue = targetOffset,
@@ -67,7 +67,7 @@ fun <T> DragShadow(
                     )
                 )
 
-                // GIẢI QUYẾT CRASH: Truyền trực tiếp activeItem không cần quan tâm nó là Model gì
+                // Kích hoạt dọn dẹp trạng thái và phát sự kiện thả tay thành công ra ngoài UI
                 dragDropState.clearDragStateAfterAnimation(activeItem)
 
                 activeDraggedIndex = null
