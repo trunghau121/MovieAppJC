@@ -83,11 +83,21 @@ class GenericDragDropState<T>(
         }
     }
 
+    private var lastCheckedFingerOffset = Offset.Zero
+
     fun onDrag(dragAmount: Offset) {
         if (isReturningAnimation) return
         val source = draggedIndex ?: return
+
         fingerOffset += dragAmount
-        checkAndPerformSwap(source)
+
+        // TỐI ƯU: Chỉ tính toán tìm ô hoán đổi nếu ngón tay di chuyển đủ xa (ví dụ > 8 pixel)
+        val distanceMoved = (fingerOffset - lastCheckedFingerOffset).getDistance()
+        if (distanceMoved > 8f) {
+            checkAndPerformSwap(source)
+            lastCheckedFingerOffset = fingerOffset
+        }
+
         checkForAutoScroll()
     }
 

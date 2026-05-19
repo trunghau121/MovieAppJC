@@ -37,13 +37,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropContext
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragShadow
+import com.movieappjc.presentation.screen.drop_drag.pointer_input.dragDropItemModifier
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.dragDropSourceContainer
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.rememberListDragDropState
 import kotlinx.coroutines.delay
@@ -95,7 +95,7 @@ fun CleanColumnScreen() {
         scope = scope,
         dragDropPolicy = dragDroPolicy,
         getDragDropContext = { DragDropContext(isEditMode = true) },
-        onListChanged = { updatedList ->
+        onListChanged = { _ ->
             println("Đã lưu thứ tự Column mới thành công!")
         }
     )
@@ -119,19 +119,13 @@ fun CleanColumnScreen() {
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier.fillMaxSize(),
-                userScrollEnabled = dragDropState.draggedIndex == null,
+                userScrollEnabled = dragDropState.draggedIndex == null && !dragDropState.isReturningAnimation,
                 verticalArrangement = Arrangement.spacedBy(2.dp) // Khoảng cách giữa các dòng
             ) {
                 itemsIndexed(
                     items = listData,
                     key = { _, item -> item.id } // Bắt buộc phải gắn ID độc nhất để hiệu ứng trượt hoạt động chính xác
                 ) { index, item ->
-                    val isCurrentlyDraggingThis = dragDropState.draggedIndex == index
-                    val isReturningThis = dragDropState.isReturningAnimation && dragDropState.draggedIndex == index
-                    val isWaitingForListAnimationThis = dragDropState.lastDraggedId == item.id
-
-                    val shouldHideOriginalItem = isCurrentlyDraggingThis || isReturningThis || isWaitingForListAnimationThis
-
                     ColumnItemRow(
                         item = item,
                         modifier = Modifier
@@ -143,7 +137,7 @@ fun CleanColumnScreen() {
                                 )
                             )
                             // Ẩn dòng gốc đi (để lại khoảng trống) nếu dòng này đang được nhấc đi
-                            .alpha(if (shouldHideOriginalItem) 0f else 1f)
+                            .dragDropItemModifier(index, item.id, dragDropState)
                     )
                 }
             }

@@ -5,12 +5,11 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.IntSize
 import kotlin.math.sqrt
 
@@ -87,20 +86,30 @@ fun <T> DragShadow(
     }
 
     val itemToRender = activeItem
+    val shadowSizeDp = remember(dragDropState.draggedItemSize) {
+        dragDropState.draggedItemSize
+    }
+
     if (itemToRender != null && activeItemSize != IntSize.Zero) {
         Box(
             modifier = Modifier
-                .size(
-                    width = with(LocalDensity.current) { activeItemSize.width.toDp() },
-                    height = with(LocalDensity.current) { activeItemSize.height.toDp() }
-                )
+                .layout { measurable, constraints ->
+                    // Ép kích thước pixel trực tiếp vào bước Measure của Layout, không qua trung gian toDp()
+                    val placeable = measurable.measure(
+                        constraints.copy(
+                            minWidth = shadowSizeDp.width,
+                            maxWidth = shadowSizeDp.width,
+                            minHeight = shadowSizeDp.height,
+                            maxHeight = shadowSizeDp.height
+                        )
+                    )
+                    layout(placeable.width, placeable.height) {
+                        placeable.placeWithLayer(0, 0)
+                    }
+                }
                 .graphicsLayer {
                     translationX = shadowOffset.value.x
                     translationY = shadowOffset.value.y
-                    scaleX = 1.0f
-                    scaleY = 1.0f
-                    alpha = 1.0f
-                    shadowElevation = 0f
                 }
         ) {
             itemContent(itemToRender)
