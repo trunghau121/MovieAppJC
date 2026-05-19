@@ -44,37 +44,7 @@ fun ReorderableCollectionItemScope.AccountRowCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .semantics {
-                customActions = listOf(
-                    CustomAccessibilityAction(
-                        label = "Move Up",
-                        action = {
-                            if (index > 0) {
-                                updateList(list.toMutableList().apply {
-                                    add(index - 1, removeAt(index))
-                                })
-                                true
-                            } else {
-                                false
-                            }
-                        }
-                    ),
-                    CustomAccessibilityAction(
-                        label = "Move Down",
-                        action = {
-                            if (index < list.size - 1) {
-                                updateList(list.toMutableList().apply {
-                                    add(index + 1, removeAt(index))
-                                })
-                                true
-                            } else {
-                                false
-                            }
-                        }
-                    ),
-                )
-            },
+            .padding(vertical = 4.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF3F4F6)),
         interactionSource = interactionSource,
@@ -101,21 +71,12 @@ fun ReorderableCollectionItemScope.AccountRowCard(
                     color = Color(0xFF9CA3AF)
                 )
             }
-            IconButton(onClick = { /* Hành động kéo thả */ }) {
+            IconButton(onClick = { }) {
                 Icon(
-                    imageVector = Icons.Default.Menu, // Thay bằng icon Menu hamburger biểu thị Handle reorder
+                    imageVector = Icons.Default.Menu,
                     contentDescription = "Reorder handle",
                     tint = Color(0xFF6B7280),
                     modifier = Modifier
-                        .longPressDraggableHandle(
-                            onDragStarted = {
-                                haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
-                            },
-                            onDragStopped = {
-                                haptic.performHapticFeedback(HapticFeedbackType.GestureEnd)
-                            }
-                        )
-                        .clearAndSetSemantics { },
                 )
             }
         }

@@ -6,8 +6,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntOffset
@@ -63,6 +63,8 @@ class GenericDragDropState<T>(
         private set
 
     private var lastCheckedFingerOffset = Offset.Zero
+    private var currentScrollSpeed = 0f
+    private var lastSwapTime = 0L // Dùng để giới hạn tần suất Swap khi đang cuộn tự động
 
     fun onDragStart(offset: Offset) {
         if (isReturningAnimation || lastDraggedItem != null) return
@@ -98,7 +100,7 @@ class GenericDragDropState<T>(
 
         // TỐI ƯU: Chỉ tính toán quét Layout hình học nếu ngón tay dịch chuyển một khoảng đủ lớn
         val distanceMoved = (fingerOffset - lastCheckedFingerOffset).getDistance()
-        if (distanceMoved > 8f) {
+        if (distanceMoved > 10f) {
             checkAndPerformSwap(source)
             lastCheckedFingerOffset = fingerOffset
         }
@@ -139,18 +141,16 @@ class GenericDragDropState<T>(
         }
     }
 
-    private var currentScrollSpeed = 0f
-
     private fun checkForAutoScroll() {
         val layoutInfo = getLayoutInfo()
         val containerHeight = layoutInfo.viewportSize.height.toFloat()
         val activationZone = 120f
         val fingerY = fingerOffset.y
 
-        // Tốc độ cuộn tối đa (px/giây) - Bạn có thể tăng lên 1000f nếu thích cuộn cực nhanh
+        // Tốc độ tối đa lý tưởng cho trải nghiệm người dùng
         val maxSpeedPxPerSecond = 1000f
 
-        // Tính toán tỷ lệ tốc độ dựa theo độ sâu ngón tay đi vào vùng nhạy cảm
+        // Tính toán tốc độ mục tiêu dựa trên độ sâu ngón tay đi vào vùng nhạy cảm
         val targetSpeed = when {
             fingerY in 0f..<activationZone -> {
                 -(1.0f - (fingerY / activationZone)) * maxSpeedPxPerSecond
@@ -164,43 +164,40 @@ class GenericDragDropState<T>(
         currentScrollSpeed = targetSpeed
 
         if (currentScrollSpeed != 0f) {
-            // Nếu Job cuộn tự động chưa chạy, hãy kích hoạt nó
             if (autoScrollJob == null || autoScrollJob?.isActive == false) {
                 autoScrollJob = scope.launch {
                     try {
-                        // SỬ DỤNG KHỐI SCROLL LIÊN TỤC: Đưa LazyList vào trạng thái cuộn mượt vô cấp công nghiệp
-                        // Giải phóng hoàn toàn chi phí block luồng của từng lệnh scrollBy lẻ tẻ
                         var lastFrameTime = System.nanoTime()
 
-                        // Thực hiện cơ chế cuộn cấp độ animation cao nhất của Compose
-                        scrollBy(0f) // Khởi tạo trạng thái scroll an toàn
-
-                        // Chúng ta mượn hàm cuộn liên tục thông qua việc lặp hiệu năng cao với awaitFrame
                         while (true) {
                             if (currentScrollSpeed < 0f && !canScrollBackward()) break
                             if (currentScrollSpeed > 0f && !canScrollForward()) break
 
-                            // Đồng bộ nhịp V-Sync chuẩn 60Hz/120Hz của phần cứng màn hình
+                            // ĐỒNG BỘ V-SYNC PHẦN CỨNG: Chờ frame tiếp theo từ màn hình (60Hz / 120Hz)
                             awaitFrame()
 
                             val currentFrameTime = System.nanoTime()
                             val deltaTime = (currentFrameTime - lastFrameTime) / 1_000_000_000f
                             lastFrameTime = currentFrameTime
 
-                            // Tính quãng đường di chuyển tuyến tính mượt mà dựa theo thời gian thực (Time-delta)
                             val scrollAmount = currentScrollSpeed * deltaTime
 
                             if (scrollAmount != 0f) {
+                                // Cuộn danh sách nền trước
                                 scrollBy(scrollAmount)
 
-                                // TỐI ƯU HOÁN ĐỔI: Sau khi cuộn, tự động kiểm tra xem có cần tráo đổi item dưới ngón tay không
-                                draggedIndex?.let { currentSource ->
-                                    checkAndPerformSwap(currentSource)
+                                // 2. TỐI ƯU CỐT LÕI: Giới hạn tần suất hoán đổi (Debounce/Throttle) khi đang tự động cuộn
+                                // Thay vì mỗi frame hình (8ms) đều Swap gây nghẽn CPU, ta ép tối thiểu 80ms mới cho phép Swap 1 lần
+                                val currentTime = System.currentTimeMillis()
+                                if (currentTime - lastSwapTime > 80L) {
+                                    draggedIndex?.let { currentSource ->
+                                        checkAndPerformSwap(currentSource)
+                                    }
+                                    lastSwapTime = currentTime
                                 }
                             }
                         }
                     } finally {
-                        // Đảm bảo dọn dẹp sạch sẽ trạng thái khi coroutine bị hủy
                         currentScrollSpeed = 0f
                     }
                 }
