@@ -220,7 +220,6 @@ class DragDropState<T>(
         if (source != null) {
             val targetItem = findVisibleItemAtOffset(fingerOffset)
             val target = targetItem?.index
-
             if (target != null && target != source) {
                 if (target !in ignoreIndices && source !in ignoreIndices) {
                     val targetItemData = getItemAt(target)
@@ -235,6 +234,7 @@ class DragDropState<T>(
                             animationTargetIndex = target
                         } else {
                             // Nếu ô đích từ chối nhận Drop -> Hủy bỏ hoán đổi, ép bóng ma bay ngược về tọa độ gốc
+                            onDropEnd?.invoke(-1,-1)
                             pendingSwapTargetIndex = null
                             animationTargetIndex = null
                         }
@@ -242,6 +242,7 @@ class DragDropState<T>(
                 }
             } else {
                 // Thả tại chỗ cũ hoặc ngoài màn hình
+                onDropEnd?.invoke(-1,-1)
                 animationTargetIndex = source
             }
             isReturningAnimation = true

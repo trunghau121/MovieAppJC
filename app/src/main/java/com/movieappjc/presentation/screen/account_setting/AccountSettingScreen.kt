@@ -1,6 +1,5 @@
 package com.movieappjc.presentation.screen.account_setting
 
-import android.util.Log
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -102,6 +101,10 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
             }
         },
         onDropEnd = { from, to ->
+            if (from < 0 || to < 0) {
+                accounts.removeIf { it is  AccountItemBlank}
+                return@rememberListDragDropState
+            }
             val itemTo = accounts[to]
             val itemFrom = accounts[from]
             val isToAccountDefault = to == 2
@@ -110,7 +113,6 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
             val isFromAccountDefault = from == 2
             val isFromAccountHome = from == 4 || from == 5
 
-            Log.d("Hau", "$itemTo")
             when (itemTo) {
                 is AccountItemEmpty -> {
                     accounts.apply {
@@ -134,9 +136,6 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
                         ))
                         if (isFromAccountHome || isFromAccountDefault)
                             set(from, AccountItemEmpty(isAccountDefault = isFromAccountDefault))
-                        else {
-                            accounts.removeIf { it is  AccountItemBlank}
-                        }
                     }
                 }
 
