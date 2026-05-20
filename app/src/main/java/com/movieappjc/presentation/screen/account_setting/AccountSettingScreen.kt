@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountEmptyDottedBox
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountRowCard
-import com.movieappjc.presentation.screen.account_setting.componemt.AccountSectionHeader
+import com.movieappjc.presentation.screen.account_setting.componemt.AccountSectionTitle
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountSettingHeader
 import com.movieappjc.presentation.screen.account_setting.componemt.PlaceHolderRow
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemBlank
@@ -64,6 +64,7 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
     val dragDroPolicy = remember { AccountDragDropPolicy() }
 
     val accounts = viewModel.accounts
+    val ignoreIndices = viewModel.ignoreIndices
 
 
     LaunchedEffect(Unit) {
@@ -74,6 +75,7 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
         lazyListState = lazyListState,
         scope = scope,
         dragDropPolicy = dragDroPolicy,
+        ignoreIndices = ignoreIndices,
         getDragDropContext = { DragDropContext(isEditMode = true) },
         getItemAt = accounts::getOrNull,
         performSwap = { from, to ->
@@ -231,24 +233,11 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
                         }
 
                         is Title -> {
-                            AccountSectionHeader(item.text)
-                        }
-
-                        is AccountItemBlank -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(80.dp)
-                                    .background(Color.Transparent)
-                            )
+                            AccountSectionTitle(item.text)
                         }
 
                         is PlaceHolder -> {
                             PlaceHolderRow()
-                        }
-
-                        is AccountItemEmpty -> {
-                            AccountEmptyDottedBox(modifier = Modifier.height(80.dp))
                         }
 
                         else -> {

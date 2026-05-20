@@ -19,13 +19,14 @@ fun AccountSettingHeader() {
             text = "Set accounts for Home screen",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            lineHeight = 36.sp,
+            lineHeight = 34.sp,
             color = Color(0xFF111827)
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = "Accounts will be displayed on the Home Screen in the order you select. You can change the account order by selecting the Handle button on the right side of account",
-            fontSize = 14.sp,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Normal,
             color = Color(0xFF6B7280),
             lineHeight = 20.sp
         )

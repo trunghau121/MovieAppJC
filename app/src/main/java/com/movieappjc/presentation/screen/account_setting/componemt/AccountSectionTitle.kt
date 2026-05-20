@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AccountSectionHeader(title: String) {
+fun AccountSectionTitle(title: String) {
     Text(
         text = title,
         fontSize = 16.sp,

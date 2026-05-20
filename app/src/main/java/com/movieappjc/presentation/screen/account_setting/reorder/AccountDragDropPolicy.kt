@@ -3,8 +3,6 @@ package com.movieappjc.presentation.screen.account_setting.reorder
 import com.movieappjc.presentation.screen.account_setting.data.AccountItem
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemBlank
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemEmpty
-import com.movieappjc.presentation.screen.account_setting.data.Header
-import com.movieappjc.presentation.screen.account_setting.data.PlaceHolder
 import com.movieappjc.presentation.screen.account_setting.data.Title
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropContext
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropPolicy
@@ -14,11 +12,7 @@ class AccountDragDropPolicy: DragDropPolicy<AccountItem> {
         item: AccountItem,
         context: DragDropContext
     ): Boolean {
-        return item !is AccountItemEmpty
-                && item !is Header
-                && item !is Title
-                && item !is PlaceHolder
-                && item !is AccountItemBlank
+        return item !is AccountItemEmpty && item !is Title
     }
 
     override fun canAcceptDrop(

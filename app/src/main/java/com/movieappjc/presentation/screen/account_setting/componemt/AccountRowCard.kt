@@ -20,46 +20,92 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.movieappjc.presentation.screen.account_setting.data.AccountItem
+import com.movieappjc.presentation.screen.account_setting.data.AccountItemBlank
+import com.movieappjc.presentation.screen.account_setting.data.AccountItemEmpty
 
 @Composable
 fun AccountRowCard(modifier: Modifier, item: AccountItem) {
     val interactionSource = remember { MutableInteractionSource() }
+    val isBlank = item is AccountItemBlank
+    val isEmpty = item is AccountItemEmpty
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF3F4F6)),
+            .padding(vertical = 4.dp)
+            .then(
+                if (isEmpty || isBlank) {
+                    Modifier
+                } else {
+                    Modifier.shadow(
+                        elevation = 10.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        clip = false,
+                        ambientColor = DefaultShadowColor.copy(alpha = 0.3f),
+                        spotColor = DefaultShadowColor.copy(alpha = 0.3f)
+                    )
+                }
+            )
+            .drawBehind {
+                if (isEmpty) {
+                    val stroke = Stroke(
+                        width = 2f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 6f), 0f)
+                    )
+                    drawRoundRect(
+                        color = Color(0xFFE1E3E9),
+                        style = stroke,
+                        cornerRadius = CornerRadius(20.dp.toPx())
+                    )
+                }
+            },
+        colors = CardDefaults.cardColors(containerColor = if (isEmpty || isBlank) {
+            Color.Transparent
+        } else if (item.isAccountHome || item.isAccountDefault) {
+            Color.White
+        } else {
+            Color(0xFFEBEFF5)
+        }),
         interactionSource = interactionSource,
         onClick = {}
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .alpha(if (isBlank || isEmpty) 0f else 1.0f),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
                 Text(
                     text = item.name,
-                    fontSize = 16.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Medium,
+                    lineHeight = 22.sp,
                     color = Color(0xFF111827)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = item.number,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight.Normal,
                     color = Color(0xFF9CA3AF)
                 )
             }
-            IconButton(onClick = { }) {
+            IconButton(onClick = { }, enabled = false) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Reorder handle",

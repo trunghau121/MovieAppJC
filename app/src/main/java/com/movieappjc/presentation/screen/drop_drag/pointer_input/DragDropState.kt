@@ -26,7 +26,7 @@ class DragDropState<T>(
     private val firstVisibleItemIndex: () -> Int,
     private val firstVisibleItemScrollOffset: () -> Int,
     private val scope: CoroutineScope,
-    private val ignoreIndices: IntRange = IntRange.EMPTY,
+    private val ignoreIndices: Set<Int> = emptySet(),
     private val dragDropPolicy: DragDropPolicy<T>,
     private val getDragDropContext: () -> DragDropContext = { DragDropContext() },
     val getItemAt: (Int) -> T?,
@@ -74,7 +74,7 @@ class DragDropState<T>(
         if (isReturningAnimation || lastDraggedItem != null) return
 
         val targetItem = findVisibleItemAtOffset(offset)
-        if (targetItem != null && targetItem.index !in ignoreIndices) {
+        if (targetItem != null && !ignoreIndices.contains(targetItem.index)) {
             // Lấy data thông qua hàm đọc gián tiếp
             val itemData = getItemAt(targetItem.index)
 
@@ -122,7 +122,7 @@ class DragDropState<T>(
         val target = targetItem?.index
 
         if (target != null && target != source) {
-            if (target !in ignoreIndices && source !in ignoreIndices) {
+            if (target !in ignoreIndices && !ignoreIndices.contains(source)) {
                 val targetItemData = getItemAt(target)
 
                 if (targetItemData != null) {
@@ -329,7 +329,7 @@ fun <T> rememberGridDragDropState(
     scope: CoroutineScope,
     dragDropPolicy: DragDropPolicy<T>,
     getDragDropContext: () -> DragDropContext = { DragDropContext() },
-    ignoreIndices: IntRange = IntRange.EMPTY,
+    ignoreIndices: Set<Int> = emptySet(),
     getItemAt: (Int) -> T?,
     onDragStart: ((Int) -> Unit)? = null,
     performSwap: ((Int, Int) -> Unit)? = null,
@@ -377,7 +377,7 @@ fun <T> rememberListDragDropState(
     scope: CoroutineScope,
     dragDropPolicy: DragDropPolicy<T>,
     getDragDropContext: () -> DragDropContext = { DragDropContext() },
-    ignoreIndices: IntRange = IntRange.EMPTY,
+    ignoreIndices: Set<Int> = emptySet(),
     getItemAt: (Int) -> T?,
     onDragStart: ((Int) -> Unit)? = null,
     performSwap: ((Int, Int) -> Unit)? = null,

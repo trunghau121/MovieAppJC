@@ -18,6 +18,7 @@ class AccountSettingViewModel @Inject constructor(
     appNavigator: AppNavigator
 ): BaseViewModel(appNavigator) {
     val accounts = mutableStateListOf<AccountItem>()
+    val ignoreIndices = mutableSetOf<Int>()
 
     fun loadDataAccounts() {
         viewModelScope.launch {
@@ -41,6 +42,11 @@ class AccountSettingViewModel @Inject constructor(
                 AccountItem(name = "Account name 9", number = "700-001-99999"),
                 AccountItem(name = "Account name 10", number = "700-001-10101")
             )
+
+            ignoreIndices.clear()
+            ignoreIndices.addAll(initialList.mapIndexedNotNull { index, item ->
+                if (item is Header || (item is Title && !item.text.equals("Accounts", true)) || item is PlaceHolder) index else null
+            }.toSet())
 
             accounts.clear()
             accounts.addAll(initialList)
