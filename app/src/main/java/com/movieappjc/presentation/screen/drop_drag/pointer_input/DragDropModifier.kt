@@ -39,6 +39,7 @@ fun <T> Modifier.dragDropSourceContainer(
             },
             onDragCancel = {
                 dragDropState.onDragEnd()
+                // dragDropState.clearDragStateAfterAnimation(null)
             }
         )
     }
