@@ -1,6 +1,5 @@
 package com.movieappjc.presentation.screen.drop_drag.pointer_input
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.VectorConverter
@@ -44,28 +43,28 @@ fun <T> DragShadow(
             }
         }
 
-        // ĐOẠN XỬ LÝ HOẠT HỌA BAY VỀ KHI BUÔNG TAY
+        // HANDLES RETURNING INTERPOLATION WHEN GESTURE IS RELEASED
         if (dragDropState.isReturningAnimation && activeDraggedIndex != null) {
             val layoutInfo = dragDropState.getLayoutInfo()
             val targetIndex = dragDropState.animationTargetIndex
 
-            // 1. Tìm xem ô đích hiện có đang hiển thị trên màn hình không
+            // 1. Verify if the target destination layout slot is currently visible within the viewport
             val targetItemInfo = layoutInfo.visibleItemsInfo.find { it.index == targetIndex }
 
             val targetOffset = if (targetItemInfo != null) {
-                // Nếu tìm thấy, bay về đúng vị trí thực tế hiện tại của nó
+                // Target found: route the visual shadow right onto its absolute screen coordinates
                 Offset(targetItemInfo.offset.x.toFloat(), targetItemInfo.offset.y.toFloat())
             } else {
-                // THUẬT TOÁN BÙ TRỪ KHI Ô BỊ KHUẤT MÀN HÌNH (Ví dụ Item 10 trôi xuống đáy)
+                // COMPENSATION TRACKING FOR OUT-OF-BOUNDS OFFSCREEN TARGETS
                 if (targetIndex != null && layoutInfo.visibleItemsInfo.isNotEmpty()) {
                     val firstVisibleIndex = layoutInfo.visibleItemsInfo.first().index
                     val lastVisibleIndex = layoutInfo.visibleItemsInfo.last().index
 
                     if (targetIndex < firstVisibleIndex) {
-                        // Ô đích bị khuất ở PHÍA TRÊN màn hình -> Ép bóng ma bay vọt lên cạnh trên
+                        // Target item is hidden ABOVE the viewport -> Project shadow out beyond the upper edge
                         Offset(lastValidStartOffset.x, -activeItemSize.height.toFloat() * 1.5f)
                     } else if (targetIndex > lastVisibleIndex) {
-                        // Ô đích bị khuất ở PHÍA DƯỚI màn hình (Trường hợp của bạn) -> Ép bóng ma lao thẳng xuống dưới đáy màn hình
+                        // Target item is hidden BELOW the viewport -> Project shadow down past the screen threshold
                         Offset(lastValidStartOffset.x, layoutInfo.viewportSize.height.toFloat() + activeItemSize.height.toFloat())
                     } else {
                         lastValidStartOffset
@@ -75,13 +74,14 @@ fun <T> DragShadow(
                 }
             }
 
-            // Tiến hành tính toán khoảng cách toán học Pitago để chạy Animation mượt mà như cũ
+            // Calculate standard Euclidean distance (Pythagorean theorem) to interpolate smooth travel velocity
             val currentX = shadowOffset.value.x
             val currentY = shadowOffset.value.y
             val deltaX = targetOffset.x - currentX
             val deltaY = targetOffset.y - currentY
             val distance = sqrt(deltaX * deltaX + deltaY * deltaY)
 
+            // Dynamically scale duration based on target distance, clamped cleanly between 40ms and 400ms
             val calculatedDuration = (distance * 0.4f).toInt().coerceIn(40, 400)
             shadowOffset.animateTo(
                 targetValue = targetOffset,
@@ -108,6 +108,7 @@ fun <T> DragShadow(
         Box(
             modifier = Modifier
                 .layout { measurable, constraints ->
+                    // Force constraints to match the size of the original picked item layout
                     val placeable = measurable.measure(
                         constraints.copy(
                             minWidth = shadowSizeDp.width,

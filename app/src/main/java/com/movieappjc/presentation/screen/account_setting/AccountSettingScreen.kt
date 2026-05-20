@@ -220,7 +220,7 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
                 state = lazyListState,
                 modifier = Modifier
                     .fillMaxSize(),
-                userScrollEnabled = dragDropState.draggedIndex == null && !dragDropState.isReturningAnimation,
+                userScrollEnabled = dragDropState.draggedIndex == null,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 itemsIndexed(

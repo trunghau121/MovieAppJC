@@ -1,8 +1,8 @@
 package com.movieappjc.presentation.screen.drop_drag.pointer_input
 
 /**
- * Hoán đổi vị trí của hai phần tử bất kỳ trong một MutableList.
- * Hàm này hoạt động mượt mà với cả List thường lẫn SnapshotStateList của Compose.
+ * Swaps two elements seamlessly within a MutableList.
+ * Optimized to perform correctly with both standard collections and Compose SnapshotStateLists.
  */
 fun <T> MutableList<T>.swap(fromIndex: Int, toIndex: Int): List<T> {
     if (fromIndex == toIndex) return this

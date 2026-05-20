@@ -17,6 +17,26 @@ import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * Maintains the interactive state, coordinates, hardware-synchronized loops,
+ * and constraint validations for the custom drag-and-drop mechanics.
+ *
+ * @param getLayoutInfo Lambda that fetches the current layout geometry, viewport measurements, and metadata of all currently visible items in the scrollable container.
+ * @param scrollBy Suspended function invoked to scroll the container programmatically by a specific pixel delta (positive for forward/downward, negative for backward/upward).
+ * @param canScrollBackward Lambda returning whether the container has scrollable content remaining in the backward direction.
+ * @param canScrollForward Lambda returning whether the container has scrollable content remaining in the forward direction.
+ * @param requestScrollToItem Command callback used to snap or scroll the lazy container immediately to a specific index and pixel offset.
+ * @param firstVisibleItemIndex Lambda that returns the index of the first item currently visible at the top/start of the viewport.
+ * @param firstVisibleItemScrollOffset Lambda that returns the precise pixel scroll offset of the first visible item relative to the viewport edge.
+ * @param scope The asynchronous CoroutineScope used to manage concurrent lifecycle tasks, such as handling auto-scrolling loops.
+ * @param ignoreIndices A collection of indices (e.g., sticky headers, section dividers) that must remain fixed and immune to drag-and-drop operations.
+ * @param dragDropPolicy The business logic strategy handler that validates interaction constraints (e.g., whether an item can be dragged or swapped).
+ * @param getDragDropContext Lambda that evaluates and updates structural data contexts (like user authorization or edit modes) during rule evaluations.
+ * @param getItemAt Data look-up function that retrieves the underlying model item instance matching a specific layout index.
+ * @param onDragStart Event callback triggered immediately when a valid long-press gesture selects and locks onto an item.
+ * @param performSwap Structural mutation callback triggered to swap data item positions inside the source collection during an active hover.
+ * @param onDropEnd Finalization callback triggered after the drag gesture releases and any corresponding return animations conclude.
+ */
 class DragDropState<T>(
     val getLayoutInfo: () -> DragDropLayoutInfo,
     private val scrollBy: suspend (Float) -> Float,
@@ -34,58 +54,73 @@ class DragDropState<T>(
     private val performSwap: ((Int, Int) -> Unit)? = null,
     private val onDropEnd: ((Int, Int) -> Unit)? = null
 ) {
+    // The layout position index of the item currently being actively dragged, or null if no gesture is occurring.
     var draggedIndex by mutableStateOf<Int?>(null)
         private set
 
+    // The real-time absolute coordinate offset tracking the user's touch pointer relative to the layout container bounds.
     var fingerOffset by mutableStateOf(Offset.Zero)
         private set
 
+    // The specific inner coordinate delta between the user's exact initial touch position and the top-left boundary of the item layout.
     var initialTouchOffset by mutableStateOf(Offset.Zero)
         private set
 
+    // The structural dimension boundaries (width and height) captured from the item composition when the drag started.
     var draggedItemSize by mutableStateOf(IntSize.Zero)
         private set
 
+    // A safety flag indicating whether the floating shadow is currently animating back to its settled destination slot after being released.
     var isReturningAnimation by mutableStateOf(false)
         private set
 
+    // The designated destination index waiting to finalize its data swap once the drag gesture fully releases.
     var pendingSwapTargetIndex by mutableStateOf<Int?>(null)
         private set
 
-    // Biến đồng bộ vị trí đích để bóng ma DragShadow biết chính xác nơi cần bay về
+    // Synchronization coordinate layout marker used to guide the DragShadow visually back to its target snapping point during structural updates.
     var animationTargetIndex by mutableStateOf<Int?>(null)
         private set
 
-    // Ghi nhớ chính bản thể đối tượng vừa thả tay để giữ ẩn UI nền công khai ra ngoài cho Modifier đọc
+    // Retains a strong reference to the model data of the dropped item to hide original content placeholders and eliminate visual flashing during lazy layout updates.
     var lastDraggedItem by mutableStateOf<T?>(null)
         private set
 
+    // The structural Coroutine task wrapper governing the active automated frame layout scrolling loop at high-speed hotzones.
     private var autoScrollJob: Job? = null
+
+    // The scheduled delayed routine managing cleanup tasks to safely clear transient shadow references and restore component visibility.
     private var resetAnimationJob: Job? = null
 
+    // The initial stationary starting pixel offset of the active item relative to the top-left edge of the parent parent parent container view.
     var dragStartAbsoluteOffset by mutableStateOf(Offset.Zero)
         private set
 
+    // Tracking variable to record the previous position vector, allowing calculation of finger drift thresholds before re-triggering geometry calculations.
     private var lastCheckedFingerOffset = Offset.Zero
+
+    // The evaluated rate of movement pixels per second applied directly to programmatic viewport scrolling during edge-detection activations.
     private var currentScrollSpeed = 0f
-    private var lastSwapTime = 0L // Dùng để giới hạn tần suất Swap khi đang cuộn tự động
+
+    // Timestamp counter used to throttle rapid index shifting logic sequences during high-velocity container scrolling.
+    private var lastSwapTime = 0L
 
     fun onDragStart(offset: Offset) {
         if (isReturningAnimation || lastDraggedItem != null) return
 
         val targetItem = findVisibleItemAtOffset(offset)
         if (targetItem != null && !ignoreIndices.contains(targetItem.index)) {
-            // Lấy data thông qua hàm đọc gián tiếp
+            // Retrieve actual data through the lazy reader function
             val itemData = getItemAt(targetItem.index)
 
-            // LUẬT 1: Kiểm tra xem bản thân ô này có ĐƯỢC PHÉP NẮM KÉO đi hay không
+            // RULE 1: Verify if this specific item is allowed to be dragged
             if (itemData != null && !dragDropPolicy.canDrag(itemData, getDragDropContext())) {
-                return // Trả về false -> Bẻ gãy luôn hành động bấm giữ, khóa cứng vị trí
+                return // Abort the gesture and lock the item in place
             }
 
             draggedIndex = targetItem.index
             fingerOffset = offset
-            lastCheckedFingerOffset = offset // Reset bộ đo khoảng cách chống trôi lệch dữ liệu
+            lastCheckedFingerOffset = offset // Reset baseline offset tracker to prevent structural drift
             draggedItemSize = targetItem.size
             initialTouchOffset = Offset(
                 x = offset.x - targetItem.offset.x,
@@ -107,7 +142,7 @@ class DragDropState<T>(
 
         fingerOffset += dragAmount
 
-        // TỐI ƯU: Chỉ tính toán quét Layout hình học nếu ngón tay dịch chuyển một khoảng đủ lớn
+        // OPTIMIZATION: Only parse spatial layout coordinates if the drag distance exceeds a small threshold
         val distanceMoved = (fingerOffset - lastCheckedFingerOffset).getDistance()
         if (distanceMoved > 10f) {
             checkAndPerformSwap(source)
@@ -130,16 +165,16 @@ class DragDropState<T>(
                     val canSwapDuringDrag = dragDropPolicy.canSwapOnHover(targetItemData, context)
 
                     if (canSwapDuringDrag) {
-                        // Lấy ra đối tượng thực tế đang bị kéo trước khi hoán đổi
+                        // Capture the item being dragged prior to the layout mutation
                         val currentlyDraggingItem = getItemAt(source)
 
                         val currentIndex = firstVisibleItemIndex()
                         val currentOffset = firstVisibleItemScrollOffset()
 
-                        // 1. Yêu cầu phía Composable tiến hành hoán đổi data thật
+                        // 1. Request the backing mutable list/state collection to update positions
                         performSwap?.invoke(source, target)
 
-                        // 2. KIỂM TRA BẢO VỆ: Chỉ cập nhật chỉ mục nếu Data thực sự đã đổi chỗ
+                        // 2. SAFETY CHECK: Only update tracked index if the underlying data swapping succeeded
                         if (getItemAt(target) == currentlyDraggingItem) {
                             draggedIndex = target
                             requestScrollToItem(currentIndex, currentOffset)
@@ -156,10 +191,10 @@ class DragDropState<T>(
         val activationZone = 120f
         val fingerY = fingerOffset.y
 
-        // Tốc độ tối đa lý tưởng cho trải nghiệm người dùng
+        // Ideal peak speed for optimal user experience
         val maxSpeedPxPerSecond = 1000f
 
-        // Tính toán tốc độ mục tiêu dựa trên độ sâu ngón tay đi vào vùng nhạy cảm
+        // Calculate velocity based on how deep the pointer is pressed into the upper/lower hot zones
         val targetSpeed = when {
             fingerY in 0f..<activationZone -> {
                 -(1.0f - (fingerY / activationZone)) * maxSpeedPxPerSecond
@@ -182,7 +217,7 @@ class DragDropState<T>(
                             if (currentScrollSpeed < 0f && !canScrollBackward()) break
                             if (currentScrollSpeed > 0f && !canScrollForward()) break
 
-                            // ĐỒNG BỘ V-SYNC PHẦN CỨNG: Chờ frame tiếp theo từ màn hình (60Hz / 120Hz)
+                            // HARDWARE V-SYNC SYNCHRONIZATION: Wait for the next screen refresh cycle (60Hz / 120Hz)
                             awaitFrame()
 
                             val currentFrameTime = System.nanoTime()
@@ -192,10 +227,10 @@ class DragDropState<T>(
                             val scrollAmount = currentScrollSpeed * deltaTime
 
                             if (scrollAmount != 0f) {
-                                // Cuộn danh sách nền trước
+                                // Scroll the backing container layout
                                 scrollBy(scrollAmount)
 
-                                // TỐI ƯU CỐT LÕI: Giới hạn tần suất hoán đổi động khi đang tự động cuộn
+                                // CORE OPTIMIZATION: Throttling dynamic swap routines during high-speed auto-scrolls
                                 val currentTime = System.currentTimeMillis()
                                 if (currentTime - lastSwapTime > 80L) {
                                     draggedIndex?.let { currentSource ->
@@ -221,7 +256,7 @@ class DragDropState<T>(
             val targetItem = findVisibleItemAtOffset(fingerOffset)
             val target = targetItem?.index
 
-            // TRƯỜNG HỢP 1: Có kéo và lướt qua một ô hợp lệ khác
+            // CASE 1: Gesture ends over a different, valid layout target
             if (target != null && target != source) {
                 if (!ignoreIndices.contains(target) && !ignoreIndices.contains(source)) {
                     val targetItemData = getItemAt(target)
@@ -244,21 +279,21 @@ class DragDropState<T>(
                 }
                 isReturningAnimation = true
             }
-            // TRƯỜNG HỢP 2: Kéo rồi thả lại đúng vị trí cũ (hoặc lệch vài pixel do rung tay)
+            // CASE 2: Gesture released on the exact original target spot (or slightly shifted due to finger tremor)
             else if (target == source) {
                 onDropEnd?.invoke(-1, -1)
                 animationTargetIndex = source
                 isReturningAnimation = true
             }
-            // === TRƯỜNG HỢP 3: KÉO RA NGOÀI BIÊN MÀN HÌNH RỒI THẢ TAY (target == null) ===
+            // CASE 3: Dragged out of bounds / empty space (target == null)
             else {
                 onDropEnd?.invoke(-1, -1)
                 pendingSwapTargetIndex = null
 
-                // CHỐT HẠ: Chỉ định điểm đích bay về chính là ô nguồn ban đầu
+                // Force the visual anchor to fall back directly onto the original source item
                 animationTargetIndex = source
 
-                // BẬT CỜ hoạt họa để bàn giao quyền điều khiển sang cho DragShadow xử lý mượt mà
+                // Trigger return animations and delegate state handling over to DragShadow
                 isReturningAnimation = true
             }
         } else {
@@ -275,12 +310,12 @@ class DragDropState<T>(
             val currentIndex = firstVisibleItemIndex()
             val currentOffset = firstVisibleItemScrollOffset()
 
-            // Lưu giữ trạng thái ẩn phần tử cũ để tránh nhấp nháy UI nền
+            // Keep original placeholder element hidden briefly to prevent rapid visual layout flickering
             lastDraggedItem = item
             onDropEnd?.invoke(fromIndex, toIndex)
             requestScrollToItem(currentIndex, currentOffset)
 
-            // Hủy tác vụ reset cũ (nếu có) trước khi tạo hàng đợi mới, chống leak luồng
+            // Cancel any pending animations before launching a new routine to prevent thread leaks
             resetAnimationJob?.cancel()
             resetAnimationJob = scope.launch {
                 delay(150)
@@ -288,8 +323,8 @@ class DragDropState<T>(
             }
         }
 
-        // === ĐOẠN ĐẢM BẢO KHÔNG BỊ ĐƠ LIST VÀ HIỆN LẠI ITEM GỐC ===
-        draggedIndex = null              // Trả về null để item gốc hiển thị lại ngay (alpha = 1f)
+        // === RESET PIPELINE: Restores list interactions and unhides underlying item layouts ===
+        draggedIndex = null // Re-exposes the source item by clearing tracking flags (alpha sets to 1f)
         pendingSwapTargetIndex = null
         animationTargetIndex = null
         fingerOffset = Offset.Zero

@@ -3,39 +3,45 @@ package com.movieappjc.presentation.screen.drop_drag.pointer_input
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 
-// === INTERFACE CẦU NỐI CHUNG ===
+// === COMMON BRIDGE INTERFACES ===
+/**
+ * Holds geometric and indexing information for a single visible item in the layout.
+ */
 interface DragDropItemInfo {
     val index: Int
     val offset: IntOffset
     val size: IntSize
 }
 
+/**
+ * Holds information about the layout container's viewport and its currently visible items.
+ */
 interface DragDropLayoutInfo {
     val viewportSize: IntSize
     val visibleItemsInfo: List<DragDropItemInfo>
 }
 
-// === NGỮ CẢNH BỔ SUNG KHHI KIỂM TRA QUY TẮC ===
+// === ADDITIONAL CONTEXT FOR RULE VALIDATION ===
 data class DragDropContext(
     val currentUserRole: String = "USER",
     val isEditMode: Boolean = true,
     val currentTimeMillis: Long = System.currentTimeMillis()
 )
 
-// === CHIẾN LƯỢC QUẢN LÝ KHÓA/CỐ ĐỊNH ITEM ===
+// === DRAG & DROP BUSINESS POLICY STRATEGY ===
 interface DragDropPolicy<T> {
     /**
-     * Bản thân item này có thể bị nắm kéo đi hay không.
+     * Determines if this specific item can be grabbed and dragged by the user.
      */
     fun canDrag(item: T, context: DragDropContext): Boolean
 
     /**
-     * Các item khác có thể thả (Drop) đè lên vị trí của ô này khi kết thúc kéo hay không.
+     * Determines if other items can be dropped onto this item's position when the drag gesture ends.
      */
     fun canAcceptDrop(item: T, context: DragDropContext): Boolean
 
     /**
-     * Ô này có thể tự động hoán đổi/dạt vị trí ngay trong lúc một item khác đang kéo lướt qua hay không.
+     * Determines if this item can dynamically shift/swap its position while another item is actively hovering over it.
      */
     fun canSwapOnHover(item: T, context: DragDropContext): Boolean
 }
