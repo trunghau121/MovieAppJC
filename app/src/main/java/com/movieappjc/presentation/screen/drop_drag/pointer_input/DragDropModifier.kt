@@ -1,6 +1,7 @@
 package com.movieappjc.presentation.screen.drop_drag.pointer_input
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -32,8 +33,9 @@ fun <T> Modifier.dragDropSourceContainer(
                 dragDropState.onDragEnd()
             },
             onDragCancel = {
+                Log.d("Hau", "onDragCancel")
                 dragDropState.onDragEnd()
-                dragDropState.resetAllDragStates()
+//                dragDropState.clearDragStateAfterAnimation(null)
             }
         )
     }

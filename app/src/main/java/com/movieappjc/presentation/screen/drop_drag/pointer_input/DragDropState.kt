@@ -29,7 +29,7 @@ class DragDropState<T>(
     private val ignoreIndices: IntRange = IntRange.EMPTY,
     private val dragDropPolicy: DragDropPolicy<T>,
     private val getDragDropContext: () -> DragDropContext = { DragDropContext() },
-    private val getItemAt: (Int) -> T?,
+    val getItemAt: (Int) -> T?,
     private val onDragStart: ((Int) -> Unit)? = null,
     private val performSwap: ((Int, Int) -> Unit)? = null,
     private val onDropEnd: ((Int, Int) -> Unit)? = null
@@ -220,32 +220,47 @@ class DragDropState<T>(
         if (source != null) {
             val targetItem = findVisibleItemAtOffset(fingerOffset)
             val target = targetItem?.index
+
+            // TRƯỜNG HỢP 1: Có kéo và lướt qua một ô hợp lệ khác
             if (target != null && target != source) {
-                if (target !in ignoreIndices && source !in ignoreIndices) {
+                if (!ignoreIndices.contains(target) && !ignoreIndices.contains(source)) {
                     val targetItemData = getItemAt(target)
                     if (targetItemData != null) {
                         val context = getDragDropContext()
-
-                        // LUẬT 3: Kiểm tra xem ô đích cuối cùng có ĐƯỢC PHÉP THẢ ĐÈ (Drop) hay không
                         val canTargetBeDroppedOn = dragDropPolicy.canAcceptDrop(targetItemData, context)
 
                         if (canTargetBeDroppedOn) {
                             pendingSwapTargetIndex = target
                             animationTargetIndex = target
                         } else {
-                            // Nếu ô đích từ chối nhận Drop -> Hủy bỏ hoán đổi, ép bóng ma bay ngược về tọa độ gốc
-                            onDropEnd?.invoke(-1,-1)
+                            onDropEnd?.invoke(-1, -1)
                             pendingSwapTargetIndex = null
-                            animationTargetIndex = null
+                            animationTargetIndex = source
                         }
                     }
+                } else {
+                    onDropEnd?.invoke(-1, -1)
+                    animationTargetIndex = source
                 }
-            } else {
-                // Thả tại chỗ cũ hoặc ngoài màn hình
-                onDropEnd?.invoke(-1,-1)
-                animationTargetIndex = source
+                isReturningAnimation = true
             }
-            isReturningAnimation = true
+            // TRƯỜNG HỢP 2: Kéo rồi thả lại đúng vị trí cũ (hoặc lệch vài pixel do rung tay)
+            else if (target == source) {
+                onDropEnd?.invoke(-1, -1)
+                animationTargetIndex = source
+                isReturningAnimation = true
+            }
+            // === TRƯỜNG HỢP 3: KÉO RA NGOÀI BIÊN MÀN HÌNH RỒI THẢ TAY (target == null) ===
+            else {
+                onDropEnd?.invoke(-1, -1)
+                pendingSwapTargetIndex = null
+
+                // CHỐT HẠ: Chỉ định điểm đích bay về chính là ô nguồn ban đầu
+                animationTargetIndex = source
+
+                // BẬT CỜ hoạt họa để bàn giao quyền điều khiển sang cho DragShadow xử lý mượt mà
+                isReturningAnimation = true
+            }
         } else {
             clearDragStateAfterAnimation(null)
         }
@@ -262,9 +277,7 @@ class DragDropState<T>(
 
             // Lưu giữ trạng thái ẩn phần tử cũ để tránh nhấp nháy UI nền
             lastDraggedItem = item
-
             onDropEnd?.invoke(fromIndex, toIndex)
-
             requestScrollToItem(currentIndex, currentOffset)
 
             // Hủy tác vụ reset cũ (nếu có) trước khi tạo hàng đợi mới, chống leak luồng
@@ -275,13 +288,16 @@ class DragDropState<T>(
             }
         }
 
-        draggedIndex = null
+        // === ĐOẠN ĐẢM BẢO KHÔNG BỊ ĐƠ LIST VÀ HIỆN LẠI ITEM GỐC ===
+        draggedIndex = null              // Trả về null để item gốc hiển thị lại ngay (alpha = 1f)
         pendingSwapTargetIndex = null
         animationTargetIndex = null
         fingerOffset = Offset.Zero
         initialTouchOffset = Offset.Zero
         draggedItemSize = IntSize.Zero
         isReturningAnimation = false
+
+        stopAutoScroll()
     }
 
     private fun stopAutoScroll() {
@@ -304,14 +320,6 @@ class DragDropState<T>(
                 isInsideY
             }
         }
-    }
-
-    fun resetAllDragStates() {
-        draggedIndex = null
-        fingerOffset = Offset.Zero
-        initialTouchOffset = Offset.Zero
-        isReturningAnimation = false
-        lastDraggedItem = null
     }
 }
 
