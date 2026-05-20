@@ -19,40 +19,52 @@ fun <T> DragShadow(
     getItemAt: (Int) -> T?,
     itemContent: @Composable (item: T) -> Unit
 ) {
+    // Internal cache states maintaining shadow component visuals isolated from global list updates
     var activeDraggedIndex by remember { mutableStateOf<Int?>(null) }
     var activeItem by remember { mutableStateOf<T?>(null) }
     var activeItemSize by remember { mutableStateOf(IntSize.Zero) }
     var lastValidStartOffset by remember { mutableStateOf(Offset.Zero) }
 
+    // Animatable state tracking real-time layout rendering offsets
     val shadowOffset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
+    // Calculates finger touch vector subtracted by relative point constraints
     val currentFingerOffset = dragDropState.fingerOffset - dragDropState.initialTouchOffset
 
     LaunchedEffect(dragDropState.draggedIndex, dragDropState.isReturningAnimation) {
         val globalIndex = dragDropState.draggedIndex
 
+        // PIPELINE 1: User initializes a valid long press gesture and starts dragging
         if (globalIndex != null && !dragDropState.isReturningAnimation) {
             activeDraggedIndex = globalIndex
-            activeItem = getItemAt(globalIndex)
+            activeItem = getItemAt(globalIndex) // Capture data blueprint
             val layoutInfo = dragDropState.getLayoutInfo()
             val itemInfo = layoutInfo.visibleItemsInfo.find { it.index == globalIndex }
             if (itemInfo != null) {
                 activeItemSize = itemInfo.size
                 val startOffset = Offset(itemInfo.offset.x.toFloat(), itemInfo.offset.y.toFloat())
                 lastValidStartOffset = startOffset
+                // Instantly snap shadow vector position to current touch position
                 shadowOffset.snapTo(dragDropState.fingerOffset - dragDropState.initialTouchOffset)
             }
         }
+        // PIPELINE 2: Gesture cancelled abruptly or finger released right at press location without moving
+        else if (globalIndex == null && !dragDropState.isReturningAnimation) {
+            // CRITICAL ADDITION: Immediately clean local variables to hide the component and prevent frozen ghost shadows
+            activeDraggedIndex = null
+            activeItem = null             // Forcing this to null collapses rendering block conditions below
+            activeItemSize = IntSize.Zero // Clear layout bounds
+        }
 
-        // HANDLES RETURNING INTERPOLATION WHEN GESTURE IS RELEASED
+        // PIPELINE 3: HANDLES RETURNING INTERPOLATION WHEN GESTURE IS VALIDLY RELEASED
         if (dragDropState.isReturningAnimation && activeDraggedIndex != null) {
             val layoutInfo = dragDropState.getLayoutInfo()
             val targetIndex = dragDropState.animationTargetIndex
 
-            // 1. Verify if the target destination layout slot is currently visible within the viewport
+            // 1. Verify if the destination target slot layout is currently visible within the screen viewport
             val targetItemInfo = layoutInfo.visibleItemsInfo.find { it.index == targetIndex }
 
             val targetOffset = if (targetItemInfo != null) {
-                // Target found: route the visual shadow right onto its absolute screen coordinates
+                // Target slot is visible: Route the visual shadow coordinates directly onto its layout block offset
                 Offset(targetItemInfo.offset.x.toFloat(), targetItemInfo.offset.y.toFloat())
             } else {
                 // COMPENSATION TRACKING FOR OUT-OF-BOUNDS OFFSCREEN TARGETS
@@ -61,10 +73,10 @@ fun <T> DragShadow(
                     val lastVisibleIndex = layoutInfo.visibleItemsInfo.last().index
 
                     if (targetIndex < firstVisibleIndex) {
-                        // Target item is hidden ABOVE the viewport -> Project shadow out beyond the upper edge
+                        // Destination slot is hidden ABOVE view: Project shadow upwards offscreen
                         Offset(lastValidStartOffset.x, -activeItemSize.height.toFloat() * 1.5f)
                     } else if (targetIndex > lastVisibleIndex) {
-                        // Target item is hidden BELOW the viewport -> Project shadow down past the screen threshold
+                        // Destination slot is hidden BELOW view: Project shadow down below the screen limits
                         Offset(lastValidStartOffset.x, layoutInfo.viewportSize.height.toFloat() + activeItemSize.height.toFloat())
                     } else {
                         lastValidStartOffset
@@ -74,27 +86,31 @@ fun <T> DragShadow(
                 }
             }
 
-            // Calculate standard Euclidean distance (Pythagorean theorem) to interpolate smooth travel velocity
+            // Calculate Euclidean travel distance using Pythagorean Theorem (sqrt(dx^2 + dy^2))
             val currentX = shadowOffset.value.x
             val currentY = shadowOffset.value.y
             val deltaX = targetOffset.x - currentX
             val deltaY = targetOffset.y - currentY
             val distance = sqrt(deltaX * deltaX + deltaY * deltaY)
 
-            // Dynamically scale duration based on target distance, clamped cleanly between 40ms and 400ms
+            // Dynamically scale translation duration based on travel distance, clamped safely between 40ms and 400ms
             val calculatedDuration = (distance * 0.4f).toInt().coerceIn(40, 400)
             shadowOffset.animateTo(
                 targetValue = targetOffset,
                 animationSpec = tween(durationMillis = calculatedDuration, easing = FastOutSlowInEasing)
             )
 
+            // Interpolation complete: Force clear global coordinate frameworks inside DragDropState
             dragDropState.clearDragStateAfterAnimation(activeItem)
+
+            // Wipe internal caches to finalize unmounting the floating shadow layer component
             activeDraggedIndex = null
             activeItem = null
             activeItemSize = IntSize.Zero
         }
     }
 
+    // While dragging actively (and not returning), synchronize shadow position directly with real-time finger drifting
     if (!dragDropState.isReturningAnimation && dragDropState.draggedIndex != null) {
         LaunchedEffect(currentFingerOffset) {
             shadowOffset.snapTo(currentFingerOffset)
@@ -104,11 +120,12 @@ fun <T> DragShadow(
     val itemToRender = activeItem
     val shadowSizeDp = remember(activeItemSize) { activeItemSize }
 
+    // Render structural shadow block UI only if the cache item state is validly populated
     if (itemToRender != null && activeItemSize != IntSize.Zero) {
         Box(
             modifier = Modifier
                 .layout { measurable, constraints ->
-                    // Force constraints to match the size of the original picked item layout
+                    // Override layout constraints to lock canvas measurements to match original item dimensions
                     val placeable = measurable.measure(
                         constraints.copy(
                             minWidth = shadowSizeDp.width,
@@ -122,10 +139,12 @@ fun <T> DragShadow(
                     }
                 }
                 .graphicsLayer {
+                    // Translate absolute spatial floating location coords on screen canvas layers
                     translationX = shadowOffset.value.x
                     translationY = shadowOffset.value.y
                 }
         ) {
+            // Render user custom item UI block
             itemContent(itemToRender)
         }
     }

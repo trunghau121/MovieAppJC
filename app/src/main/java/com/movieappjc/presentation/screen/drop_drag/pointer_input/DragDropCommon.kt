@@ -8,8 +8,13 @@ import androidx.compose.ui.unit.IntSize
  * Holds geometric and indexing information for a single visible item in the layout.
  */
 interface DragDropItemInfo {
+    // The specific positional index of the item inside the backing list data structure
     val index: Int
+
+    // The absolute coordinate position (x, y) of the item's top-left corner relative to the parent container
     val offset: IntOffset
+
+    // The current physical pixel dimensions (width, height) of this item layout block
     val size: IntSize
 }
 
@@ -17,31 +22,21 @@ interface DragDropItemInfo {
  * Holds information about the layout container's viewport and its currently visible items.
  */
 interface DragDropLayoutInfo {
+    // The overall pixel size bounds of the visible screen area (viewport) containing the list
     val viewportSize: IntSize
+
+    // A real-time collection holding geometric metadata for all items currently visible to the user
     val visibleItemsInfo: List<DragDropItemInfo>
 }
 
-// === ADDITIONAL CONTEXT FOR RULE VALIDATION ===
-data class DragDropContext(
-    val currentUserRole: String = "USER",
-    val isEditMode: Boolean = true,
-    val currentTimeMillis: Long = System.currentTimeMillis()
-)
-
 // === DRAG & DROP BUSINESS POLICY STRATEGY ===
 interface DragDropPolicy<T> {
-    /**
-     * Determines if this specific item can be grabbed and dragged by the user.
-     */
-    fun canDrag(item: T, context: DragDropContext): Boolean
+    // Evaluates permission boundaries to verify if a long-press can successfully initialize a drag on this item
+    fun canDrag(item: T, index: Int): Boolean
 
-    /**
-     * Determines if other items can be dropped onto this item's position when the drag gesture ends.
-     */
-    fun canAcceptDrop(item: T, context: DragDropContext): Boolean
+    // Validates if the selected target area is legally allowed to act as a permanent landing destination
+    fun canAcceptDrop(item: T, index: Int): Boolean
 
-    /**
-     * Determines if this item can dynamically shift/swap its position while another item is actively hovering over it.
-     */
-    fun canSwapOnHover(item: T, context: DragDropContext): Boolean
+    // Dictates if this item placeholder should dynamically step aside and swap positions while a shadow drifts past it
+    fun canSwapOnHover(item: T, index: Int): Boolean
 }

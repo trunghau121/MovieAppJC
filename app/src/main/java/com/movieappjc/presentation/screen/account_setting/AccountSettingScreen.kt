@@ -37,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.movieappjc.presentation.screen.account_setting.componemt.AccountEmptyDottedBox
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountRowCard
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountSectionTitle
 import com.movieappjc.presentation.screen.account_setting.componemt.AccountSettingHeader
@@ -48,7 +47,6 @@ import com.movieappjc.presentation.screen.account_setting.data.Header
 import com.movieappjc.presentation.screen.account_setting.data.PlaceHolder
 import com.movieappjc.presentation.screen.account_setting.data.Title
 import com.movieappjc.presentation.screen.account_setting.reorder.AccountDragDropPolicy
-import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropContext
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragShadow
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.dragDropItemModifier
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.dragDropSourceContainer
@@ -76,7 +74,6 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
         scope = scope,
         dragDropPolicy = dragDroPolicy,
         ignoreIndices = ignoreIndices,
-        getDragDropContext = { DragDropContext(isEditMode = true) },
         getItemAt = accounts::getOrNull,
         performSwap = { from, to ->
             val fromItem = accounts.getOrNull(from)

@@ -49,11 +49,11 @@ fun AccountRowCard(modifier: Modifier, item: AccountItem) {
                     Modifier
                 } else {
                     Modifier.shadow(
-                        elevation = 10.dp,
+                        elevation = 15.dp,
                         shape = RoundedCornerShape(20.dp),
                         clip = false,
-                        ambientColor = DefaultShadowColor.copy(alpha = 0.3f),
-                        spotColor = DefaultShadowColor.copy(alpha = 0.3f)
+                        ambientColor = DefaultShadowColor.copy(alpha = 0.2f),
+                        spotColor = DefaultShadowColor.copy(alpha = 0.2f)
                     )
                 }
             )
@@ -66,7 +66,7 @@ fun AccountRowCard(modifier: Modifier, item: AccountItem) {
                     drawRoundRect(
                         color = Color(0xFFE1E3E9),
                         style = stroke,
-                        cornerRadius = CornerRadius(20.dp.toPx())
+                        cornerRadius = CornerRadius(13.dp.toPx())
                     )
                 }
             },

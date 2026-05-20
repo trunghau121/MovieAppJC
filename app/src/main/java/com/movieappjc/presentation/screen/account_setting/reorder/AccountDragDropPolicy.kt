@@ -4,20 +4,19 @@ import com.movieappjc.presentation.screen.account_setting.data.AccountItem
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemBlank
 import com.movieappjc.presentation.screen.account_setting.data.AccountItemEmpty
 import com.movieappjc.presentation.screen.account_setting.data.Title
-import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropContext
 import com.movieappjc.presentation.screen.drop_drag.pointer_input.DragDropPolicy
 
 class AccountDragDropPolicy: DragDropPolicy<AccountItem> {
     override fun canDrag(
         item: AccountItem,
-        context: DragDropContext
+        index: Int
     ): Boolean {
         return item !is AccountItemEmpty && item !is Title
     }
 
     override fun canAcceptDrop(
         item: AccountItem,
-        context: DragDropContext
+        index: Int
     ): Boolean {
         return item is AccountItemEmpty
                 || item is AccountItemBlank
@@ -28,7 +27,7 @@ class AccountDragDropPolicy: DragDropPolicy<AccountItem> {
 
     override fun canSwapOnHover(
         item: AccountItem,
-        context: DragDropContext
+        index: Int
     ): Boolean {
         return true
     }
