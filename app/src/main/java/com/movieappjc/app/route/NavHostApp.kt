@@ -25,7 +25,7 @@ fun NavHostApp(
         startDestination = Routes.HomeScreen
     ) {
         composable<Routes.HomeScreen> {
-            AccountSettingScreen()
+            MyMenuScreen()
         }
 
         composable<Routes.MovieDetail> {

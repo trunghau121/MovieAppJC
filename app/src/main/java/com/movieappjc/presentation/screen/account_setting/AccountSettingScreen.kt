@@ -100,49 +100,7 @@ fun AccountSettingScreen(viewModel: AccountSettingViewModel = hiltViewModel()) {
             }
         },
         onDropEnd = { from, to ->
-            if (from < 0 || to < 0) {
-                accounts.removeIf { it is  AccountItemBlank}
-                return@rememberListDragDropState
-            }
-            val itemTo = accounts[to]
-            val itemFrom = accounts[from]
-            val isToAccountDefault = to == 2
-            val isToAccountHome = to == 4 || to == 5
 
-            val isFromAccountDefault = from == 2
-            val isFromAccountHome = from == 4 || from == 5
-
-            when (itemTo) {
-                is AccountItemEmpty -> {
-                    accounts.apply {
-                        set(to, itemFrom.copy(
-                            isAccountDefault = isToAccountDefault,
-                            isAccountHome = isToAccountHome
-                        ))
-                        if (isFromAccountHome || isFromAccountDefault)
-                            set(from, AccountItemEmpty(isAccountDefault = isFromAccountDefault))
-                        else {
-                            accounts.removeAt(from)
-                        }
-                    }
-                }
-
-                is AccountItemBlank -> {
-                    accounts.apply {
-                        set(to, itemFrom.copy(
-                            isAccountDefault = isToAccountDefault,
-                            isAccountHome = isToAccountHome
-                        ))
-                        if (isFromAccountHome || isFromAccountDefault)
-                            set(from, AccountItemEmpty(isAccountDefault = isFromAccountDefault))
-                    }
-                }
-
-                else -> {
-
-                    accounts.swap(from, to)
-                }
-            }
         }
     )
     Scaffold(
