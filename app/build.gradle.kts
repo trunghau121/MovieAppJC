@@ -1,8 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.konan.properties.Properties
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
@@ -22,13 +22,13 @@ fun getVersionCode(): Int {
 
 android {
     namespace = "com.movieappjc"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.movieappjc"
         minSdk = 24
         //noinspection OldTargetApi
-        targetSdk = 35
+        targetSdk = 37
         versionCode = getVersionCode()
         versionName = appVersion
 
@@ -68,24 +68,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        jvmToolchain(17)
-
-        compilerOptions {
-            if (project.findProperty("enableComposeCompilerReports") == "true") {
-                val outputDir = project.layout.buildDirectory.set(File("/compose-reports"))
-                freeCompilerArgs.addAll(
-                    listOf(
-                        "-P",
-                        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$outputDir",
-                        "-P",
-                        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$outputDir"
-                    )
-                )
-            }
-        }
-    }
-
     buildFeatures {
         buildConfig = true
     }
@@ -94,6 +76,12 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

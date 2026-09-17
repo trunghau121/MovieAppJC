@@ -28,7 +28,7 @@ fun <T> DataState<T>.ToUI(
         }
 
         is DataState.Error -> {
-            error(state.error)
+            error.invoke(state)
         }
 
         is DataState.Loading -> {
