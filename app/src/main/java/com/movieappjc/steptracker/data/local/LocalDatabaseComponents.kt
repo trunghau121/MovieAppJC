@@ -4,7 +4,13 @@ import android.content.Context
 import androidx.room.*
 
 // Room entity to store local step data
-@Entity(tableName = "local_steps")
+@Entity(
+    tableName = "local_steps",
+    indices = [
+        Index(value = ["startTime"]),
+        Index(value = ["endTime"])
+    ]
+)
 data class LocalStepEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val startTime: Long,

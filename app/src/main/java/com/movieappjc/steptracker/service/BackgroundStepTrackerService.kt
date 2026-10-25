@@ -22,43 +22,48 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import com.movieappjc.R
-import com.movieappjc.steptracker.data.local.AppDatabase
 import com.movieappjc.steptracker.data.local.StepStoreData
-import com.movieappjc.steptracker.data.repository.StepRepositoryImpl
 import com.movieappjc.steptracker.domain.models.StepBlock
 import com.movieappjc.steptracker.domain.repository.StepRepository
 import com.movieappjc.steptracker.domain.usecase.ProcessStepsUseCase
 import com.movieappjc.steptracker.util.Formatters
-import kotlinx.coroutines.*
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.Calendar
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class BackgroundStepTrackerService : Service(), SensorEventListener {
+
+    @Inject
+    lateinit var stepRepository: StepRepository
+    @Inject
+    lateinit var storeData: StepStoreData
+    @Inject
+    lateinit var processStepsUseCase: ProcessStepsUseCase
 
     private lateinit var sensorManager: SensorManager
     private var stepSensor: Sensor? = null
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private lateinit var stepRepository: StepRepository
-    private lateinit var storeData: StepStoreData // Declare StoreData
-
-    private var currentBatchSteps = 0L
-    private var startTimeOfBatch: Long = System.currentTimeMillis()
+    @Volatile private var currentBatchSteps = 0L
+    @Volatile private var startTimeOfBatch: Long = System.currentTimeMillis()
 
     private var notificationUpdateJob: Job? = null
     private val channelId = "secure_step_channel"
 
     override fun onCreate() {
         super.onCreate()
-
         // 1. Fulfill Android 12+ strict foreground service 5-second rule immediately
         safeStartForeground()
-
-        storeData = StepStoreData(this) // Initialize StoreData
-
-        // 2. Initialize heavy components safely in the background
-        val db = AppDatabase.getDatabase(this)
-        stepRepository = StepRepositoryImpl(this, db.localStepDao(), storeData)
 
         if (!hasActivityPermission()) {
             stopSelf()
@@ -70,7 +75,7 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         stepSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL) }
 
-        // 3. Start the loop to update the notification UI periodically
+        // 2. Start the loop to update the notification UI periodically
         startNotificationUpdateLoop()
     }
 
@@ -143,8 +148,6 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
         if (notificationUpdateJob?.isActive == true) return
 
         notificationUpdateJob = serviceScope.launch {
-            val processStepsUseCase = ProcessStepsUseCase()
-
             while (isActive) {
                 val startOfDay = getStartOfDayMillis()
                 val now = System.currentTimeMillis()
@@ -253,7 +256,11 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
         }
     }
 
-    private fun hasActivityPermission(): Boolean = ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
+    private fun hasActivityPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
+        } else true
+    }
 
     private fun cleanUpAndStop() {
         sensorManager.unregisterListener(this)

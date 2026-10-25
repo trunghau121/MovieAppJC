@@ -4,7 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +26,7 @@ import com.movieappjc.steptracker.service.BackgroundStepTrackerService
 import com.movieappjc.steptracker.worker.AdvancedSyncWorker
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import androidx.core.net.toUri
 
 class StepTrackingManager(private val activity: ComponentActivity) : DefaultLifecycleObserver {
 
@@ -60,9 +65,47 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         }
     }
 
+    /**
+     * Checks whether the device contains a hardware step counter sensor.
+     */
+    fun isStepCounterSensorAvailable(): Boolean {
+        val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+        return sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null
+    }
+
+    /**
+     * Shows direct system dialog ("Let app always run in background?") asking user to Allow.
+     */
+    fun requestIgnoreBatteryOptimizations() {
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
+            try {
+                // Direct system popup dialog ("Let app always run in background?")
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = "package:${context.packageName}".toUri()
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (_: Exception) {
+                try {
+                    // Fallback to settings screen if direct dialog is unsupported on OEM
+                    val fallbackIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(fallbackIntent)
+                } catch (_: Exception) {}
+            }
+        }
+    }
+
     fun startTracking() {
         if (storeData.isTrackingEnabled) return
+        if (!isStepCounterSensorAvailable() && HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_UNAVAILABLE) {
+            Toast.makeText(context, "Thiết bị không hỗ trợ cảm biến đếm bước chân.", Toast.LENGTH_LONG).show()
+            return
+        }
         storeData.isTrackingEnabled = true
+        requestIgnoreBatteryOptimizations()
         if (hasSystemPermissions()) checkAndRequestHealthConnectPermission() else requestSystemPermissions()
     }
 

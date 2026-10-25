@@ -11,9 +11,11 @@ import com.movieappjc.steptracker.data.local.StepStoreData
 import com.movieappjc.steptracker.domain.models.StepBlock
 import com.movieappjc.steptracker.domain.models.SyncPayload
 import com.movieappjc.steptracker.domain.repository.StepRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class StepRepositoryImpl(
-    private val context: Context,
+class StepRepositoryImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val localStepDao: LocalStepDao,
     private val storeData: StepStoreData
 ) : StepRepository {

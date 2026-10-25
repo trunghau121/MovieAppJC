@@ -5,24 +5,25 @@ import android.os.Build
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.movieappjc.steptracker.data.local.AppDatabase
 import com.movieappjc.steptracker.data.local.StepStoreData
-import com.movieappjc.steptracker.data.repository.StepRepositoryImpl
 import com.movieappjc.steptracker.domain.models.SyncPayload
+import com.movieappjc.steptracker.domain.repository.StepRepository
 import com.movieappjc.steptracker.domain.usecase.ProcessStepsUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
 // Worker responsible for periodically syncing local and watch step data to the server
-class AdvancedSyncWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
-
-    private val processStepsUseCase = ProcessStepsUseCase()
-    private val storeData = StepStoreData(appContext)
-    private val stepRepository = StepRepositoryImpl(
-        appContext,
-        AppDatabase.getDatabase(appContext).localStepDao(),
-        storeData
-    )
+@HiltWorker
+class AdvancedSyncWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val stepRepository: StepRepository,
+    private val storeData: StepStoreData,
+    private val processStepsUseCase: ProcessStepsUseCase
+) : CoroutineWorker(appContext, workerParams) {
     private val readPermission = HealthPermission.getReadPermission(StepsRecord::class)
 
     override suspend fun doWork(): Result {
@@ -65,10 +66,10 @@ class AdvancedSyncWorker(appContext: Context, workerParams: WorkerParameters) : 
             if (recentLocalData.isNotEmpty()) {
                 val recentPayloads = processStepsUseCase.execute(recentLocalData, emptyList())
 
-                // Avoid duplicating slots already processed in Part 1
+                // Avoid duplicating slots already processed in Part 1 (O(1) lookup using Set)
+                val existingStartTimes = payloadsToSend.mapTo(mutableSetOf()) { it.startTime }
                 recentPayloads.forEach { newPayload ->
-                    val existingIndex = payloadsToSend.indexOfFirst { it.startTime == newPayload.startTime }
-                    if (existingIndex == -1) {
+                    if (existingStartTimes.add(newPayload.startTime)) {
                         payloadsToSend.add(newPayload)
                     }
                 }
