@@ -27,6 +27,7 @@ import com.movieappjc.app.theme.MovieAppJCTheme
 import com.movieappjc.app.theme.kColorVulcan
 import com.movieappjc.domain.repositories.AppRepository
 import com.movieappjc.presentation.screen.main.MainScreen
+import com.movieappjc.steptracker.manager.StepTrackingManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -37,6 +38,8 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var appRepository: AppRepository
+
+    lateinit var stepTrackingManager: StepTrackingManager
     override fun onCreate(savedInstanceState: Bundle?) {
         ADp.initializeAdp(this.resources, 390)
         enableEdgeToEdge()
@@ -46,6 +49,9 @@ class MainActivity : ComponentActivity() {
         } else {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
+
+        stepTrackingManager = StepTrackingManager(this)
+        stepTrackingManager.startTracking()
 
         setContent {
             MyApp(appRepository = appRepository) {
