@@ -18,13 +18,13 @@ class StepStoreData(context: Context) {
         get() = prefs.getBoolean("KEY_TRACKING_ENABLED", false)
         set(value) = prefs.edit { putBoolean("KEY_TRACKING_ENABLED", value) }
 
-    // Store Health Connect token for fetching incremental changes
-    var hcChangesToken: String?
-        get() = prefs.getString("hc_changes_token", null)
-        set(value) = prefs.edit { putString("hc_changes_token", value) }
-
     // Store the last time data was synced to the server
     var lastSyncTime: Long
         get() = prefs.getLong("last_sync_time", -1L)
         set(value) = prefs.edit { putLong("last_sync_time", value) }
+
+    // Store today's total steps for real-time widget updates
+    var todaySteps: Long
+        get() = prefs.getLong("today_steps", 0L)
+        set(value) = prefs.edit(commit = true) { putLong("today_steps", value) }
 }

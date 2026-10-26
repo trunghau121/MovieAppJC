@@ -16,27 +16,19 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.health.connect.client.HealthConnectClient
-import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.request.ReadRecordsRequest
-import androidx.health.connect.client.time.TimeRangeFilter
 import com.movieappjc.R
 import com.movieappjc.steptracker.data.local.StepStoreData
 import com.movieappjc.steptracker.domain.models.StepBlock
 import com.movieappjc.steptracker.domain.repository.StepRepository
 import com.movieappjc.steptracker.domain.usecase.ProcessStepsUseCase
 import com.movieappjc.steptracker.util.Formatters
+import com.movieappjc.steptracker.widget.StepTrackerWidget
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.time.Instant
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -50,14 +42,14 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
     @Inject
     lateinit var processStepsUseCase: ProcessStepsUseCase
 
-    private lateinit var sensorManager: SensorManager
+    private var sensorManager: SensorManager? = null
     private var stepSensor: Sensor? = null
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     @Volatile private var currentBatchSteps = 0L
     @Volatile private var startTimeOfBatch: Long = System.currentTimeMillis()
+    @Volatile private var savedDbStepsToday: Long = 0L
 
-    private var notificationUpdateJob: Job? = null
     private val channelId = "secure_step_channel"
 
     override fun onCreate() {
@@ -65,37 +57,37 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
         // 1. Fulfill Android 12+ strict foreground service 5-second rule immediately
         safeStartForeground()
 
+        sensorManager = getSystemService(SENSOR_SERVICE) as? SensorManager
+
         if (!hasActivityPermission()) {
             stopSelf()
             return
         }
 
-        // Register step counter sensor
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-        stepSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL) }
+        // 2. Load today's already saved DB steps into RAM
+        loadTodayDbSteps()
 
-        // 2. Start the loop to update the notification UI periodically
-        startNotificationUpdateLoop()
+        // 3. Register step counter sensor
+        stepSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        stepSensor?.let { sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_FASTEST) }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Re-call startForeground to prevent crashes when the app is reopened
         safeStartForeground()
         return START_STICKY
     }
 
     private fun safeStartForeground() {
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager ?: return
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, "Step Tracker Service", NotificationManager.IMPORTANCE_LOW)
-            channel.setShowBadge(false) // Disable notification dot on app icon
+            channel.setShowBadge(false)
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Create an initial notification showing 0 steps
-        val notification = createNotification(0L)
+        val totalStepsNow = savedDbStepsToday + currentBatchSteps
+        val notification = createNotification(totalStepsNow)
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -105,6 +97,21 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    private fun updateNotificationImmediately() {
+        val totalStepsNow = savedDbStepsToday + currentBatchSteps
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as? NotificationManager
+        notificationManager?.notify(1, createNotification(totalStepsNow))
+
+        // Update Glance Home Screen Widget instantly
+        serviceScope.launch {
+            try {
+                StepTrackerWidget.updateWidget(this@BackgroundStepTrackerService, totalStepsNow)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -144,69 +151,17 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
         return notification.build()
     }
 
-    private fun startNotificationUpdateLoop() {
-        if (notificationUpdateJob?.isActive == true) return
-
-        notificationUpdateJob = serviceScope.launch {
-            while (isActive) {
+    private fun loadTodayDbSteps() {
+        serviceScope.launch {
+            try {
                 val startOfDay = getStartOfDayMillis()
                 val now = System.currentTimeMillis()
-
-                // 1. Fetch local steps recorded by the phone today
-                val localRecords = stepRepository.getLocalSteps(startOfDay, now).toMutableList()
-
-                // Add uncommitted steps currently in RAM
-                if (currentBatchSteps > 0) {
-                    localRecords.add(StepBlock(startTimeOfBatch, now, currentBatchSteps))
-                }
-
-                // 2. Fetch smartwatch steps from Health Connect
-                val watchRecords = mutableListOf<StepBlock>()
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val status = HealthConnectClient.getSdkStatus(this@BackgroundStepTrackerService)
-                        if (status == HealthConnectClient.SDK_AVAILABLE) {
-                            val client = HealthConnectClient.getOrCreate(this@BackgroundStepTrackerService)
-                            val readPermission = HealthPermission.getReadPermission(StepsRecord::class)
-
-                            if (client.permissionController.getGrantedPermissions().contains(readPermission)) {
-                                val response = client.readRecords(
-                                    ReadRecordsRequest(
-                                        recordType = StepsRecord::class,
-                                        timeRangeFilter = TimeRangeFilter.between(
-                                            Instant.ofEpochMilli(startOfDay),
-                                            Instant.ofEpochMilli(now)
-                                        )
-                                    )
-                                )
-
-                                // Exclude phone-generated steps to avoid double counting
-                                val filteredWatchData = response.records.filter {
-                                    !it.metadata.dataOrigin.packageName.contains("com.android.healthconnect.phone")
-                                }
-
-                                watchRecords.addAll(filteredWatchData.map {
-                                    StepBlock(it.startTime.toEpochMilli(), it.endTime.toEpochMilli(), it.count)
-                                })
-                            }
-                        }
-                    }
-                } catch (_: Exception) {
-                    // Ignore Health Connect errors quietly
-                }
-
-                // 3. Process and merge blocks (Prioritize watch data over phone data)
-                val processedBlocks = processStepsUseCase.execute(localRecords, watchRecords)
-
-                // 4. Calculate final accurate total
-                val finalTotalSteps = processedBlocks.sumOf { it.stepCount }
-
-                // 5. Update the notification UI
-                val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.notify(1, createNotification(finalTotalSteps))
-
-                // Wait 30 seconds before the next update (Adjusted for testing/real-time feel)
-                delay(30_000L)
+                val localRecords = stepRepository.getLocalSteps(startOfDay, now)
+                val processedBlocks = processStepsUseCase.execute(localRecords)
+                savedDbStepsToday = processedBlocks.sumOf { it.stepCount }
+                updateNotificationImmediately()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -243,14 +198,26 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
             currentBatchSteps += newlyDetectedSteps
             storeData.previousTotalSteps = totalStepsSinceBoot
 
+            // 1. UPDATE NOTIFICATION IMMEDIATELY!
+            updateNotificationImmediately()
+
             val now = System.currentTimeMillis()
 
-            // Save to database every 50 steps or every 20 seconds to prevent data loss
-            if (currentBatchSteps >= 50 || startTimeOfBatch + 20_000L < now) {
+            // 2. Save to database if >= 50 steps OR >= 20 seconds with new steps
+            if (currentBatchSteps >= 50 || (currentBatchSteps > 0 && startTimeOfBatch + 20_000L < now)) {
+                val batchToSave = currentBatchSteps
+                val batchStartTime = startTimeOfBatch
+
+                currentBatchSteps = 0L
+                startTimeOfBatch = now
+                savedDbStepsToday += batchToSave
+
                 serviceScope.launch {
-                    stepRepository.saveLocalSteps(StepBlock(startTimeOfBatch, now, currentBatchSteps))
-                    currentBatchSteps = 0L
-                    startTimeOfBatch = now
+                    try {
+                        stepRepository.saveLocalSteps(StepBlock(batchStartTime, now, batchToSave))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
@@ -263,8 +230,12 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
     }
 
     private fun cleanUpAndStop() {
-        sensorManager.unregisterListener(this)
-        storeData.isTrackingEnabled = false // Use StoreData instead of direct SharedPreferences
+        try {
+            sensorManager?.unregisterListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        storeData.isTrackingEnabled = false
         stopSelf()
     }
 
@@ -273,8 +244,15 @@ class BackgroundStepTrackerService : Service(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        sensorManager.unregisterListener(this)
-        notificationUpdateJob?.cancel()
-        serviceScope.cancel()
+        try {
+            sensorManager?.unregisterListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        try {
+            serviceScope.cancel()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

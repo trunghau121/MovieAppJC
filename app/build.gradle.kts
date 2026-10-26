@@ -114,11 +114,14 @@ dependencies {
     implementation(libs.compose.tooling.preview)
     debugImplementation (libs.compose.ui.tooling)
 
-    implementation(libs.androidx.connect.client)
     implementation("androidx.work:work-runtime-ktx:2.12.0")
 
     // Hilt for WorkManager
     implementation("androidx.hilt:hilt-work:1.2.0")
+
+    // Glance Widget
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.glance:glance-material3:1.1.1")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

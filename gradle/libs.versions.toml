@@ -1,5 +1,4 @@
 [versions]
-connectClientVersion = "1.1.0"
 coreKtxVersion = "1.17.0"
 compose-bom = "2025.08.00"
 activityComposeVersion = "1.10.1"
@@ -23,7 +22,6 @@ fragmentKtxVersion = "1.8.9"
 navigationVersion = "2.9.3"
 
 [libraries]
-androidx-connect-client = { module = "androidx.health.connect:connect-client", version.ref = "connectClientVersion" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose" }

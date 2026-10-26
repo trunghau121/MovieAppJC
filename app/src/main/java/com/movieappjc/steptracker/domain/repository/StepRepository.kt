@@ -7,7 +7,5 @@ interface StepRepository {
     suspend fun getLocalSteps(start: Long, end: Long): List<StepBlock>
     suspend fun saveLocalSteps(stepBlock: StepBlock)
     suspend fun clearOldLocalSteps(cutoff: Long)
-    suspend fun getHealthConnectChanges(): Pair<List<StepBlock>, String?>
-    suspend fun getInitialHealthConnectToken(): String
     suspend fun uploadStepsToServer(payloads: List<SyncPayload>): Boolean
 }
