@@ -1,6 +1,7 @@
 package com.movieappjc.steptracker.manager
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.work.*
 import com.movieappjc.steptracker.data.local.StepStoreData
 import com.movieappjc.steptracker.service.BackgroundStepTrackerService
+import com.movieappjc.steptracker.util.AutoStartHelper
 import com.movieappjc.steptracker.worker.AdvancedSyncWorker
 import kotlinx.coroutines.launch
 
@@ -28,13 +30,22 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
     private val context: Context = activity.applicationContext
     private val storeData = StepStoreData(context)
 
-    // Handle physical activity permission result
-    private val systemPermissionLauncher = activity.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        if (permissions[Manifest.permission.ACTIVITY_RECOGNITION] == true) {
-            executeStartTracking()
+    // Launcher for Physical Activity permission
+    private val activityRecognitionLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            checkAndRequestNotificationPermission()
         } else {
-            handleFailure("Cần quyền vận động để đếm bước!")
+            handleFailure("Physical Activity permission is required to track steps!")
         }
+    }
+
+    // Launcher for Notification permission
+    private val notificationPermissionLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { _ ->
+        checkAndRequestBatteryOptimization()
     }
 
     init {
@@ -81,10 +92,83 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         return sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null
     }
 
-    /**
-     * Shows direct system dialog ("Let app always run in background?") asking user to Allow.
-     */
-    fun requestIgnoreBatteryOptimizations() {
+    fun startTracking() {
+        if (storeData.isTrackingEnabled) return
+        if (!isStepCounterSensorAvailable()) {
+            Toast.makeText(context, "Thiết bị không hỗ trợ cảm biến đếm bước chân.", Toast.LENGTH_LONG).show()
+            return
+        }
+        storeData.isTrackingEnabled = true
+        checkAndRequestActivityRecognition()
+    }
+
+    private fun checkAndRequestActivityRecognition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED
+        ) {
+            AlertDialog.Builder(activity)
+                .setTitle("Physical Activity Permission Required")
+                .setMessage("To accurately track your daily steps in real-time, this app requires physical activity recognition permission. Tap OK to grant this permission.")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                    handleFailure("Physical Activity permission is required to track steps!")
+                }
+                .setCancelable(false)
+                .show()
+        } else {
+            checkAndRequestNotificationPermission()
+        }
+    }
+
+    private fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            AlertDialog.Builder(activity)
+                .setTitle("Notification Permission Required")
+                .setMessage("To display your live step progress in real-time and maintain background tracking, please allow notifications.")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                    checkAndRequestBatteryOptimization()
+                }
+                .setCancelable(false)
+                .show()
+        } else {
+            checkAndRequestBatteryOptimization()
+        }
+    }
+
+    private fun checkAndRequestBatteryOptimization() {
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
+            AlertDialog.Builder(activity)
+                .setTitle("Background Battery Optimization")
+                .setMessage("To ensure step tracking continues reliably when the app is in the background or your screen is turned off, please allow the app to ignore battery optimizations.")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    requestIgnoreBatteryOptimizations()
+                    executeStartTracking()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                    executeStartTracking()
+                }
+                .setCancelable(false)
+                .show()
+        } else {
+            executeStartTracking()
+        }
+    }
+
+    private fun requestIgnoreBatteryOptimizations() {
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
         if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
             try {
@@ -104,21 +188,6 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         }
     }
 
-    fun startTracking() {
-        if (storeData.isTrackingEnabled) return
-        if (!isStepCounterSensorAvailable()) {
-            Toast.makeText(context, "Thiết bị không hỗ trợ cảm biến đếm bước chân.", Toast.LENGTH_LONG).show()
-            return
-        }
-        storeData.isTrackingEnabled = true
-        requestIgnoreBatteryOptimizations()
-        if (hasSystemPermissions()) {
-            executeStartTracking()
-        } else {
-            requestSystemPermissions()
-        }
-    }
-
     fun stopTracking() {
         storeData.isTrackingEnabled = false
         context.stopService(Intent(context, BackgroundStepTrackerService::class.java))
@@ -132,21 +201,11 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         } else true
     }
 
-    private fun requestSystemPermissions() {
-        val list = mutableListOf<String>()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) list.add(Manifest.permission.ACTIVITY_RECOGNITION)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) list.add(Manifest.permission.POST_NOTIFICATIONS)
-
-        if (list.isNotEmpty()) {
-            systemPermissionLauncher.launch(list.toTypedArray())
-        } else {
-            executeStartTracking()
-        }
-    }
-
     private fun executeStartTracking() {
         val serviceIntent = Intent(context, BackgroundStepTrackerService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(serviceIntent) else context.startService(serviceIntent)
+
+        AutoStartHelper.startPowerSaverIntent(activity)
 
         // Cancel legacy 15-minute periodic sync work if previously enqueued
         WorkManager.getInstance(context).cancelUniqueWork("StepSyncWork")

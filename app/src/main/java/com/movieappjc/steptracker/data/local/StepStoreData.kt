@@ -27,4 +27,9 @@ class StepStoreData(context: Context) {
     var todaySteps: Long
         get() = prefs.getLong("today_steps", 0L)
         set(value) = prefs.edit(commit = true) { putLong("today_steps", value) }
+
+    // Skip protected app / autostart check dialog
+    var skipProtectedAppCheck: Boolean
+        get() = prefs.getBoolean("skipProtectedAppCheck", false)
+        set(value) = prefs.edit { putBoolean("skipProtectedAppCheck", value) }
 }
