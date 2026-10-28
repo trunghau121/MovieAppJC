@@ -24,7 +24,7 @@ object StepTrackerModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return AppDatabase.getDatabase(context)
+        return AppDatabase.create(context)
     }
 
     @Provides

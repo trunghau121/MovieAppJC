@@ -3,4 +3,25 @@
     <bool name="isTablet">false</bool>
     <string name="notif_steps_today">%1$s steps today</string>
     <string name="notif_goal_progress">%1$d%% of %2$s goal</string>
+
+    <string name="step_notification_channel_name">Step Tracker Service</string>
+
+    <string name="step_widget_title">Daily Step</string>
+    <string name="step_widget_brand">STEP MOVE</string>
+
+    <string name="step_sensor_unavailable">This device does not support a step counter sensor.</string>
+
+    <string name="step_permission_activity_required">Physical Activity permission is required to track steps!</string>
+    <string name="step_permission_activity_title">Physical Activity Permission Required</string>
+    <string name="step_permission_activity_message">To accurately track your daily steps in real-time, this app requires physical activity recognition permission. Tap OK to grant this permission.</string>
+
+    <string name="step_permission_notification_title">Notification Permission Required</string>
+    <string name="step_permission_notification_message">To display your live step progress in real-time and maintain background tracking, please allow notifications.</string>
+
+    <string name="step_battery_title">Background Battery Optimization</string>
+    <string name="step_battery_message">To ensure step tracking continues reliably when the app is in the background or your screen is turned off, please allow the app to ignore battery optimizations.</string>
+
+    <string name="step_protected_title">%1$s Protected Apps</string>
+    <string name="step_protected_message">%1$s requires to be enabled in \'Protected Apps\' to function properly.</string>
+    <string name="step_protected_go_settings">Go to settings</string>
 </resources>

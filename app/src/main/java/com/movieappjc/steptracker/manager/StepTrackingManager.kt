@@ -1,6 +1,7 @@
 package com.movieappjc.steptracker.manager
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -8,27 +9,39 @@ import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
-import android.os.PowerManager
-import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.movieappjc.R
 import com.movieappjc.steptracker.data.local.StepStoreData
 import com.movieappjc.steptracker.service.BackgroundStepTrackerService
 import com.movieappjc.steptracker.util.AutoStartHelper
 import com.movieappjc.steptracker.worker.AdvancedSyncWorker
-import kotlinx.coroutines.launch
 
-class StepTrackingManager(private val activity: ComponentActivity) : DefaultLifecycleObserver {
+/**
+ * Must be created before the activity is STARTED (e.g. as a property or in onCreate),
+ * because it registers ActivityResult launchers.
+ */
+@SuppressLint("LogNotTimber")
+class StepTrackingManager(
+    private val activity: ComponentActivity,
+    private val storeData: StepStoreData = StepStoreData(activity.applicationContext)
+) : DefaultLifecycleObserver {
 
     private val context: Context = activity.applicationContext
-    private val storeData = StepStoreData(context)
+
+    // True while the permission / battery dialogs of startTracking() are being shown
+    private var isStartFlowRunning = false
 
     // Launcher for Physical Activity permission
     private val activityRecognitionLauncher = activity.registerForActivityResult(
@@ -37,7 +50,7 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         if (isGranted) {
             checkAndRequestNotificationPermission()
         } else {
-            handleFailure("Physical Activity permission is required to track steps!")
+            handleFailure(R.string.step_permission_activity_required)
         }
     }
 
@@ -45,7 +58,7 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
     private val notificationPermissionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { _ ->
-        checkAndRequestBatteryOptimization()
+        finishStartFlow()
     }
 
     init {
@@ -57,16 +70,15 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         // Trigger sync when app opens
         triggerAppOpenSync()
 
-        // Resume tracking if it was previously enabled
-        if (storeData.isTrackingEnabled) {
-            activity.lifecycleScope.launch {
-                if (hasSystemPermissions()) executeStartTracking() else stopTracking()
-            }
+        // Resume tracking if it was previously enabled (no dialogs here)
+        if (storeData.isTrackingEnabled && !isStartFlowRunning) {
+            if (hasSystemPermissions()) executeStartTracking() else stopTracking()
         }
     }
 
     /**
      * Triggers a one-time step data sync to the server when the app is opened.
+     * KEEP: reopening the app must not cancel a sync that is already running.
      */
     fun triggerAppOpenSync() {
         val syncRequest = OneTimeWorkRequestBuilder<AdvancedSyncWorker>()
@@ -79,7 +91,7 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
 
         WorkManager.getInstance(context).enqueueUniqueWork(
             "StepAppOpenSyncWork",
-            ExistingWorkPolicy.REPLACE,
+            ExistingWorkPolicy.KEEP,
             syncRequest
         )
     }
@@ -92,13 +104,17 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         return sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null
     }
 
+    /**
+     * Starts the permission flow. Tracking is only marked as enabled (and the service started)
+     * once the flow has finished, see [finishStartFlow].
+     */
     fun startTracking() {
-        if (storeData.isTrackingEnabled) return
+        if (storeData.isTrackingEnabled || isStartFlowRunning) return
         if (!isStepCounterSensorAvailable()) {
-            Toast.makeText(context, "Thiết bị không hỗ trợ cảm biến đếm bước chân.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.step_sensor_unavailable, Toast.LENGTH_LONG).show()
             return
         }
-        storeData.isTrackingEnabled = true
+        isStartFlowRunning = true
         checkAndRequestActivityRecognition()
     }
 
@@ -106,113 +122,111 @@ class StepTrackingManager(private val activity: ComponentActivity) : DefaultLife
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED
         ) {
-            AlertDialog.Builder(activity)
-                .setTitle("Physical Activity Permission Required")
-                .setMessage("To accurately track your daily steps in real-time, this app requires physical activity recognition permission. Tap OK to grant this permission.")
-                .setPositiveButton("OK") { dialog, _ ->
-                    dialog.dismiss()
-                    activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
-                }
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    dialog.dismiss()
-                    handleFailure("Physical Activity permission is required to track steps!")
-                }
-                .setCancelable(false)
-                .show()
+            showDialog(
+                title = R.string.step_permission_activity_title,
+                message = R.string.step_permission_activity_message,
+                onOk = { activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION) },
+                onCancel = { handleFailure(R.string.step_permission_activity_required) }
+            )
         } else {
             checkAndRequestNotificationPermission()
         }
     }
 
     private fun checkAndRequestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-        ) {
-            AlertDialog.Builder(activity)
-                .setTitle("Notification Permission Required")
-                .setMessage("To display your live step progress in real-time and maintain background tracking, please allow notifications.")
-                .setPositiveButton("OK") { dialog, _ ->
-                    dialog.dismiss()
-                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    dialog.dismiss()
-                    checkAndRequestBatteryOptimization()
-                }
-                .setCancelable(false)
-                .show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+        ) != PackageManager.PERMISSION_GRANTED) {
+            showDialog(
+                title = R.string.step_permission_notification_title,
+                message = R.string.step_permission_notification_message,
+                onOk = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                onCancel = { }
+            )
         } else {
-            checkAndRequestBatteryOptimization()
+            finishStartFlow()
         }
     }
 
-    private fun checkAndRequestBatteryOptimization() {
-        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
-        if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
-            AlertDialog.Builder(activity)
-                .setTitle("Background Battery Optimization")
-                .setMessage("To ensure step tracking continues reliably when the app is in the background or your screen is turned off, please allow the app to ignore battery optimizations.")
-                .setPositiveButton("OK") { dialog, _ ->
-                    dialog.dismiss()
-                    requestIgnoreBatteryOptimizations()
-                    executeStartTracking()
-                }
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    dialog.dismiss()
-                    executeStartTracking()
-                }
-                .setCancelable(false)
-                .show()
-        } else {
-            executeStartTracking()
+    // Last step of the start flow: enable tracking, start the service, offer the OEM autostart screen once
+    private fun finishStartFlow() {
+        isStartFlowRunning = false
+        if (!hasSystemPermissions()) {
+            handleFailure(R.string.step_permission_activity_required)
+            return
         }
-    }
-
-    private fun requestIgnoreBatteryOptimizations() {
-        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
-        if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
-            try {
-                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                    data = "package:${context.packageName}".toUri()
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                context.startActivity(intent)
-            } catch (_: Exception) {
-                try {
-                    val fallbackIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                    context.startActivity(fallbackIntent)
-                } catch (_: Exception) {}
-            }
-        }
+        storeData.isTrackingEnabled = true
+        executeStartTracking()
+        AutoStartHelper.startPowerSaverIntent(activity)
     }
 
     fun stopTracking() {
+        // Order matters: the service only advances the sensor baseline while tracking is enabled
         storeData.isTrackingEnabled = false
+        // Drop the baseline so steps walked while tracking is off are not "recovered" on the next start
+        storeData.previousTotalSteps = -1L
         context.stopService(Intent(context, BackgroundStepTrackerService::class.java))
         WorkManager.getInstance(context).cancelUniqueWork("StepSyncWork")
         WorkManager.getInstance(context).cancelUniqueWork("StepAppOpenSyncWork")
     }
 
     private fun hasSystemPermissions(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
-        } else true
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                || ContextCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun executeStartTracking() {
-        val serviceIntent = Intent(context, BackgroundStepTrackerService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(serviceIntent) else context.startService(serviceIntent)
-
-        AutoStartHelper.startPowerSaverIntent(activity)
+        if (!hasSystemPermissions()) {
+            storeData.isTrackingEnabled = false
+            return
+        }
+        try {
+            ContextCompat.startForegroundService(
+                context,
+                Intent(context, BackgroundStepTrackerService::class.java)
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Unable to start the step tracking service", e)
+            return
+        }
 
         // Cancel legacy 15-minute periodic sync work if previously enqueued
         WorkManager.getInstance(context).cancelUniqueWork("StepSyncWork")
     }
 
-    private fun handleFailure(msg: String) {
+    private fun showDialog(
+        @StringRes title: Int,
+        @StringRes message: Int,
+        onOk: () -> Unit,
+        onCancel: () -> Unit
+    ) {
+        if (activity.isFinishing || activity.isDestroyed) {
+            onCancel()
+            return
+        }
+        AlertDialog.Builder(activity)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+                onOk()
+            }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+                onCancel()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun handleFailure(@StringRes messageRes: Int) {
+        isStartFlowRunning = false
         storeData.isTrackingEnabled = false
-        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+        Toast.makeText(context, messageRes, Toast.LENGTH_LONG).show()
+    }
+
+    private companion object {
+        const val TAG = "StepTrackingManager"
     }
 }
