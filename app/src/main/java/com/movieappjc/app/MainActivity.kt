@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.core_app.extension.ADp
 import com.movieappjc.R
 import com.movieappjc.app.common.constants.supportedLocalesNow
@@ -28,6 +29,7 @@ import com.movieappjc.app.theme.kColorVulcan
 import com.movieappjc.domain.repositories.AppRepository
 import com.movieappjc.presentation.screen.main.MainScreen
 import com.movieappjc.steptracker.manager.StepTrackingManager
+import com.movieappjc.steptracker.ui.StepPermissionDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -58,6 +60,17 @@ class MainActivity : ComponentActivity() {
                 Box(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
                     MainScreen(onClickLanguage = it)
                 }
+            }
+
+            val dialogState = stepTrackingManager.dialogState
+            if (dialogState != null) {
+                StepPermissionDialog(
+                    title = stringResource(dialogState.titleRes),
+                    message = stringResource(dialogState.messageRes),
+                    buttonText = stringResource(dialogState.buttonTextRes),
+                    onConfirm = dialogState.onConfirm,
+                    onDismiss = dialogState.onDismiss
+                )
             }
         }
     }

@@ -2,7 +2,6 @@ package com.movieappjc.steptracker.manager
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,6 +15,9 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -28,6 +30,7 @@ import androidx.work.WorkManager
 import com.movieappjc.R
 import com.movieappjc.steptracker.data.local.StepStoreData
 import com.movieappjc.steptracker.service.BackgroundStepTrackerService
+import com.movieappjc.steptracker.ui.StepPermissionDialogState
 import com.movieappjc.steptracker.util.AutoStartHelper
 import com.movieappjc.steptracker.worker.AdvancedSyncWorker
 
@@ -42,6 +45,9 @@ class StepTrackingManager(
 ) : DefaultLifecycleObserver {
 
     private val context: Context = activity.applicationContext
+
+    var dialogState by mutableStateOf<StepPermissionDialogState?>(null)
+        private set
 
     // True while the permission / battery dialogs of startTracking() are being shown
     private var isStartFlowRunning = false
@@ -257,19 +263,19 @@ class StepTrackingManager(
             onCancel()
             return
         }
-        AlertDialog.Builder(activity)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                dialog.dismiss()
+        dialogState = StepPermissionDialogState(
+            titleRes = title,
+            messageRes = message,
+            buttonTextRes = R.string.step_permission_allow_access,
+            onConfirm = {
+                dialogState = null
                 onOk()
-            }
-            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
+            },
+            onDismiss = {
+                dialogState = null
                 onCancel()
             }
-            .setCancelable(false)
-            .show()
+        )
     }
 
     private fun showSettingsDialog(
@@ -281,20 +287,20 @@ class StepTrackingManager(
             onCancel()
             return
         }
-        AlertDialog.Builder(activity)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(R.string.step_permission_open_settings) { dialog, _ ->
-                dialog.dismiss()
+        dialogState = StepPermissionDialogState(
+            titleRes = title,
+            messageRes = message,
+            buttonTextRes = R.string.step_permission_open_settings,
+            onConfirm = {
+                dialogState = null
                 openAppSettings()
                 isStartFlowRunning = false
-            }
-            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
+            },
+            onDismiss = {
+                dialogState = null
                 onCancel()
             }
-            .setCancelable(false)
-            .show()
+        )
     }
 
     private fun openAppSettings() {

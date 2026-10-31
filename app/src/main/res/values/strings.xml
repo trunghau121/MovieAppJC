@@ -20,6 +20,7 @@
     <string name="step_permission_notification_message">To display your live step progress in real-time and maintain background tracking, please allow notifications.</string>
 
     <string name="step_permission_open_settings">Open Settings</string>
+    <string name="step_permission_allow_access">Allow access</string>
     <string name="step_permission_settings_message">Physical Activity permission has been denied. Please enable it in App Settings to track your steps.</string>
     <string name="step_permission_notification_settings_message">Notification permission has been denied. Please enable it in App Settings to display step notifications.</string>
 

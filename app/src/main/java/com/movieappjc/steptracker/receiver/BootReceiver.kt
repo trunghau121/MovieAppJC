@@ -31,7 +31,6 @@ class BootReceiver : BroadcastReceiver() {
 
         if (!hasPermission) {
             storeData.isTrackingEnabled = false
-            storeData.previousTotalSteps = -1L
             return
         }
 
