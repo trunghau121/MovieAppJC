@@ -8,12 +8,15 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -42,6 +45,7 @@ class StepTrackingManager(
 
     // True while the permission / battery dialogs of startTracking() are being shown
     private var isStartFlowRunning = false
+    private var isWaitingForAppSettings = false
 
     // Launcher for Physical Activity permission
     private val activityRecognitionLauncher = activity.registerForActivityResult(
@@ -57,8 +61,12 @@ class StepTrackingManager(
     // Launcher for Notification permission
     private val notificationPermissionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { _ ->
-        finishStartFlow()
+    ) { isGranted ->
+        if (isGranted) {
+            finishStartFlow()
+        } else {
+            handleFailure(R.string.step_permission_notification_required)
+        }
     }
 
     init {
@@ -70,9 +78,28 @@ class StepTrackingManager(
         // Trigger sync when app opens
         triggerAppOpenSync()
 
-        // Resume tracking if it was previously enabled (no dialogs here)
+        // Resume tracking if it was previously enabled
         if (storeData.isTrackingEnabled && !isStartFlowRunning) {
-            if (hasSystemPermissions()) executeStartTracking() else stopTracking()
+            if (hasSystemPermissions()) {
+                executeStartTracking()
+            } else {
+                isStartFlowRunning = false
+                storeData.isTrackingEnabled = false
+                startTracking()
+            }
+        }
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        if (isWaitingForAppSettings) {
+            isWaitingForAppSettings = false
+            if (!hasSystemPermissions()) {
+                isStartFlowRunning = false
+                startTracking()
+            } else {
+                finishStartFlow()
+            }
         }
     }
 
@@ -120,14 +147,28 @@ class StepTrackingManager(
 
     private fun checkAndRequestActivityRecognition() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACTIVITY_RECOGNITION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            showDialog(
-                title = R.string.step_permission_activity_title,
-                message = R.string.step_permission_activity_message,
-                onOk = { activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION) },
-                onCancel = { handleFailure(R.string.step_permission_activity_required) }
+            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                activity, Manifest.permission.ACTIVITY_RECOGNITION
             )
+            if (!showRationale) {
+                showSettingsDialog(
+                    title = R.string.step_permission_activity_title,
+                    message = R.string.step_permission_settings_message,
+                    onCancel = { handleFailure(R.string.step_permission_activity_required) }
+                )
+            } else {
+                showDialog(
+                    title = R.string.step_permission_activity_title,
+                    message = R.string.step_permission_activity_message,
+                    onOk = { activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION) },
+                    onCancel = { handleFailure(R.string.step_permission_activity_required) }
+                )
+            }
         } else {
             checkAndRequestNotificationPermission()
         }
@@ -137,13 +178,25 @@ class StepTrackingManager(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
-        ) != PackageManager.PERMISSION_GRANTED) {
-            showDialog(
-                title = R.string.step_permission_notification_title,
-                message = R.string.step_permission_notification_message,
-                onOk = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
-                onCancel = { }
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                activity, Manifest.permission.POST_NOTIFICATIONS
             )
+            if (!showRationale) {
+                showSettingsDialog(
+                    title = R.string.step_permission_notification_title,
+                    message = R.string.step_permission_notification_settings_message,
+                    onCancel = { handleFailure(R.string.step_permission_notification_required) }
+                )
+            } else {
+                showDialog(
+                    title = R.string.step_permission_notification_title,
+                    message = R.string.step_permission_notification_message,
+                    onOk = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                    onCancel = { handleFailure(R.string.step_permission_notification_required) }
+                )
+            }
         } else {
             finishStartFlow()
         }
@@ -161,19 +214,18 @@ class StepTrackingManager(
         AutoStartHelper.startPowerSaverIntent(activity)
     }
 
-    fun stopTracking() {
-        // Order matters: the service only advances the sensor baseline while tracking is enabled
-        storeData.isTrackingEnabled = false
-        // Drop the baseline so steps walked while tracking is off are not "recovered" on the next start
-        storeData.previousTotalSteps = -1L
-        context.stopService(Intent(context, BackgroundStepTrackerService::class.java))
-        WorkManager.getInstance(context).cancelUniqueWork("StepSyncWork")
-        WorkManager.getInstance(context).cancelUniqueWork("StepAppOpenSyncWork")
-    }
-
     private fun hasSystemPermissions(): Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                || ContextCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
+        val hasActivityPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                || ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACTIVITY_RECOGNITION
+        ) == PackageManager.PERMISSION_GRANTED
+        val hasNotificationPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                || ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+        return hasActivityPermission && hasNotificationPermission
     }
 
     private fun executeStartTracking() {
@@ -218,6 +270,45 @@ class StepTrackingManager(
             }
             .setCancelable(false)
             .show()
+    }
+
+    private fun showSettingsDialog(
+        @StringRes title: Int,
+        @StringRes message: Int,
+        onCancel: () -> Unit
+    ) {
+        if (activity.isFinishing || activity.isDestroyed) {
+            onCancel()
+            return
+        }
+        AlertDialog.Builder(activity)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(R.string.step_permission_open_settings) { dialog, _ ->
+                dialog.dismiss()
+                openAppSettings()
+                isStartFlowRunning = false
+            }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+                onCancel()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun openAppSettings() {
+        try {
+            isWaitingForAppSettings = true
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", activity.packageName, null)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            activity.startActivity(intent)
+        } catch (e: Exception) {
+            isWaitingForAppSettings = false
+            Log.e(TAG, "Unable to open app settings", e)
+        }
     }
 
     private fun handleFailure(@StringRes messageRes: Int) {

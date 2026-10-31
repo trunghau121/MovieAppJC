@@ -12,11 +12,16 @@
     <string name="step_sensor_unavailable">This device does not support a step counter sensor.</string>
 
     <string name="step_permission_activity_required">Physical Activity permission is required to track steps!</string>
+    <string name="step_permission_notification_required">Notification permission is required to track steps and display live progress!</string>
     <string name="step_permission_activity_title">Physical Activity Permission Required</string>
     <string name="step_permission_activity_message">To accurately track your daily steps in real-time, this app requires physical activity recognition permission. Tap OK to grant this permission.</string>
 
     <string name="step_permission_notification_title">Notification Permission Required</string>
     <string name="step_permission_notification_message">To display your live step progress in real-time and maintain background tracking, please allow notifications.</string>
+
+    <string name="step_permission_open_settings">Open Settings</string>
+    <string name="step_permission_settings_message">Physical Activity permission has been denied. Please enable it in App Settings to track your steps.</string>
+    <string name="step_permission_notification_settings_message">Notification permission has been denied. Please enable it in App Settings to display step notifications.</string>
 
     <string name="step_battery_title">Background Battery Optimization</string>
     <string name="step_battery_message">To ensure step tracking continues reliably when the app is in the background or your screen is turned off, please allow the app to ignore battery optimizations.</string>
